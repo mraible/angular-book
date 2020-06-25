@@ -1,5 +1,7 @@
 = An InfoQ Mini-Book
 
+image::https://github.com/mraible/angular-book/workflows/Build/badge.svg[Build]
+
 This is an awesome book. It's written in AsciiDoc and compiles to HTML, PDF, EPUB, and MOBI using the
 http://asciidoctor.org/docs/asciidoctor-gradle-plugin/[Asciidoctor Gradle plugin].
 
