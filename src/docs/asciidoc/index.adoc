@@ -1,12 +1,12 @@
-= My InfoQ Mini-Book
+= The Angular Mini-Book
 :book-title: {doctitle}
-:author: Your Name
-:email:  youremail@infoq.com
-:revnumber: 1.0
+:author: Matt Raible
+:email: matt@raibledesigns.com
+:revnumber: 1.0.0
 :revdate: {docdate}
-:revyear: 2018
-:subject: JHipster
-:keywords: Angular, Bootstrap, Spring Boot
+:revyear: 2020
+:subject: Angular
+:keywords: Angular, TypeScript, Bootstrap, Spring Boot
 :doctype: book
 :media: screen
 ifeval::["{media}" != "prepress"]

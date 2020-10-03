@@ -20,7 +20,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'org.asciidoctor.convert'
 
-version = '4.1.0-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 asciidoctorj {
     version = '2.1.0'

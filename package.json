@@ -1,10 +1,10 @@
 {
-  "name": "infoq-mini-book",
-  "version": "4.1.0",
-  "description": "InfoQ Mini-Book",
+  "name": "angular-mini-book",
+  "version": "1.0.0",
+  "description": "Angular Mini-Book",
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:mraible/infoq-mini-book.git"
+    "url": "git@github.com:mraible/angular-book.git"
   },
   "devDependencies": {
     "gulp": "4.0.2",

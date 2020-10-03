@@ -1,1 +1,11 @@
 = Acknowledgements
+
+I'm extremely grateful to Trish, Abbie, and Jack. They put up with my late nights and extended screen time while I worked on this book.
+
+// thank creators of JavaScript/TypeScript and the open web
+
+// thanks to tech editors
+
+// thanks to Lawrence!
+
+// thanks to Angular creators, it's remarkable!
