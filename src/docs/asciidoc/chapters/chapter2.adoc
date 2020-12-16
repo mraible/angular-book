@@ -19,17 +19,9 @@ Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java d
 
 Long story short, they're a match made in heaven!
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/bootiful-angular.png' %}[alt=Bootiful Angular,width=800,align=center]
-
-toc::[]
-
-If you'd rather watch a video, https://youtu.be/pgWk9dft3So[I created a screencast of this tutorial].
-
-++++
-<div style="text-align: center; margin-bottom: 1.25rem">
-<iframe width="700" height="394" style="max-width: 100%" src="https://www.youtube.com/embed/pgWk9dft3So" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-++++
+[[bootiful-angular]]
+.Bootiful Angular
+image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%"]
 
 == What's New In Angular 9?
 
@@ -101,7 +93,9 @@ ng serve
 
 Open your browser to `http://localhost:4200`, and you'll see the default homepage.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/default-homepage.png' %}[alt=Angular default homepage,width=800,align=center]
+[[default-homepage]]
+.Angular default homepage
+image::../images/angular-spring-boot/default-homepage.png[Angular default homepage, 800, scaledwidth="100%"]
 
 Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
@@ -120,7 +114,9 @@ To add OIDC login support to your Angular 9 app, you'll first need an https://de
 
 Your app's settings should resemble the following.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/angular9-oidc-settings.png' %}[alt=Angular OIDC App Settings,width=700,align=center]
+[[angular-oidc-settings]]
+.Angular OIDC App Settings
+image::../images/angular-spring-boot/angular9-oidc-settings.png[Angular OIDC App Settings, 800, scaledwidth="100%"]
 
 At the bottom of the screen, you'll see your app's Client ID. You might also notice that **Use PKCE** is selected. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
 
@@ -135,7 +131,9 @@ ng add @oktadev/schematics --issuer=$issuer --clientId=$clientId
 
 This command adds Okta's Angular SDK and configures OIDC authentication for your app.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/oktadev-schematics.png' %}[alt=OktaDev Schematics in Action,width=800,align=center]
+[[oktadev-schematics]]
+.OktaDev Schematics in Action
+image::../images/angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%"]
 
 It creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
 
@@ -215,15 +213,21 @@ NOTE: You might notice that tokens are only added for `http://localhost`. You'll
 
 Start your app again using `ng serve`, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/angular-login-button.png' %}[alt=Login button,width=800,align=center]
+[[angular-login-button]]
+.Login button
+image::../images/angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%"]
 
 Click on it, and you'll be redirected to Okta to log in.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/okta-login.png' %}[alt=Okta Login form,width=425,align=center]
+[[okta-login]]
+.Okta Login form
+image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="100%"]
 
 Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/angular-logout-button.png' %}[alt=Logout button,width=800,align=center]
+[[angular-logout-button]]
+.Logout button
+image::../images/angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%"]
 
 Now that you've created a secure Angular 9 app let's create a Spring Boot app to serve up data with a REST API.
 
@@ -251,7 +255,9 @@ unzip notes-api.zip -d angular-spring-boot/notes-api
 
 You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.2.4.RELEASE&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/start.spring.io.png' %}[alt=Create app with start.spring.io,width=800,align=center]
+[[start.spring.io]]
+.Create app with start.spring.io
+image::../images/angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%"]
 
 === Secure Spring Boot with Spring Security, OAuth 2.0, and OIDC
 
@@ -266,7 +272,9 @@ Log in to your Okta dashboard, then:
 
 Your app's settings should look as follows.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/spring-boot-oidc-settings.png' %}[alt=Spring Boot OIDC Settings,width=700,align=center]
+[[spring-boot-oidc-settings]]
+.Spring Boot OIDC Settings
+image::../images/angular-spring-boot/spring-boot-oidc-settings.png[Spring Boot OIDC Settings, 700, scaledwidth="100%"]
 
 You _could_ copy your app's OIDC settings to `src/main/resources/application.properties`:
 
@@ -647,19 +655,27 @@ TIP: If you want `npm test` to pass after modifying this template, you'll need t
 
 Run `ng serve` (and make sure your Spring Boot app is running too).
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/notes-login.png' %}[alt=Notes App Login,width=800,align=center]
+[[notes-login]]
+.Notes App Login
+image::../images/angular-spring-boot/notes-login.png[Notes App Login, 800, scaledwidth="100%"]
 
 Log in, and you should see a **View Notes** link.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/notes-link.png' %}[alt=Notes Link,width=800,align=center]
+[[notes-link]]
+.Notes Link
+image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth="100%"]
 
 Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/notes-list.png' %}[alt=Notes List,width=800,align=center]
+[[notes-list]]
+.Notes List
+image::../images/angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%"]
 
 Click on the **New** link to add a new note.
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/notes-detail.png' %}[alt=Notes Detail,width=800,align=center]
+[[notes-detail]]
+.Notes Detail
+image::../images/angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%"]
 
 Add a new note, and you'll see a message like this in your backend console.
 
@@ -683,7 +699,9 @@ find(filter: NoteFilter): Observable<Note[]> {
 
 Now you'll see your notes listed. Nice work!
 
-image::{% asset_path 'blog/spring-boot-2-angular-9/notes-user-list.png' %}[alt=Notes User List,width=800,align=center]
+[[notes-user-list]]
+.Notes User List
+image::../images/angular-spring-boot/notes-user-list.png[Notes User List, 800, scaledwidth="100%"]
 
 You might be wondering how the `NoteListComponent` works. It loads the user's notes from the `NoteService` when the component initializes, and also contains `select()` and `delete()` methods. The reason it's able to talk to your secured Spring Boot API is that the aforementioned `AuthInterceptor` adds an access token to the request.
 
@@ -988,7 +1006,9 @@ Another web framework took the world by storm the following year: AngularJS. Ang
 
 Together, these frameworks have had quite a run. It's hard to believe that they've lasted so long, especially considering both projects have had major rewrites!
 
-// image::{% asset_path 'blog/angular-bootstrap/angular-bootstrap.png' %}[alt=Angular 💜 Bootstrap,width=800,align=center]
+// [[angular-bootstrap]]
+.Angular 💜 Bootstrap
+image::../images/angular-spring-boot/angular-bootstrap.png[Angular 💜 Bootstrap, 800, scaledwidth="100%"]
 
 toc::[]
 
@@ -1083,7 +1103,9 @@ Please run `ng add @angular/localize` from the Angular CLI.
 
 Cancel the process and run `ng add @angular/localize` to fix this error. Now, if you restart your app, you'll see it's pretty simple. And kinda ugly.
 
-image::{% asset_path 'blog/angular-bootstrap/notes-bare-bones.png' %}[alt=Bare-bones styling,width=800,align=center]
+[[notes-bare-bones]]
+.Bare-bones styling
+image::../images/angular-spring-boot/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%"]
 
 Let's fix that!
 
@@ -1113,7 +1135,9 @@ And change `app.component.html` to use Bootstrap classes.
 
 Now we're getting somewhere!
 
-image::{% asset_path 'blog/angular-bootstrap/notes-slightly-styled.png' %}[alt=Slightly styled,width=800,align=center]
+[[notes-slightly-styled]]
+.Slightly styled
+image::../images/angular-spring-boot/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
 
 
 To make the login button work, you need to configure both apps' security configurations.
@@ -1167,7 +1191,9 @@ const oktaConfig = {
 
 Now you should be able to log in with your Okta credentials and create notes to your heart's content!
 
-image::{% asset_path 'blog/angular-bootstrap/first-note.png' %}[alt=First note,width=800,align=center]
+[[first-note]]
+.First note
+image::../images/angular-spring-boot/first-note.png[First note, 800, scaledwidth="100%"]
 
 You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
 
@@ -1260,7 +1286,9 @@ Then import this file at the top of `src/styles.scss`:
 
 You'll see the colors change after these updates.
 
-image::{% asset_path 'blog/angular-bootstrap/bootstrap-sass.png' %}[alt=Customized Bootstrap variables,width=800,align=center]
+[[bootstrap-sass]]
+.Customized Bootstrap variables
+image::../images/angular-spring-boot/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%"]
 
 Comment out (or remove) the variables in `_variables.scss` to revert to Bootstrap's default colors.
 
@@ -1319,13 +1347,17 @@ Remove the login and logout buttons from `home.component.html`.
 
 Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
 
-image::{% asset_path 'blog/angular-bootstrap/notes-with-navbar.png' %}[alt=Notes app with navbar,width=800,align=center]
+[[notes-with-navbar]]
+.Notes app with navbar
+image::../images/angular-spring-boot/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%"]
 
 === Fix Bootstrap's Responsive Menu
 
 If you reduce the width of your browser window, you'll see the menu collapses to take up less real estate.
 
-image::{% asset_path 'blog/angular-bootstrap/navbar-squished.png' %}[alt=Navbar squished,width=600,align=center]
+[[navbar-squished]]
+.Navbar squished
+image::../images/angular-spring-boot/navbar-squished.png[Navbar squished, 600, scaledwidth="100%"]
 
 However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
@@ -1358,7 +1390,9 @@ export class AppComponent implements OnInit {
 
 Now, you'll be able to toggle the menu!
 
-image::{% asset_path 'blog/angular-bootstrap/notes-menu.png' %}[alt=Squished navbar with menu,width=600,align=center]
+[[notes-menu]]
+.Squished navbar with menu
+image::../images/angular-spring-boot/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
 
 === Update the Note List Angular Template
 
@@ -1418,7 +1452,9 @@ Modify the `note-list.component.html` so the breadcrumb doesn't float right and 
 
 That looks better!
 
-image::{% asset_path 'blog/angular-bootstrap/styled-notes-list.png' %}[alt=Styled Notes List,width=800,align=center]
+[[styled-notes-list]]
+.Styled Notes List
+image::../images/angular-spring-boot/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
 
 === Add Validation and Bootstrap to the Note Edit Template
 
@@ -1464,7 +1500,9 @@ If you click the **New** button, you'll see the form needs some work too. Bootst
 
 That's an improvement!
 
-image::{% asset_path 'blog/angular-bootstrap/styled-notes-form.png' %}[alt=Styled Notes Form,width=800,align=center]
+[[styled-notes-form]]
+.Styled Notes Form
+image::../images/angular-spring-boot/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%"]
 
 To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
 
@@ -1482,11 +1520,15 @@ To make the `title` field required, add a `required` attribute to its `<input>` 
 
 Now when you add a new note, it'll let you know that it requires a title.
 
-image::{% asset_path 'blog/angular-bootstrap/notes-edit-required-title.png' %}[alt=Title is required,width=800,align=center]
+[[notes-edit-required-title]]
+.Title is required
+image::../images/angular-spring-boot/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%"]
 
 If you give it focus and leave, it'll add a red border around the field.
 
-image::{% asset_path 'blog/angular-bootstrap/notes-edit-red-outline.png' %}[alt=Dirty title validation decoration,width=800,align=center]
+[[notes-edit-red-outline]]
+.Dirty title validation decoration
+image::../images/angular-spring-boot/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%"]
 
 == Add a Searchable, Sortable, and Pageable Data Table with Angular and Spring Data JPA
 
@@ -1764,7 +1806,9 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
 
 Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
 
-image::{% asset_path 'blog/angular-bootstrap/notes-list-with-sorting.png' %}[alt=Notes list with sorting,width=800,align=center]
+[[notes-list-with-sorting]]
+.Notes list with sorting
+image::../images/angular-spring-boot/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
 
 === Add Pagination with Angular and Bootstrap
 
@@ -1900,7 +1944,9 @@ export class NoteService {
 
 Now your note list should have a working pagination feature at the bottom. Pretty slick, eh?
 
-image::{% asset_path 'blog/angular-bootstrap/notes-list-with-pagination.png' %}[alt=Notes with pagination,width=800,align=center]
+[[notes-list-with-pagination]]
+.Notes with pagination
+image::../images/angular-spring-boot/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%"]
 
 
 == Angular with Bootstrap + Spring Boot is Powerful
@@ -1951,7 +1997,9 @@ docker-compose -f src/main/docker/elasticsearch.yml up -d
 
 Then, run `npm run e2e` in another terminal window to verify everything works. Here's a screenshot of the app's Notes form with validation.
 
-image::{% asset_path 'blog/angular-bootstrap/khipster-notes.png' %}[alt=KHipster Notes,width=800,align=center]
+[[khipster-notes]]
+.KHipster Notes
+image::../images/angular-spring-boot/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
 
 Want to make it work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
 

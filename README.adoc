@@ -14,7 +14,7 @@ npm run setup
 To convert this book to HTML and EPUB, run the following command:
 
 ----
-$ npm run build
+npm run build
 ----
 
 * Open _build/asciidoc/html5/index.html_ in your browser to see the generated HTML file.

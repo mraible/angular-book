@@ -89,7 +89,7 @@ You should see a screen like the one below at http://localhost:4200.
 
 [[default-homepage]]
 .Default homepage
-image::src/assets/images/default-homepage.png[Default Homepage, 800, scaledwidth="100%"]
+image::../images/ng-demo/default-homepage.png[Default Homepage, 800, scaledwidth="100%"]
 
 You can make sure your new project's tests pass, run `ng test`:
 
@@ -198,7 +198,7 @@ Now you should be able to see the search form.
 
 [[search-component]]
 .Search component
-image::src/assets/images/search-without-css.png[Search component, 800, scaledwidth="100%"]
+image::../images/ng-demo/search-without-css.png[Search component, 800, scaledwidth="100%"]
 
 If yours looks different, it's because I trimmed my `app.component.html` to the bare minimum.
 
@@ -446,7 +446,7 @@ Now the search results look better.
 
 [[search-results]]
 .Search results
-image::src/assets/images/search-results.png[Search Results, 800, scaledwidth="100%"]
+image::../images/ng-demo/search-results.png[Search Results, 800, scaledwidth="100%"]
 
 But wait, you still don't have search functionality! To add a search feature, add a `search()` method to `SearchService`.
 
@@ -675,7 +675,7 @@ At this point, you should be able to search for a person and update their inform
 
 [[edit-form]]
 .Edit component
-image::src/assets/images/edit-form.png[Edit form, 800, scaledwidth="100%"]
+image::../images/ng-demo/edit-form.png[Edit form, 800, scaledwidth="100%"]
 
 The &lt;form> in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above.
 The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
@@ -766,7 +766,7 @@ After making these changes, the name field will be required.
 
 [[edit-form-required]]
 .Edit form with validation
-image::src/assets/images/edit-form-validation.png[Edit form with validation, 800, scaledwidth="100%"]
+image::../images/ng-demo/edit-form-validation.png[Edit form with validation, 800, scaledwidth="100%"]
 
 In this screenshot, you might notice the address fields are blank and the save button is enabled. This is explained by the error in your console.
 
@@ -794,7 +794,7 @@ Now values display in all fields, `name` is required, and save is enabled.
 
 [[edit-form-names]]
 .Edit form with names and validation
-image::src/assets/images/edit-form-names.png[Edit form with names and validation, 800, scaledwidth="100%"]
+image::../images/ng-demo/edit-form-names.png[Edit form with names and validation, 800, scaledwidth="100%"]
 
 To learn more about forms and validation, see https://angular.io/guide/form-validation[Angular Forms Validation documentation].
 
@@ -1245,7 +1245,7 @@ Run `ng e2e` to verify all your end-to-end tests pass. You should see a success 
 
 [[protractor-success]]
 .Protractor success
-image::src/assets/images/protractor-success.png[Protractor success, 800, scaledwidth="100%"]
+image::../images/ng-demo/protractor-success.png[Protractor success, 800, scaledwidth="100%"]
 
 If you made it this far and have all your specs passing - congratulations! You're well on your way to writing quality code with Angular and verifying it works.
 
@@ -1268,7 +1268,7 @@ You might notice that the `EditComponent` could use some additional coverage. If
 
 [[test-coverage]]
 .Test coverage
-image::src/assets/images/test-coverage.png[Test coverage, 800, scaledwidth="100%"]
+image::../images/ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%"]
 
 == Continuous Integration
 
@@ -1495,7 +1495,7 @@ After modifying your templates, the edit screen will look as follows.
 
 [[bootstrap4]]
 .Bootstrap 4
-image::src/assets/images/bootstrap4.png[Bootstrap 4, 800, scaledwidth="100%"]
+image::../images/ng-demo/bootstrap4.png[Bootstrap 4, 800, scaledwidth="100%"]
 
 == Styling with Angular Material
 
@@ -1543,7 +1543,7 @@ After modifying your templates, the edit screen will look as follows.
 
 [[angular-material]]
 .Angular Material
-image::src/assets/images/angular-material.png[Angular Material, 800, scaledwidth="100%"]
+image::../images/ng-demo/angular-material.png[Angular Material, 800, scaledwidth="100%"]
 
 == Add Authentication with OpenID Connect
 
@@ -1564,7 +1564,7 @@ Login to your Okta account, then follow the steps below.
 When you are finished, your settings should look similar to the screenshot below.
 
 .OIDC App Settings
-image::src/assets/images/oidc-settings.png[OIDC App Settings, 730, scaledwidth="100%"]
+image::../images/ng-demo/oidc-settings.png[OIDC App Settings, 730, scaledwidth="100%"]
 
 === Add OIDC Authentication with OktaDev Schematics
 
@@ -1618,13 +1618,13 @@ After making these changes, you should be able to run `ng serve` and see a login
 
 [[okta-login-button]]
 .Okta login button
-image::src/assets/images/okta-login-button.png[Login button, 800, scaledwidth="100%"]
+image::../images/ng-demo/okta-login-button.png[Login button, 800, scaledwidth="100%"]
 
 Click the *Login* button and sign-in with one of the people that's configured in your Okta application.
 
 [[okta-login]]
 .Okta login form
-image::src/assets/images/okta-login-form.png[Okta login form, 800, scaledwidth="100%"]
+image::../images/ng-demo/okta-login-form.png[Okta login form, 800, scaledwidth="100%"]
 
 === Display Authenticated User's Name
 
@@ -1672,7 +1672,7 @@ Refresh your app and you should see your name with a link to *Search*.
 
 [[okta-post-login]]
 .View after login
-image::src/assets/images/okta-post-login.png[View after login, 800, scaledwidth="100%"]
+image::../images/ng-demo/okta-post-login.png[View after login, 800, scaledwidth="100%"]
 
 If you logout and manually navigate to http://localhost:4200/search, you'll be required to log in.
 
