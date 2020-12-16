@@ -1,7 +1,8 @@
 [[chapter-3]]
 = Chapter 3
 
-3. Angular Deployment
+== Angular Deployment
+
 - Deploy Angular to Heroku with Secure Headers
 - Use `ng deploy` with Firebase, Netlify, and AWS
 
@@ -12,9 +13,12 @@ Developers ask me from time-to-time, "What's the best way to do Angular  deploym
 
 There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
 
+////
 [[angular-deployment]]
 .Angular Deployment with a Side of Spring Boot
 image::../images/angular-deployment/angular-deployment.png[Angular Deployment with a Side of Spring Boot, 800, scaledwidth="100%"]
+////
+
 
 == Create an Angular + Spring Boot App
 
@@ -25,7 +29,7 @@ Since this tutorial is more about deployment than app creation, you can start wi
 
 One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
 
-[[notes-list-with-sorting]]
+[[notes-list-with-sorting-recap]]
 .Notes list with sorting
 image::../images/angular-deployment/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
 
@@ -141,7 +145,7 @@ image::../images/angular-deployment/angular-home.png[Angular Home, 800, scaledwi
 
 Click the **Login** button in the top right corner. You should be logged in straight-away, since you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
 
-[[first-note]]
+[[first-note-recap]]
 .First note
 image::../images/angular-deployment/first-note.png[First note, 800, scaledwidth="100%"]
 
@@ -806,7 +810,7 @@ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git --re
 git push angular master
 ----
 
-💥 Now you'll have a security report you can be proud of! 😃
+Now you'll have a security report you can be proud of!
 
 [[heroku-headers]]
 .Security Report Summary with an A
@@ -1258,7 +1262,7 @@ Building modern apps with Angular and Spring Boot is a common practice these day
 
 [[keyword-planner-angular-results]]
 .Keyword Planner results
-image::../images/angular-deployment/keyword-planner-angular-results.png[Keyword Planner results, 375, scaledwidth="100%"]
+image::../images/angular-docker/keyword-planner-angular-results.png[Keyword Planner results, 375, scaledwidth="100%"]
 
 This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS. You can find links to previous tutorials below.
 

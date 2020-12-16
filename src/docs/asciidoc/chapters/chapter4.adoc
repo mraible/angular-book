@@ -1,7 +1,8 @@
 [[chapter-4]]
 = Chapter 4
 
-4. Angular + Docker
+== Angular + Docker
+
 - Dockerize an Angular App
 - Combine Angular and Spring Boot in a Single Artifact
 - Build a Docker Image with Jib
@@ -15,24 +16,18 @@ image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Doc
 
 Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app—you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
 
+////
 ====
-I'd like to thank many folks for their help with this post. **Benoit Sautel** for help with Gradle + Kotlin, **Ray Tsang** for help with Jib, **James Ward** for help with Knative, **Josh Long** for his assistance with Docker + Cloud Foundry, and **Joe Kutner** for his buildpacks support. Y'all rock! 🤘
+I'd like to thank many folks for their help with this post. **Benoit Sautel** for help with Gradle + Kotlin, **Ray Tsang** for help with Jib, **James Ward** for help with Knative, **Josh Long** for his assistance with Docker + Cloud Foundry, and **Joe Kutner** for his buildpacks support. Y'all rock!
 
 [.avatar-row]
-https://twitter.com/bsautel[image:{% asset_path 'blog/angular-docker/bsautel.jpg' %}[alt=Benoit Sautel,role="BlogPost-avatar img-100px"]]
-https://twitter.com/saturnism[image:{% asset_path 'blog/angular-docker/saturnism.jpg' %}[alt=Ray Tsang,role="BlogPost-avatar img-100px"]]
-https://twitter.com/_JamesWard[image:{% asset_path 'blog/angular-docker/_JamesWard.jpg' %}[alt=James Ward,role="BlogPost-avatar img-100px"]]
-https://twitter.com/starbuxman[image:{% asset_path 'blog/angular-docker/starbuxman.jpg' %}[alt=Josh Long,role="BlogPost-avatar img-100px"]]
-https://twitter.com/codefinger[image:{% asset_path 'blog/angular-docker/codefinger.jpg' %}[alt=Joe Kutner,role="BlogPost-avatar img-100px"]]
+https://twitter.com/bsautel[image:../images/angular-docker/bsautel.jpg[alt=Benoit Sautel,role="BlogPost-avatar img-100px"]]
+https://twitter.com/saturnism[image:../images/angular-docker/saturnism.jpg[alt=Ray Tsang,role="BlogPost-avatar img-100px"]]
+https://twitter.com/_JamesWard[image:../images/angular-docker/_JamesWard.jpg[alt=James Ward,role="BlogPost-avatar img-100px"]]
+https://twitter.com/starbuxman[image:../images/angular-docker/starbuxman.jpg[alt=Josh Long,role="BlogPost-avatar img-100px"]]
+https://twitter.com/codefinger[image:../images/angular-docker/codefinger.jpg[alt=Joe Kutner,role="BlogPost-avatar img-100px"]]
 ====
-
-NOTE: You can also https://youtu.be/BKepFaIwCvo[watch this tutorial as a screencast]!
-
-++++
-<div style="text-align: center; margin-bottom: 1.25rem">
-<iframe width="700" height="394" style="max-width: 100%" src="https://www.youtube.com/embed/BKepFaIwCvo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-++++
+////
 
 == Create an Angular + Spring Boot App
 
@@ -57,13 +52,13 @@ OAuth 2.0 was finalized in 2012 and has since become the industry-standard proto
 
 To begin the process of adding OIDC to Angular and Spring Boot, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log into it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
 
-[[heroku-create-app]]
+[[heroku-create-app-recap]]
 .Create Heroku app
 image::../images/angular-docker/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%"]
 
 After creating your app, click on the **Resources** tab and add the **Okta** add-on.
 
-[[okta-add-on]]
+[[okta-add-on-docker]]
 .Okta Add-On
 image::../images/angular-docker/okta-add-on.png[Okta Add-On, 475, scaledwidth="100%"]
 
@@ -71,7 +66,7 @@ CAUTION: If you haven't entered a credit card for your Heroku account, you will 
 
 Click **Provision** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now go to your app's **Settings** tab and click the **Reveal Config Vars** button. The variables displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
 
-[[heroku-config-vars]]
+[[heroku-config-vars-recap]]
 .Okta Add-On
 image::../images/angular-docker/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
 
@@ -128,7 +123,7 @@ ng serve
 
 Open `http://localhost:4200` in your browser.
 
-[[angular-home]]
+[[angular-home-docker]]
 .Angular Home
 image::../images/angular-docker/angular-home.png[Angular Home, 800, scaledwidth="100%"]
 
@@ -312,7 +307,7 @@ git push heroku main:master
 
 Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your Spring Boot app. You should see a screen like the one below.
 
-[[heroku-hello]]
+[[heroku-hello-docker]]
 .Hello on Heroku
 image::../images/angular-docker/heroku-hello.png[Hello on Heroku, 800, scaledwidth="100%"]
 
@@ -985,7 +980,7 @@ source okta.env
 java -jar build/libs/*.jar
 ----
 
-Congrats! You modified your Angular and Spring Boot apps to be packaged together and implemented the most secure form of OAuth 2.0 to boot! 🎊
+Congrats! You modified your Angular and Spring Boot apps to be packaged together and implemented the most secure form of OAuth 2.0 to boot!
 
 Commit your changes to Git.
 
@@ -1119,9 +1114,9 @@ Run `docker login` to log into your account, then use the `jib` task to build *a
 ./gradlew jib -Pprod
 ----
 
-Isn't it cool how Jib makes it so you don't need a `Dockerfile`!? 👍
+Isn't it cool how Jib makes it so you don't need a `Dockerfile`!?
 
-== Heroku 💜 Spring Boot + Docker
+== Heroku with Spring Boot + Docker
 
 To deploy this container to Heroku, create a new Heroku app and add it as a Git remote.
 
@@ -1213,9 +1208,9 @@ If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, yo
 .A+ Security Headers
 image::../images/angular-docker/heroku-jib-headers-a+.png[A+ Security Headers, 800, scaledwidth="100%"]
 
-== Knative 💙 Spring Boot + Docker
+== Knative with Spring Boot + Docker
 
-Heroku is awesome, but sometimes people want more control over their infrastructure. Enter Knative. It's like Heroku in that it's a Platform as a Service (PaaS). Knative is built on top of Kubernetes so you can install a number of services with a bit of YAML and `kubectl` commands.
+Heroku is awesome, but sometimes people want more control over their infrastructure. Enter Knative. It's like Heroku in that it's a Platform as a Service (PaaS). Knative is built on top of Kubernetes, so you can install a number of services with a bit of YAML and `kubectl` commands.
 
 With Heroku, when companies reach the limitations of the platform, they have to go elsewhere to host their services. With Knative, you can just drop down to Kubernetes. It's Heroku for Kubernetes in a sense, but you don't have to switch to a different universe when you need additional functionality.
 
@@ -1523,7 +1518,7 @@ Then, you'll be able to log into your app running on Knative! Add a note or two 
 .Angular + Spring Boot in Docker running on Knative
 image::../images/angular-docker/knative-works.png[Angular + Spring Boot in Docker running on Knative, 800, scaledwidth="100%"]
 
-== Cloud Foundry 💚 Spring Boot + Docker
+== Cloud Foundry with Spring Boot + Docker
 
 Did you know you can https://docs.cloudfoundry.org/adminguide/docker.html[run Docker containers on Cloud Foundry]? It's pretty slick.
 
@@ -1657,7 +1652,7 @@ You should be able to navigate to `http://localhost:8080`, log in, and add notes
 .Spring Boot 2.3 app running
 image::../images/angular-docker/spring-boot-2.3-notes.png[Spring Boot 2.3 app running, 800, scaledwidth="100%"]
 
-Pretty neat, don't you think!? 😃
+Pretty neat, don't you think!?
 
 == Learn More About Angular, Spring Boot, and Docker
 

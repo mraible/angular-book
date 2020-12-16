@@ -1622,7 +1622,7 @@ image::../images/ng-demo/okta-login-button.png[Login button, 800, scaledwidth="1
 
 Click the *Login* button and sign-in with one of the people that's configured in your Okta application.
 
-[[okta-login]]
+[[okta-login-form]]
 .Okta login form
 image::../images/ng-demo/okta-login-form.png[Okta login form, 800, scaledwidth="100%"]
 
@@ -1676,7 +1676,7 @@ image::../images/ng-demo/okta-post-login.png[View after login, 800, scaledwidth=
 
 If you logout and manually navigate to http://localhost:4200/search, you'll be required to log in.
 
-If everything works - congrats! 🥳
+If everything works - congrats!
 
 ==== Add authentication to tests
 

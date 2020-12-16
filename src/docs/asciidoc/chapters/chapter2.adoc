@@ -1,7 +1,8 @@
 [[chapter-2]]
 = Chapter 2
 
-2. Combine Angular with Spring Boot and Kotlin
+== Combine Angular with Spring Boot and Kotlin
+
 - Spring Boot 2.3
 - Spring Boot with Spring Security
 - Spring Boot as an OAuth 2.0 Resource Server
@@ -93,9 +94,9 @@ ng serve
 
 Open your browser to `http://localhost:4200`, and you'll see the default homepage.
 
-[[default-homepage]]
+[[angular-homepage]]
 .Angular default homepage
-image::../images/angular-spring-boot/default-homepage.png[Angular default homepage, 800, scaledwidth="100%"]
+image::../images/angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%"]
 
 Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
@@ -219,7 +220,7 @@ image::../images/angular-spring-boot/angular-login-button.png[Login button, 800,
 
 Click on it, and you'll be redirected to Okta to log in.
 
-[[okta-login]]
+[[angular-okta-login]]
 .Okta Login form
 image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="100%"]
 
@@ -975,24 +976,7 @@ For Angular 8, 7, and 5 versions of this tutorial, see my past posts.
 
 If you like this blog post and want to see more like it, follow https://twitter.com/oktadev[@oktadev on Twitter], subscribe to https://youtube.com/c/oktadev[our YouTube channel], or follow us https://www.linkedin.com/company/oktadev/[on LinkedIn]. As always, please leave a comment below if you have any questions.
 
----
-layout: blog_post
-title: "Build Beautiful Angular Apps with Bootstrap"
-author: matt-raible
-by: advocate
-communities: [javascript]
-description: "Angular + Spring Boot = 💚! Learn how to add Bootstrap to the mix and configure searching, sorting, and pagination with NG Bootstrap and Spring Data JPA."
-tags: [angular, bootstrap, ng-bootstrap, spring-boot, spring-data-jpa]
-tweets:
-- "Add Bootstrap to your Angular application and make it look beautiful! #css #sass"
-- "Use Bootstrap and Spring Data JPA to build a searchable, sortable, and pageable data table!"
-- "Learn how to integrate @angular and @getbootstrap in 2020 and make beautiful apps!"
-image: blog/angular-bootstrap/angular-bootstrap.png
-type: conversion
----
-:toc: macro
-:page-liquid:
-:experimental:
+== Build Beautiful Angular Apps with Bootstrap
 
 I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design content to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
 
@@ -1006,19 +990,11 @@ Another web framework took the world by storm the following year: AngularJS. Ang
 
 Together, these frameworks have had quite a run. It's hard to believe that they've lasted so long, especially considering both projects have had major rewrites!
 
-// [[angular-bootstrap]]
-.Angular 💜 Bootstrap
-image::../images/angular-spring-boot/angular-bootstrap.png[Angular 💜 Bootstrap, 800, scaledwidth="100%"]
-
-toc::[]
-
-TIP: https://youtu.be/r_4Gpa8Qk8A[Watch this tutorial as a screencast]. 👇
-
-++++
-<div style="text-align: center; margin-bottom: 1.25rem">
-<iframe width="700" height="394" style="max-width: 100%" src="https://www.youtube.com/embed/r_4Gpa8Qk8A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-++++
+////
+[[angular-bootstrap]]
+.Angular + Bootstrap
+image::../images/angular-spring-boot/angular-bootstrap.png[Angular + Bootstrap, 800, scaledwidth="100%"]
+////
 
 == Isn't Angular Dead?
 
@@ -1072,7 +1048,7 @@ Add Bootstrap and NG Bootstrap:
 npm i bootstrap@4.4.1 @ng-bootstrap/ng-bootstrap@6.0.0
 ----
 
-TIP: You can leave off the version numbers if you like. However, this tutorial is only guaranteed to work with the versions specified. 😉
+TIP: You can leave off the version numbers if you like. However, this tutorial is only guaranteed to work with the versions specified.
 
 Import `NgbModule` in `app.module.ts`:
 
@@ -1105,7 +1081,7 @@ Cancel the process and run `ng add @angular/localize` to fix this error. Now, if
 
 [[notes-bare-bones]]
 .Bare-bones styling
-image::../images/angular-spring-boot/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%"]
 
 Let's fix that!
 
@@ -1137,7 +1113,7 @@ Now we're getting somewhere!
 
 [[notes-slightly-styled]]
 .Slightly styled
-image::../images/angular-spring-boot/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
 
 
 To make the login button work, you need to configure both apps' security configurations.
@@ -1193,7 +1169,7 @@ Now you should be able to log in with your Okta credentials and create notes to 
 
 [[first-note]]
 .First note
-image::../images/angular-spring-boot/first-note.png[First note, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%"]
 
 You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
 
@@ -1288,7 +1264,7 @@ You'll see the colors change after these updates.
 
 [[bootstrap-sass]]
 .Customized Bootstrap variables
-image::../images/angular-spring-boot/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%"]
 
 Comment out (or remove) the variables in `_variables.scss` to revert to Bootstrap's default colors.
 
@@ -1349,7 +1325,7 @@ Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4
 
 [[notes-with-navbar]]
 .Notes app with navbar
-image::../images/angular-spring-boot/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%"]
 
 === Fix Bootstrap's Responsive Menu
 
@@ -1357,7 +1333,7 @@ If you reduce the width of your browser window, you'll see the menu collapses to
 
 [[navbar-squished]]
 .Navbar squished
-image::../images/angular-spring-boot/navbar-squished.png[Navbar squished, 600, scaledwidth="100%"]
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%"]
 
 However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
@@ -1392,7 +1368,7 @@ Now, you'll be able to toggle the menu!
 
 [[notes-menu]]
 .Squished navbar with menu
-image::../images/angular-spring-boot/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
 
 === Update the Note List Angular Template
 
@@ -1454,7 +1430,7 @@ That looks better!
 
 [[styled-notes-list]]
 .Styled Notes List
-image::../images/angular-spring-boot/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
 
 === Add Validation and Bootstrap to the Note Edit Template
 
@@ -1502,7 +1478,7 @@ That's an improvement!
 
 [[styled-notes-form]]
 .Styled Notes Form
-image::../images/angular-spring-boot/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%"]
 
 To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
 
@@ -1522,13 +1498,13 @@ Now when you add a new note, it'll let you know that it requires a title.
 
 [[notes-edit-required-title]]
 .Title is required
-image::../images/angular-spring-boot/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%"]
 
 If you give it focus and leave, it'll add a red border around the field.
 
 [[notes-edit-red-outline]]
 .Dirty title validation decoration
-image::../images/angular-spring-boot/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%"]
 
 == Add a Searchable, Sortable, and Pageable Data Table with Angular and Spring Data JPA
 
@@ -1808,7 +1784,7 @@ Restart your Spring Boot app to make the data available for searching. Click on 
 
 [[notes-list-with-sorting]]
 .Notes list with sorting
-image::../images/angular-spring-boot/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
 
 === Add Pagination with Angular and Bootstrap
 
@@ -1946,7 +1922,7 @@ Now your note list should have a working pagination feature at the bottom. Prett
 
 [[notes-list-with-pagination]]
 .Notes with pagination
-image::../images/angular-spring-boot/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%"]
 
 
 == Angular with Bootstrap + Spring Boot is Powerful
@@ -1984,7 +1960,7 @@ I also wanted to let you know you can get a lot of this functionality for free w
 
 3. In a terminal, navigate to the `easy-notes` directory and run `khipster import-jdl notes.jdl`
 
-That's it! 🎉
+That's it!
 
 Of course, you probably want to see it running. Run the following commands to start Keycloak (as a local OAuth 2.0 server) and Elasticsearch, and launch the app.
 
@@ -1999,7 +1975,7 @@ Then, run `npm run e2e` in another terminal window to verify everything works. H
 
 [[khipster-notes]]
 .KHipster Notes
-image::../images/angular-spring-boot/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
 
 Want to make it work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
 

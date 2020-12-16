@@ -8,16 +8,17 @@
   },
   "author": "Matt Raible (@mraible)",
   "keywords": [
-    "book",
-    "asciidoc",
+    "angular",
+    "mini-book",
+    "infoq",
     "asciidoctor"
   ],
   "scripts": {
     "build": "bash ./gradlew all",
-    "clean": "npx rimraf ./build && bash ./gradlew clean all",
+    "clean": "bash ./gradlew clean",
     "serve": "npm run watch:all",
     "setup": "npm install && npm run build",
-    "start": "npm run watch:all",
+    "start": "npm run setup && npm run watch",
     "watch": "npm run watch:all",
     "watch:adoc": "bash ./gradlew --continuous html",
     "watch:html": "nodemon ./watch.js",
