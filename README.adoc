@@ -1,6 +1,6 @@
-= An InfoQ Mini-Book
+image::https://github.com/mraible/angular-book/workflows/Book%20CI/badge.svg[link="https://github.com/mraible/angular-book/actions",alt="Actions Status"]
 
-image::https://github.com/mraible/angular-book/workflows/Build/badge.svg[Build]
+= Angular Mini-Book
 
 This is an awesome book. It's written in AsciiDoc and compiles to HTML, PDF, and EPUB using the
 http://asciidoctor.org/docs/asciidoctor-gradle-plugin/[Asciidoctor Gradle plugin].
