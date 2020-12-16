@@ -1,4 +1,12 @@
 [[action]]
 = Action!
 
+I hope you've enjoyed learning how Angular is awesome!
+
+// advice
+
 == Additional reading
+
+If you want to learn more, here are some suggestions.
+
+// recommended books

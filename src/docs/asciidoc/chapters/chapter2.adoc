@@ -1,2 +1,2005 @@
 [[chapter-2]]
 = Chapter 2
+
+== Combine Angular with Spring Boot and Kotlin
+
+- Spring Boot 2.3
+- Spring Boot with Spring Security
+- Spring Boot as an OAuth 2.0 Resource Server
+- Spring Data REST
+- CORS Integration
+- CRUD in Angular
+- Security Patterns for Spring Boot
+- Add a Data Table with Searching, Sorting, and Pagination
+
+Angular is a web framework for building mobile and desktop applications. Its first version, AngularJS, was one of the first JavaScript MVC frameworks to dominate the web landscape. Developers loved it, and it rose to popularity in the early 2010s. AngularJS 1.0 was released on June 14, 2014. Angular 9 was recently released, giving Angular quite a successful run in the land of web frameworks.
+
+Spring Boot is one of the most popular frameworks for developing Java applications and REST APIs. It also has first-class support for Kotlin!
+
+Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java developers write Spring apps. Instead of writing a lot of boilerplate XML or JavaConfig with annotations, Spring Boot introduced the idea of pre-configured _starters_ with smart defaults.
+
+Long story short, they're a match made in heaven!
+
+[[bootiful-angular]]
+.Bootiful Angular
+image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%"]
+
+== What's New In Angular 9?
+
+Angular 9's most prominent new feature is Ivy. Ivy is Angular's new compiler and renderer. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
+
+Simply put: upgrading to Angular 9 will make your web apps faster!
+
+Other notable features in Angular 9 include:
+
+1. Enhancements to Angular CLI to support internationalization (i18n).
+2. Type-safe improvements to `TestBed` for unit testing.
+
+To use Angular CLI's i18n feature, you simply need to add the `i18n` attribute to your text elements, then run `ng xi18n` to extract your localizable text into a file.
+
+`TestBed.inject(Component)` is the new way to get references to components in tests. `TestBed.get(Component)` is deprecated.
+
+== What's New in Spring Boot 2.2?
+
+Spring Boot 2.2 was released in September 2019 and focuses on performance improvements and reduced memory usage. It adds Java 13 support, RSocket support, and the ability to group health indicators. Grouping indicators can be useful if you're deploying to Kubernetes and want different groups for "liveness" and "readiness" probes.
+
+In this post, I'll show you how to build a CRUD application with Angular 9 and Spring Boot 2.2. Along the way, I'll do my best to weave in security tips and how to make your apps more secure.
+
+**Prerequisites:**
+
+* https://nodejs.org/[Node 12]+
+* https://adoptopenjdk.net/[Java 11]+
+* An https://developer.okta.com/signup/[Okta Developer Account]
+
+To install Node and Java on a Mac, Linux, or Windows Subsystem for Linux (WSL), you can use https://docs.brew.sh/Installation[Homebrew].
+
+[source,shell]
+----
+brew install node
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk11
+----
+
+You can also use https://sdkman.io[SDKMAN!] to install Java 11.
+
+[source,shell]
+----
+sdk install java 11.0.5.hs-adpt
+----
+
+You can refer to the table of contents below for the steps in this tutorial.
+
+== Create an Angular 9 App
+
+To create an Angular 9 app, you first need to install Angular CLI.
+
+[source,shell]
+----
+npm install -g @angular/cli@9.0.2
+----
+
+Then create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` to create an Angular application.
+
+[source,shell]
+----
+ng new notes --routing --style css
+----
+
+This process will take a minute or two to complete, depending on your internet speed and hardware. Once it's finished, navigate into the directory and run `ng serve`.
+
+[source,shell]
+----
+ng serve
+----
+
+Open your browser to `http://localhost:4200`, and you'll see the default homepage.
+
+[[angular-homepage]]
+.Angular default homepage
+image::../images/angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%"]
+
+Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
+
+== Add Angular Authentication using OpenID Connect
+
+OpenID Connect (also called OIDC) is an identity later based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint.
+
+Okta has Authentication and User Management APIs that reduce development time with instant-on, scalable user infrastructure. Okta's intuitive API and expert support make it easy for developers to authenticate, manage, and secure users + roles in any application.
+
+To add OIDC login support to your Angular 9 app, you'll first need an https://developer.okta.com/signup[free Okta developer account]. After you've created your account and logged in to your Okta dashboard, create a new OIDC app using the following steps:
+
+1. Navigate to **Applications** > **Add Application**
+2. Select **Single-Page App** and click **Next**
+3. Provide a name (e.g., `Angular 9`) and change the Login redirect URI to `http://localhost:4200/callback`
+4. Click **Done**
+
+Your app's settings should resemble the following.
+
+[[angular-oidc-settings]]
+.Angular OIDC App Settings
+image::../images/angular-spring-boot/angular9-oidc-settings.png[Angular OIDC App Settings, 800, scaledwidth="100%"]
+
+At the bottom of the screen, you'll see your app's Client ID. You might also notice that **Use PKCE** is selected. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
+
+TIP: To learn more about PKCE (pronounced "pixy"), see link:/blog/2019/08/22/okta-authjs-pkce[Implement the OAuth 2.0 Authorization Code with PKCE Flow].
+
+Copy your client ID and your issuer URI (from **API** > **Authorization Servers**) into the following command.
+
+[source,shell]
+----
+ng add @oktadev/schematics --issuer=$issuer --clientId=$clientId
+----
+
+This command adds Okta's Angular SDK and configures OIDC authentication for your app.
+
+[[oktadev-schematics]]
+.OktaDev Schematics in Action
+image::../images/angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%"]
+
+It creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
+
+[source,ts]
+.src/app/home/home.component.ts
+----
+import { Component, OnInit } from '@angular/core';
+import { OktaAuthService } from '@okta/okta-angular';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+  isAuthenticated: boolean;
+
+  constructor(public oktaAuth: OktaAuthService) {
+  }
+
+  async ngOnInit() {
+    this.isAuthenticated = await this.oktaAuth.isAuthenticated();
+    // Subscribe to authentication state changes
+    this.oktaAuth.$authenticationState.subscribe(
+      (isAuthenticated: boolean)  => this.isAuthenticated = isAuthenticated
+    );
+  }
+}
+----
+
+[source,html]
+.src/app/home/home.component.html
+----
+<div>
+  <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()">Login</button>
+  <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()">Logout</button>
+</div>
+----
+
+There's also an `HttpInterceptor` created to add an access token to outgoing HTTP requests.
+
+[source,ts]
+.src/app/shared/okta/auth.interceptor.ts
+----
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable, from } from 'rxjs';
+import { OktaAuthService } from '@okta/okta-angular';
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+  constructor(private oktaAuth: OktaAuthService) {
+  }
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return from(this.handleAccess(request, next));
+  }
+
+  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+    // Only add an access token to whitelisted origins
+    const allowedOrigins = ['http://localhost'];
+    if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
+      const accessToken = await this.oktaAuth.getAccessToken();
+      request = request.clone({
+        setHeaders: {
+          Authorization: 'Bearer ' + accessToken
+        }
+      });
+    }
+    return next.handle(request).toPromise();
+  }
+}
+----
+
+NOTE: You might notice that tokens are only added for `http://localhost`. You'll need to modify the `allowedOrigins` array to include your production URL eventually.
+
+Start your app again using `ng serve`, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
+
+[[angular-login-button]]
+.Login button
+image::../images/angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%"]
+
+Click on it, and you'll be redirected to Okta to log in.
+
+[[angular-okta-login]]
+.Okta Login form
+image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="100%"]
+
+Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
+
+[[angular-logout-button]]
+.Logout button
+image::../images/angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%"]
+
+Now that you've created a secure Angular 9 app let's create a Spring Boot app to serve up data with a REST API.
+
+== Create a Spring Boot 2.2 App
+
+The good folks at Pivotal created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with https://httpie.org/[HTTPie].
+
+Kotlin is an intriguing language for Spring developers because it reduces boilerplate code and allows succinct, effective code. Kotlin is 100% interoperable with Java, so you can continue to use the Java libraries and frameworks you know and love. Not only that, but Spring has first-class support for Kotlin.
+
+Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
+
+[source,shell]
+----
+http https://start.spring.io/starter.zip javaVersion==11 language==kotlin \
+artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
+type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
+----
+
+Run this command in a terminal, and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
+
+[source,shell]
+----
+unzip notes-api.zip -d angular-spring-boot/notes-api
+----
+
+You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.2.4.RELEASE&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+
+[[start.spring.io]]
+.Create app with start.spring.io
+image::../images/angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%"]
+
+=== Secure Spring Boot with Spring Security, OAuth 2.0, and OIDC
+
+Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with Okta. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
+
+Log in to your Okta dashboard, then:
+
+* Go to **Applications** > **Add Application**
+* Select **Web** and click **Next**
+* Give it a name like `Spring Boot 2.2` and change the Login redirect URI to `http://localhost:8080/login/oauth2/code/okta`
+* Click **Done**
+
+Your app's settings should look as follows.
+
+[[spring-boot-oidc-settings]]
+.Spring Boot OIDC Settings
+image::../images/angular-spring-boot/spring-boot-oidc-settings.png[Spring Boot OIDC Settings, 700, scaledwidth="100%"]
+
+You _could_ copy your app's OIDC settings to `src/main/resources/application.properties`:
+
+[source,properties]
+----
+okta.oauth2.issuer=https://{yourOktaDomain}/oauth2/default
+okta.oauth2.client-id={yourClientId}
+okta.oauth2.client-secret={yourClientSecret}
+----
+
+However, **you should never store secrets in source control**! To prevent you from checking secrets in, you can use https://github.com/awslabs/git-secrets[git-secrets].
+
+For this example, copy your settings into a new `okta.env` file and ignore `*.env` in your `notes-api/.gitignore` file.
+
+[source,shell]
+----
+export OKTA_OAUTH2_ISSUER=https://{yourOktaDomain}/oauth2/default
+export OKTA_OAUTH2_CLIENT_ID={yourClientId}
+export OKTA_OAUTH2_CLIENT_SECRET={yourClientSecret}
+----
+
+After replacing the `{...}` placeholders with your values, run `source okta.env` to set these environment variables.
+
+Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Okta to sign in.
+
+TIP: If you don't get prompted, it's because you're already logged in. Try it in an incognito window to see the full login flow.
+
+=== Spring Boot as an OAuth 2.0 Resource Server
+
+Your Spring Boot API is now secure, but it's not configured to look for an `Authorization` header with an access token in it. You need to write some code to make your Spring Boot API an OAuth 2.0 resource server.
+
+Create a `SecurityConfiguration.kt` class in the same directory as `DemoApplication.kt`:
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+
+@EnableWebSecurity
+class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+    override fun configure(http: HttpSecurity) {
+        //@formatter:off
+        http
+            .authorizeRequests().anyRequest().authenticated()
+                .and()
+            .oauth2Login()
+                .and()
+            .oauth2ResourceServer().jwt()
+        //@formatter:on
+    }
+}
+----
+
+NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser.
+
+== Add a Notes REST API with Spring Data REST
+
+Start by creating a new `Note` entity in `src/main/kotlin/.../notes/DemoApplication.kt`.
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+
+@SpringBootApplication
+class DemoApplication
+
+fun main(args: Array<String>) {
+    runApplication<DemoApplication>(*args)
+}
+
+@Entity
+data class Note(@Id @GeneratedValue var id: Long? = null,
+                var title: String? = null,
+                var text: String? = null,
+                @JsonIgnore var user: String? = null)
+----
+
+Kotlin's https://kotlinlang.org/docs/reference/data-classes.html[data classes] are built to hold data. By adding the `data` keyword, your class will get `equals()`, `hashCode()`, `toString()`, and a `copy()` function. The `Type? = null` syntax means the arguments are nullable when creating a new instance of the class.
+
+Create a `NotesRepository` for persisting the data in your notes. Add the following lines of code just below your `Note` entity.
+
+[source,kotlin]
+----
+@RepositoryRestResource
+interface NotesRepository : JpaRepository<Note, Long>
+----
+
+The `extends` syntax differs from Java and is a lot more concise (a colon instead of `extends`). If your IDE doesn't automatically add imports, you'll need to add the following at the top of the file.
+
+[source,kotlin]
+----
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.rest.core.annotation.RepositoryRestResource
+----
+
+To automatically add the username to a note when it's created, add a `RepositoryEventHandler` that is invoked before creating the record.
+
+[source,kotlin]
+----
+@Component
+@RepositoryEventHandler(Note::class)
+class AddUserToNote {
+
+    @HandleBeforeCreate
+    fun handleCreate(note: Note) {
+        val username: String =  SecurityContextHolder.getContext().getAuthentication().name
+        println("Creating note: $note with user: $username")
+        note.user = username
+    }
+}
+----
+
+The imports for this class are:
+
+[source,kotlin]
+----
+import org.springframework.data.rest.core.annotation.HandleBeforeCreate
+import org.springframework.data.rest.core.annotation.RepositoryEventHandler
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.stereotype.Component
+----
+
+Create a `DataInitializer.kt` class that populates the database with some default data on startup.
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import org.springframework.boot.ApplicationArguments
+import org.springframework.boot.ApplicationRunner
+import org.springframework.stereotype.Component
+
+@Component
+class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
+
+    @Throws(Exception::class)
+    override fun run(args: ApplicationArguments) {
+        listOf("Note 1", "Note 2", "Note 3").forEach {
+            repository.save(Note(title = it, user = "user"))
+        }
+        repository.findAll().forEach { println(it) }
+    }
+}
+----
+
+Restart your Spring Boot app, and you should see the following printed to your console on startup.
+
+[source,shell]
+----
+Note(id=1, title=Note 1, text=null, user=user)
+Note(id=2, title=Note 2, text=null, user=user)
+Note(id=3, title=Note 3, text=null, user=user)
+----
+
+Create a `UserController.kt` class (in the same directory as `DemoApplication.kt`) and use it to filter notes by the currently logged-in user. While you're at it, add a `/user` endpoint that returns the user's information.
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
+
+@RestController
+class UserController(val repository: NotesRepository) {
+
+    @GetMapping("/user/notes")
+    fun notes(principal: Principal): List<Note> {
+        println("Fetching notes for user: ${principal.name}")
+        val notes = repository.findAllByUser(principal.name)
+        if (notes.isEmpty()) {
+            return listOf()
+        } else {
+            return notes
+        }
+    }
+
+    @GetMapping("/user")
+    fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
+        return user;
+    }
+}
+----
+
+The `findAllByUser()` method doesn't exist on `NotesRepository`, so you'll need to add it. Thanks to Spring Data JPA, all you need to do is add the method definition to the interface, and it will handle generating the finder method in the implementation.
+
+[source,kotlin]
+----
+interface NotesRepository : JpaRepository<Note, Long> {
+    fun findAllByUser(name: String): List<Note>
+}
+----
+
+To prevent conflicting paths with the REST endpoints created by `@RepositoryRestResource`, set the base path to `/api` in `application.properties`.
+
+[source,properties]
+----
+spring.data.rest.base-path=/api
+----
+
+Restart your Spring Boot app, navigate to `http://localhost:8080/user`, and you'll see a whole plethora of details about your account. Opening `http://localhost:8080/api/notes` will show the default notes entered by the `DataInitializer` component.
+
+=== Add a CORS Filter for Angular
+
+In order for your Angular app (on port 4200) to communicate with your Spring Boot app (on port 8080), you have to enable CORS (cross-origin resource sharing). You can do this by giving your `DemoApplication` a body and defining a `corsFilter` bean inside it.
+
+[source,kotlin]
+----
+import org.springframework.boot.web.servlet.FilterRegistrationBean
+import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
+
+@SpringBootApplication
+class DemoApplication {
+
+    @Bean
+    fun simpleCorsFilter(): FilterRegistrationBean<CorsFilter> {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+        config.allowCredentials = true
+        config.allowedOrigins = listOf("http://localhost:4200")
+        config.allowedMethods = listOf("*");
+        config.allowedHeaders = listOf("*")
+        source.registerCorsConfiguration("/**", config)
+        val bean = FilterRegistrationBean(CorsFilter(source))
+        bean.order = Ordered.HIGHEST_PRECEDENCE
+        return bean
+    }
+}
+----
+
+Restart your Spring Boot app after adding this bean.
+
+To see how your final `DemoApplication` file should look, you can https://github.com/oktadeveloper/okta-spring-boot-2-angular-9-example/blob/master/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt[view the completed version in GitHub].
+
+Now that your API is working, it's time to develop a UI for it with Angular 9!
+
+== Add a Notes CRUD Feature in Angular
+
+Angular Schematics is a workflow tool that allows you to manipulate any project that has a `package.json`. Angular CLI is based on Schematics. OktaDev Schematics uses Schematics to update and add new files to projects. There's even an https://github.com/manfredsteyer/angular-crud[Angular CRUD] schematic!
+
+Angular CRUD allows you to generate CRUD (create, read, update, and delete) screens and associated files from JSON.
+
+In your Angular `notes` app, install `angular-crud` using npm:
+
+[source,shell]
+----
+npm i -D angular-crud@1.0.0
+----
+
+Then create a `src/app/note` directory.
+
+[source,shell]
+----
+mkdir -p src/app/note
+----
+
+Then, create a `model.json` file in it that defines metadata that's used when generating files.
+
+[source,json]
+----
+{
+  "title": "Notes",
+  "entity": "note",
+  "api": {
+    "url": "http://localhost:8080/api/notes"
+  },
+  "filter": [
+    "title"
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "label": "Id",
+      "isId": true,
+      "readonly": true,
+      "type": "number"
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "label": "Title"
+    },
+    {
+      "name": "text",
+      "type": "string",
+      "label": "Text"
+    }
+  ]
+}
+----
+
+Run the command below to generate CRUD screens.
+
+[source,shell]
+----
+ng g angular-crud:crud-module note
+----
+
+You will see the following output.
+
+[source,shell]
+----
+CREATE src/app/note/note-filter.ts (44 bytes)
+CREATE src/app/note/note.module.ts (659 bytes)
+CREATE src/app/note/note.routes.ts (346 bytes)
+CREATE src/app/note/note.service.spec.ts (607 bytes)
+CREATE src/app/note/note.service.ts (1744 bytes)
+CREATE src/app/note/note.ts (69 bytes)
+CREATE src/app/note/note-edit/note-edit.component.html (1097 bytes)
+CREATE src/app/note/note-edit/note-edit.component.spec.ts (978 bytes)
+CREATE src/app/note/note-edit/note-edit.component.ts (1493 bytes)
+CREATE src/app/note/note-list/note-list.component.html (1716 bytes)
+CREATE src/app/note/note-list/note-list.component.spec.ts (978 bytes)
+CREATE src/app/note/note-list/note-list.component.ts (1091 bytes)
+UPDATE src/app/app.module.ts (540 bytes)
+----
+
+This schematic creates a `NotesModule`, routes, a service to communicate with the API, and list/edit screens for viewing and editing notes. If you look at the `src/app/note/note.routes.ts` file, you'll see the routes it creates.
+
+[source,ts]
+----
+import { Routes } from '@angular/router';
+import { NoteListComponent } from './note-list/note-list.component';
+import { NoteEditComponent } from './note-edit/note-edit.component';
+
+export const NOTE_ROUTES: Routes = [
+  {
+    path: 'notes',
+    component: NoteListComponent
+  },
+  {
+    path: 'notes/:id',
+    component: NoteEditComponent
+  }
+];
+----
+
+Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
+
+[source,html]
+----
+<div>
+  <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()">Login</button>
+  <p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
+  <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()">Logout</button>
+</div>
+----
+
+Change `src/app/app.component.html` to be as simple as it can be.
+
+{% raw %}
+[source,html]
+----
+<h1>{{ title }} app is running!</h1>
+
+<router-outlet></router-outlet>
+----
+{% endraw %}
+
+TIP: If you want `npm test` to pass after modifying this template, you'll need to change `app.component.spec.ts` to look for `querySelector('h1')` instead of `querySelector('.content span')`.
+
+Run `ng serve` (and make sure your Spring Boot app is running too).
+
+[[notes-login]]
+.Notes App Login
+image::../images/angular-spring-boot/notes-login.png[Notes App Login, 800, scaledwidth="100%"]
+
+Log in, and you should see a **View Notes** link.
+
+[[notes-link]]
+.Notes Link
+image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth="100%"]
+
+Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
+
+[[notes-list]]
+.Notes List
+image::../images/angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%"]
+
+Click on the **New** link to add a new note.
+
+[[notes-detail]]
+.Notes Detail
+image::../images/angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%"]
+
+Add a new note, and you'll see a message like this in your backend console.
+
+[source,shell]
+----
+Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: matt.raible@okta.com
+----
+
+You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
+
+[source,ts]
+----
+find(filter: NoteFilter): Observable<Note[]> {
+  const params = {
+    title: filter.title,
+  };
+  const userNotes = 'http://localhost:8080/user/notes';
+  return this.http.get<Note[]>(userNotes, {params, headers});
+}
+----
+
+Now you'll see your notes listed. Nice work!
+
+[[notes-user-list]]
+.Notes User List
+image::../images/angular-spring-boot/notes-user-list.png[Notes User List, 800, scaledwidth="100%"]
+
+You might be wondering how the `NoteListComponent` works. It loads the user's notes from the `NoteService` when the component initializes, and also contains `select()` and `delete()` methods. The reason it's able to talk to your secured Spring Boot API is that the aforementioned `AuthInterceptor` adds an access token to the request.
+
+[source,ts]
+.src/app/note/note-list/note-list.component.ts
+----
+import { Component, OnInit } from '@angular/core';
+import { NoteFilter } from '../note-filter';
+import { NoteService } from '../note.service';
+import { Note } from '../note';
+
+@Component({
+  selector: 'app-note',
+  templateUrl: 'note-list.component.html'
+})
+export class NoteListComponent implements OnInit {
+
+  filter = new NoteFilter();
+  selectedNote: Note;
+  feedback: any = {};
+
+  get noteList(): Note[] {
+    return this.noteService.noteList;
+  }
+
+  constructor(private noteService: NoteService) {
+  }
+
+  ngOnInit() {
+    this.search();
+  }
+
+  search(): void {
+    this.noteService.load(this.filter);
+  }
+
+  select(selected: Note): void {
+    this.selectedNote = selected;
+  }
+
+  delete(note: Note): void {
+    if (confirm('Are you sure?')) {
+      this.noteService.delete(note).subscribe(() => {
+          this.feedback = {type: 'success', message: 'Delete was successful!'};
+          setTimeout(() => {
+            this.search();
+          }, 1000);
+        },
+        err => {
+          this.feedback = {type: 'warning', message: 'Error deleting.'};
+        }
+      );
+    }
+  }
+}
+----
+
+The **Edit** link in this component's template links to the `NoteEditComponent`.
+
+[source,html]
+----
+<a [routerLink]="['../notes', item.id ]" class="btn btn-secondary">Edit</a>
+----
+
+The `NoteEditComponent` has methods for loading a note, saving a note, and canceling.
+
+[source,ts]
+----
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NoteService } from '../note.service';
+import { Note } from '../note';
+import { map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+
+@Component({
+  selector: 'app-note-edit',
+  templateUrl: './note-edit.component.html'
+})
+export class NoteEditComponent implements OnInit {
+
+  id: string;
+  note: Note;
+  feedback: any = {};
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private noteService: NoteService) {
+  }
+
+  ngOnInit() {
+    this
+      .route
+      .params
+      .pipe(
+        map(p => p.id),
+        switchMap(id => {
+          if (id === 'new') { return of(new Note()); }
+          return this.noteService.findById(id);
+        })
+      )
+      .subscribe(note => {
+          this.note = note;
+          this.feedback = {};
+        },
+        err => {
+          this.feedback = {type: 'warning', message: 'Error loading'};
+        }
+      );
+  }
+
+  save() {
+    this.noteService.save(this.note).subscribe(
+      note => {
+        this.note = note;
+        this.feedback = {type: 'success', message: 'Save was successful!'};
+        setTimeout(() => {
+          this.router.navigate(['/notes']);
+        }, 1000);
+      },
+      err => {
+        this.feedback = {type: 'warning', message: 'Error saving'};
+      }
+    );
+  }
+
+  cancel() {
+    this.router.navigate(['/notes']);
+  }
+}
+----
+
+=== Fix the Note Edit Feature
+
+One of the problems with the `NoteEditComponent` is it assumes the API returns an ID. Since Spring Data REST uses HATEOS by default, it returns links instead of IDs. You can change this default to return IDs by creating a `RestConfiguration` class in your Spring Boot app. You might notice you can also configure the base path in this class, instead of in `application.properties`.
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import org.springframework.context.annotation.Configuration
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer
+
+@Configuration
+class RestConfiguration : RepositoryRestConfigurer {
+   override fun configureRepositoryRestConfiguration(config: RepositoryRestConfiguration?) {
+       config?.exposeIdsFor(Note::class.java)
+       config?.setBasePath("/api")
+   }
+}
+----
+
+Another option is to modify the Angular side of things. Since the ID is passed into the `NoteEditComponent`, you can set it as a local variable, then set it on the note after it's returned. Here's a diff of what changes need to be made in `notes/src/app/note/note-edit/note-edit.component.ts`.
+
+[source,diff]
+----
+--- a/notes/src/app/note/note-edit/note-edit.component.ts
++++ b/notes/src/app/note/note-edit/note-edit.component.ts
+@@ -30,11 +29,13 @@ export class NoteEditComponent implements OnInit {
+        map(p => p.id),
+        switchMap(id => {
+          if (id === 'new') { return of(new Note()); }
++          this.id = id;
+          return this.noteService.findById(id);
+        })
+      )
+      .subscribe(note => {
+          this.note = note;
++          this.note.id = +note.id;
+          this.feedback = {};
+        },
+        err => {
+@@ -47,6 +48,7 @@ export class NoteEditComponent implements OnInit {
+    this.noteService.save(this.note).subscribe(
+      note => {
+        this.note = note;
++        this.note.id = +this.id;
+        this.feedback = {type: 'success', message: 'Save was successful!'};
+        setTimeout(() => {
+          this.router.navigate(['/notes']);
+----
+
+In the final example for this post, I opted to return IDs from my Spring Boot API.
+
+== Lock Down Spring Boot with Recommended Security Practices
+
+In link:/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
+
+1. Use HTTPS in Production
+2. Enable Cross-Site Request Forgery (CSRF) Protection
+3. Use a Content Security Policy (CSP) to Prevent XSS Attacks
+4. Use OpenID Connect for Authentication
+
+You've already implemented #4 with Okta, but what about the others?
+
+You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I like just to do it in production, so I don't need to install certificates in development.
+
+CSRF protection and a CSP can be configured with Spring Security.
+
+Modify your `SecurityConfiguration` class with these security enhancements.
+
+====
+[source,kotlin]
+----
+class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+    override fun configure(http: HttpSecurity) {
+        //@formatter:off
+        http
+            .authorizeRequests().anyRequest().authenticated()
+                .and()
+            .oauth2Login()
+                .and()
+            .oauth2ResourceServer().jwt()
+
+        http.requiresChannel()
+            .requestMatchers(RequestMatcher {
+                r -> r.getHeader("X-Forwarded-Proto") != null
+            }).requiresSecure() // <.>
+
+        http.csrf()
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()); // <.>
+
+        http.headers()
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/"); // <.>
+       //@formatter:on
+    }
+}
+----
+<.> Force HTTPS in production
+<.> Configure the CSRF Cookie so it can be read by JavaScript
+<.> Configure a CSP that only allows local scripts
+====
+
+Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this in https://angular.io/guide/security[Angular's Security docs].
+
+In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
+
+TIP: Once you've deployed your Spring Boot app to a public URL, you can test your CSP headers are working with https://securityheaders.com/[securityheaders.com].
+
+== Learn More About Angular, Spring Boot, and Kotlin
+
+In this tutorial, I showed you how to create an Angular 9 app, a Spring Boot 2.2 app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
+
+This tutorial did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in an link:/blog/2020/03/02/angular-bootstrap[upcoming post]. In the meantime, you can see a previous tutorial I wrote to see how this app might look with Angular Material.
+
+* link:/blog/2017/09/19/build-a-secure-notes-application-with-kotlin-typescript-and-okta[Build a Secure Notes Application with Kotlin, TypeScript, and Okta]
+
+You can find the source code for the completed application at https://github.com/oktadeveloper/okta-spring-boot-2-angular-9-example[oktadeveloper/okta-spring-boot-2-angular-9-example].
+
+Our blog has a bunch of Angular, Spring Boot, and Kotlin tutorials. Here are some I recommend:
+
+* link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap]
+* link:/blog/2019/05/16/angular-authentication-jwt[Angular Authentication with JWT]
+* link:/blog/2019/03/20/build-desktop-app-with-angular-electron[Build a Desktop Application with Angular and Electron]
+* link:/blog/2019/10/30/java-oauth2[OAuth 2.0 Java Guide: Secure Your App in 5 Minutes]
+* link:/blog/2019/08/28/reactive-microservices-spring-cloud-gateway[Secure Reactive Microservices with Spring Cloud Gateway]
+* link:/blog/2019/09/17/build-a-spring-boot-kotlin-app[Build an Application with Spring Boot and Kotlin]
+
+To read more about the Angular 9 and Spring Boot 2.2 releases, I recommend these articles:
+
+* https://www.grapecity.com/blogs/what-to-expect-in-angular-9[What's New in Angular 9]
+* https://spring.io/blog/2019/10/16/spring-boot-2-2-0[Spring Boot 2.2.0] from the Spring Team's Blog
+
+For Angular 8, 7, and 5 versions of this tutorial, see my past posts.
+
+* link:/blog/2019/05/13/angular-8-spring-boot-2[Angular 8 + Spring Boot 2.2: Build a CRUD App Today!] - May 2019
+* link:/blog/2018/08/22/basic-crud-angular-7-and-spring-boot-2[Build a Basic CRUD App with Angular 7.0 and Spring Boot 2.1] - August 2018
+* link:/blog/2017/12/04/basic-crud-angular-and-spring-boot[Build a Basic CRUD App with Angular 5.0 and Spring Boot 2.0] - December 2017
+
+If you like this blog post and want to see more like it, follow https://twitter.com/oktadev[@oktadev on Twitter], subscribe to https://youtube.com/c/oktadev[our YouTube channel], or follow us https://www.linkedin.com/company/oktadev/[on LinkedIn]. As always, please leave a comment below if you have any questions.
+
+== Build Beautiful Angular Apps with Bootstrap
+
+I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design content to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
+
+However, no CSS frameworks took the world by storm like Bootstrap. Back then, it was called Twitter Bootstrap. Mark Otto and Jacob Thornton invented it in mid-2010 while they worked at Twitter. As they wrote in "Building Twitter Bootstrap" in Issue 324 of A List Apart:
+
+> Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
+
+They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it.
+
+Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
+
+Together, these frameworks have had quite a run. It's hard to believe that they've lasted so long, especially considering both projects have had major rewrites!
+
+////
+[[angular-bootstrap]]
+.Angular + Bootstrap
+image::../images/angular-spring-boot/angular-bootstrap.png[Angular + Bootstrap, 800, scaledwidth="100%"]
+////
+
+== Isn't Angular Dead?
+
+I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "legacy." Others call them "revenue-generating."
+
+Whatever you want to call it, Angular is far from dead. At least according to the popularity of two recent articles we've published! Many of you have flocked to our recent Angular posts&mdash;the proof is in the traffic numbers.
+
+* link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
+* link:/blog/2020/01/21/angular-material-login[Build a Beautiful App + Login with Angular Material]
+
+== Angular Still Loves Bootstrap
+
+You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
+
+++++
+<div style="max-width: 500px; margin: 0 auto 1.25rem">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">If you&#39;re developing <a href="https://twitter.com/angular?ref_src=twsrc%5Etfw">@angular</a> apps, what&#39;s your preferred CSS framework? <a href="https://twitter.com/hashtag/Angular?src=hash&amp;ref_src=twsrc%5Etfw">#Angular</a> <a href="https://twitter.com/hashtag/CSS?src=hash&amp;ref_src=twsrc%5Etfw">#CSS</a></p>&mdash; Matt Raible (@mraible) <a href="https://twitter.com/mraible/status/1196894737870938113?ref_src=twsrc%5Etfw">November 19, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+++++
+
+== Integrate Bootstrap with Angular 9
+
+Today I'd like to show you how to integrate Bootstrap into an Angular 9 application. I'll start with the CRUD example from my aforementioned Angular 9 + Spring Boot 2.2 tutorial. I'll integrate Bootstrap, convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
+
+**Prerequisites:**
+
+* https://nodejs.org/[Node 12]+
+* https://adoptopenjdk.net/[Java 11]+
+* An https://developer.okta.com/signup/[Okta Developer Account]
+
+Clone the previous application into an `okta-angular-bootstrap-example` directory.
+
+[source,shell]
+----
+git clone https://github.com/oktadeveloper/okta-spring-boot-2-angular-9-example.git \
+ okta-angular-bootstrap-example
+----
+
+In a terminal, navigate into this new directory and its `notes` folder. Then install the dependencies for the Angular app.
+
+[source,shell]
+----
+cd okta-angular-bootstrap-example/notes
+npm i
+----
+
+Add Bootstrap and NG Bootstrap:
+
+[source,shell]
+----
+npm i bootstrap@4.4.1 @ng-bootstrap/ng-bootstrap@6.0.0
+----
+
+TIP: You can leave off the version numbers if you like. However, this tutorial is only guaranteed to work with the versions specified.
+
+Import `NgbModule` in `app.module.ts`:
+
+[source,ts]
+.src/app/app.module.ts
+----
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+@NgModule({
+  ...
+  imports: [
+    ...
+    NgbModule
+  ],
+  ...
+})
+export class AppModule { }
+----
+
+If you run `ng serve -o`, you'll get a blank screen. Look in your browser's developer console, and you'll see why.
+
+[source,shell]
+----
+Uncaught Error: It looks like your application or one of its dependencies is using i18n.
+Angular 9 introduced a global `$localize()` function that needs to be loaded.
+Please run `ng add @angular/localize` from the Angular CLI.
+----
+
+Cancel the process and run `ng add @angular/localize` to fix this error. Now, if you restart your app, you'll see it's pretty simple. And kinda ugly.
+
+[[notes-bare-bones]]
+.Bare-bones styling
+image::../images/angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%"]
+
+Let's fix that!
+
+Modify `styles.css` to add a reference to Bootstrap's CSS file:
+
+[source,css]
+.src/styles.css
+----
+@import "~bootstrap/dist/css/bootstrap.css";
+----
+
+And change `app.component.html` to use Bootstrap classes.
+
+{% raw %}
+[source,html]
+.src/app/app.component.html
+----
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand text-light" href="#">{{ title }} app is running!</a>
+</nav>
+
+<div class="container-fluid pt-3">
+  <router-outlet></router-outlet>
+</div>
+----
+{% endraw %}
+
+Now we're getting somewhere!
+
+[[notes-slightly-styled]]
+.Slightly styled
+image::../images/angular-bootstrap/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
+
+
+To make the login button work, you need to configure both apps' security configurations.
+
+== Secure Angular and Spring Boot with OpenID Connect
+
+Using your Okta developer account (you https://developer.okta.com/signup[created one], right?), log in to your dashboard, and register your Spring Boot app:
+
+1. Navigate to **Applications** > **Add Application**
+2. Select **Web** and click **Next**
+3. Give the application a name and add `http://localhost:8080/login/oauth2/code/okta` as a login redirect URI
+4. Click **Done**
+
+Create an `okta.env` file in the `notes-api` directory and copy your settings into it.
+
+[source,shell]
+----
+export OKTA_OAUTH2_ISSUER=https://{yourOktaDomain}/oauth2/default
+export OKTA_OAUTH2_CLIENT_ID={yourClientId}
+export OKTA_OAUTH2_CLIENT_SECRET={yourClientSecret}
+----
+
+Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and starting your app.
+
+[source,shell]
+----
+cd notes-api
+source okta.env
+./gradlew bootRun
+----
+
+Then, create a new OIDC app for Angular:
+
+1. Navigate to **Applications** > **Add Application**
+2. Select **Single-Page App** and click **Next**
+3. Give the application a name and set the login redirect URI to `http://localhost:4200/callback`
+4. Click **Done**
+
+Modify `auth-routing.module.ts` to use your Okta domain and client ID.
+
+[source,typescript]
+.notes/src/app/auth-routing.module.ts
+----
+const oktaConfig = {
+  issuer: 'https://{yourOktaDomain}/oauth2/default',
+  redirectUri: window.location.origin + '/callback',
+  clientId: '{yourClientId}',
+  pkce: true
+};
+----
+
+Now you should be able to log in with your Okta credentials and create notes to your heart's content!
+
+[[first-note]]
+.First note
+image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%"]
+
+You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
+
+Commit your progress to Git from the `okta-angular-bootstrap-example` directory.
+
+[source,shell]
+----
+git commit -am "Add Bootstrap and configure OIDC"
+----
+
+== Use Sass to Customize Bootstrap
+
+Before you make things awesome, I'd like to show you how to convert from using CSS with Angular to using Sass. Why? Because https://sass-lang.com/[Sass] is completely compatible with CSS, and it makes CSS more like programming. It also allows you to customize Bootstrap by overriding its variables.
+
+NOTE: If you're not into Sass, you can <<#make-angular-beautiful,skip this section>>. Everything will still work without it.
+
+First, run the following command in the `notes` directory to convert the Angular project to use Sass.
+
+[source,shell]
+----
+ng config schematics.@schematics/angular:component.styleext scss
+----
+
+If you run the following `find` command:
+
+[source,shell]
+----
+find . -name "*.css" -not -path "./node_modules/*"
+----
+
+You'll see three files have a `.css` extension.
+
+[source,shell]
+----
+./src/app/home/home.component.css
+./src/app/app.component.css
+./src/styles.css
+----
+
+You can manually rename these to have a `.scss` extension, or do it programmatically.
+
+[source,shell]
+----
+find . -name "*.css" -not -path "./node_modules/*" | rename -v "s/css/scss/g"
+----
+
+NOTE: I had to `brew install rename` on my Mac for this command to work.
+
+Then, replace all references to `.css` files.
+
+[source,shell]
+----
+find ./src/app -type f -exec sed -i '' -e  's/.css/.scss/g' {} \;
+----
+
+Modify `angular.json` to reference `src/styles.scss` (in the `build` and `test` sections).
+
+[source,json]
+----
+"styles": [
+  "src/styles.scss"
+],
+----
+
+And change `styles.scss` to import Bootstrap's Sass.
+
+[source,css]
+.src/styles.scss
+----
+@import "~bootstrap/scss/bootstrap.scss";
+----
+
+To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v4-dev/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+
+[source,sass]
+----
+$primary: orange;
+$secondary: blue;
+$light: lighten($primary, 20%);
+$dark: darken($secondary, 10%);
+----
+
+Then import this file at the top of `src/styles.scss`:
+
+[source,sass]
+----
+@import "variables";
+@import "~bootstrap/scss/bootstrap.scss";
+----
+
+You'll see the colors change after these updates.
+
+[[bootstrap-sass]]
+.Customized Bootstrap variables
+image::../images/angular-bootstrap/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%"]
+
+Comment out (or remove) the variables in `_variables.scss` to revert to Bootstrap's default colors.
+
+anchor:make-angular-beautiful[]
+
+== Make Your Angular App Beautiful with Bootstrap
+
+You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/4.4/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
+
+{% raw %}
+[source,html]
+.src/app/app.component.html
+----
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">
+    <img src="/assets/images/angular.svg" width="30" height="30" class="d-inline-block align-top" alt="Angular">
+    {{ title }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://twitter.com/oktadev">@oktadev</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/oktadeveloper/okta-angular-bootstrap-example">GitHub</a>
+      </li>
+      <li class="nav-item pl-lg-3">
+        <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()" class="btn btn-outline-primary">Login</button>
+        <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()" class="btn btn-outline-secondary">Logout</button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-fluid pt-3">
+  <a *ngIf="!isAuthenticated">Please log in to manage your notes.</a>
+  <router-outlet></router-outlet>
+</div>
+----
+{% endraw %}
+
+Remove the login and logout buttons from `home.component.html`.
+
+[source,html]
+.src/app/home/home.component.html
+----
+<p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
+----
+
+Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
+
+[[notes-with-navbar]]
+.Notes app with navbar
+image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%"]
+
+=== Fix Bootstrap's Responsive Menu
+
+If you reduce the width of your browser window, you'll see the menu collapses to take up less real estate.
+
+[[navbar-squished]]
+.Navbar squished
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%"]
+
+However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
+
+[source,html]
+.src/app/app/app.component.html
+----
+<button (click)="isCollapsed = !isCollapsed" class="navbar-toggler" ...>
+  ...
+</button>
+
+<div [ngbCollapse]="isCollapsed" class="collapse navbar-collapse" ...>
+  ...
+</div>
+----
+
+Then add `isCollapsed` in `app.component.ts` and change the `title` to be capitalized.
+
+[source,ts]
+.src/app/app/app.component.ts
+----
+export class AppComponent implements OnInit {
+  title = 'Notes';
+  isAuthenticated: boolean;
+  isCollapsed = true;
+
+  ...
+
+}
+----
+
+Now, you'll be able to toggle the menu!
+
+[[notes-menu]]
+.Squished navbar with menu
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
+
+=== Update the Note List Angular Template
+
+Modify the `note-list.component.html` so the breadcrumb doesn't float right and all the content is in the same card.
+
+{% raw %}
+[source,html]
+.src/app/note/note-list/note-list.component.html
+----
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+  <li class="breadcrumb-item active">Notes</li>
+</ol>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Notes List</h2>
+    <div class="card-text">
+      <form #f="ngForm" class="form-inline">
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input [(ngModel)]="filter.title" id="title" name="title" class="form-control ml-2 mr-2">
+        </div>
+
+        <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+        <a [routerLink]="['../notes', 'new' ]" class="btn btn-default">New</a>
+      </form>
+    </div>
+    <div *ngIf="noteList.length > 0">
+      <div *ngIf="feedback.message" class="alert alert-{{feedback.type}} m-2">{{ feedback.message }}</div>
+      <div class="table-responsive">
+        <table class="table table-centered table-hover mb-0" id="datatable">
+          <thead>
+          <tr>
+            <th class="border-top-0" scope="col">Id</th>
+            <th class="border-top-0" scope="col">Title</th>
+            <th class="border-top-0" scope="col">Text</th>
+            <th class="border-top-0" scope="col" style="width:120px"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">
+            <td>{{item.id}}</td>
+            <td>{{item.title}}</td>
+            <td>{{item.text}}</td>
+            <td style="white-space: nowrap">
+              <a [routerLink]="['../notes', item.id ]" class="btn btn-secondary">Edit</a>&nbsp;
+              <button (click)="delete(item)" class="btn btn-danger">Delete</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+----
+{% endraw %}
+
+That looks better!
+
+[[styled-notes-list]]
+.Styled Notes List
+image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
+
+=== Add Validation and Bootstrap to the Note Edit Template
+
+If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/4.4/components/forms/[stylish forms] using its `form-group` and `form-control` classes. `note-edit.component.html` already uses these classes; you just need to rearrange some things to use the proper `card-*` classes.
+
+{% raw %}
+[source,html]
+.src/app/note/note-edit/note-edit.component.html
+----
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+  <li class="breadcrumb-item active">Notes</li>
+</ol>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Notes Detail</h2>
+    <div class="card-text">
+      <div *ngIf="feedback.message" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
+      <form *ngIf="note" #editForm="ngForm" (ngSubmit)="save()">
+        <div class="form-group">
+          <label>Id</label>
+          {{note.id || 'n/a'}}
+        </div>
+
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input [(ngModel)]="note.title" id="title" name="title" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="text">Text</label>
+          <input [(ngModel)]="note.text" id="text" name="text" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
+        <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>
+----
+{% endraw %}
+
+That's an improvement!
+
+[[styled-notes-form]]
+.Styled Notes Form
+image::../images/angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%"]
+
+To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
+
+[source,html]
+----
+<div class="form-group">
+  <label for="title">Title</label>
+  <input [(ngModel)]="note.title" id="title" name="title" class="form-control" required
+         #name="ngModel" [ngClass]="{'is-invalid': name.touched && name.invalid,  'is-valid': name.touched && name.valid}">
+  <div [hidden]="name.valid" style="display: block" class="invalid-feedback">
+    Title is required
+  </div>
+</div>
+----
+
+Now when you add a new note, it'll let you know that it requires a title.
+
+[[notes-edit-required-title]]
+.Title is required
+image::../images/angular-bootstrap/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%"]
+
+If you give it focus and leave, it'll add a red border around the field.
+
+[[notes-edit-red-outline]]
+.Dirty title validation decoration
+image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%"]
+
+== Add a Searchable, Sortable, and Pageable Data Table with Angular and Spring Data JPA
+
+At the beginning of this tutorial, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples#complete[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
+
+=== Add Search by Title with Spring Data JPA
+
+Adding search functionality requires the fewest code modifications. Change the `UserController#notes()` method in your Spring Boot app to accept a title parameter and return notes with the parameter's value in their title.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
+----
+@GetMapping("/user/notes")
+fun notes(principal: Principal, title: String?): List<Note> {
+    println("Fetching notes for user: ${principal.name}")
+    return if (title.isNullOrEmpty()) {
+        repository.findAllByUser(principal.name)
+    } else {
+        println("Searching for title: ${title}")
+        repository.findAllByUserAndTitleContainingIgnoringCase(principal.name, title)
+    }
+}
+----
+
+Add the new repository method to the `NotesRepository` in `DemoApplication.kt`.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoController.kt
+----
+@RepositoryRestResource
+interface NotesRepository : JpaRepository<Note, Long> {
+    fun findAllByUser(name: String): List<Note>
+    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String): List<Note>
+}
+----
+
+Restart your server and add a few notes, and you should be able to search for them by title in your Angular app. I love how Spring Data JPA makes this so easy!
+
+=== Add Sort Functionality with Angular and Bootstrap
+
+To begin, create a `sortable.directive.ts`.
+
+[source,ts]
+.src/app/note/note-list/sortable.directive.ts
+----
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
+
+export type SortDirection = 'asc' | 'desc' | '';
+const rotate: { [key: string]: SortDirection } = {asc: 'desc', desc: '', '': 'asc'};
+
+export interface SortEvent {
+  column: string;
+  direction: SortDirection;
+}
+
+@Directive({
+  selector: 'th[sortable]',
+  host: {
+    '[class.asc]': 'direction === "asc"',
+    '[class.desc]': 'direction === "desc"',
+    '(click)': 'rotate()'
+  }
+})
+export class SortableHeaderDirective {
+
+  @Input() sortable: string;
+  @Input() direction: SortDirection = '';
+  @Output() sort = new EventEmitter<SortEvent>();
+
+  rotate() {
+    this.direction = rotate[this.direction];
+    this.sort.emit({column: this.sortable, direction: this.direction});
+  }
+}
+----
+
+Add it as a declaration in `note.module.ts`.
+
+[source,ts]
+.src/app/note/node.module.ts
+----
+import { SortableHeaderDirective } from './note-list/sortable.directive';
+
+@NgModule({
+  ...
+  declarations: [
+    ...
+    SortableHeaderDirective
+  ],
+  ...
+}
+----
+
+Add a `headers` variable to `note-list.component.ts` and an `onSort()` method.
+
+[source,ts]
+.src/app/note/node.module.ts
+----
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { SortableHeaderDirective, SortEvent} from './sortable.directive';
+
+export class NoteListComponent implements OnInit {
+  @ViewChildren(SortableHeaderDirective) headers: QueryList<SortableHeaderDirective>;
+
+  ...
+
+  onSort({column, direction}: SortEvent) {
+    // reset other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
+
+    this.filter.column = column;
+    this.filter.direction = direction;
+    this.search();
+  }
+
+  ...
+}
+----
+
+Update the `note-filter.ts` to have `column` and `direction` properties.
+
+[source,ts]
+.src/app/note/note-filter.ts
+----
+export class NoteFilter {
+  title = '';
+  column: string;
+  direction: string;
+}
+----
+
+Modify the `find()` method in `NoteService` to pass a `sort` parameter when appropriate.
+
+[source,ts]
+.src/app/note/note.service.ts
+----
+import { map } from 'rxjs/operators';
+
+...
+
+find(filter: NoteFilter): Observable<Note[]> {
+  const params: any = {
+    title: filter.title,
+    sort: `${filter.column},${filter.direction}`,
+  };
+  if (!filter.direction) { delete params.sort; }
+
+  const userNotes = 'http://localhost:8080/user/notes';
+  return this.http.get(userNotes, {params, headers}).pipe(
+    map((response: any) => {
+      return response.content;
+    })
+  );
+}
+----
+
+Update `note-list.component.html` so it uses the `sortable` directive and calls `onSort()` when a user clicks it.
+
+[source,html]
+.src/app/note/note-list/note-list.component.html
+----
+<thead>
+  <tr>
+    <th class="border-top-0" scope="col">#</th>
+    <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
+    <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+    <th class="border-top-0" scope="col" style="width:120px"></th>
+  </tr>
+</thead>
+----
+
+Add CSS in `styles.scss` to show a sort indicator when a user sorts a column.
+
+[source,css]
+.src/styles.scss
+----
+th[sortable] {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+th[sortable].desc:before, th[sortable].asc:before {
+  content: '';
+  display: block;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAmxJREFUeAHtmksrRVEUx72fH8CIGQNJkpGUUmakDEiZSJRIZsRQmCkTJRmZmJgQE0kpX0D5DJKJgff7v+ru2u3O3vvc67TOvsdatdrnnP1Y///v7HvvubdbUiIhBISAEBACQkAICAEhIAQ4CXSh2DnyDfmCPEG2Iv9F9MPlM/LHyAecdyMzHYNwR3fdNK/OH9HXl1UCozD24TCvILxizEDWIEzA0FcM8woCgRrJCoS5PIwrANQSMAJX1LEI9bqpQo4JYNFFKRSvIgsxHDVnqZgIkPnNBM0rIGtYk9YOOsqgbgepRCfdbmFtqhFkVEDVPjJp0+Z6e6hRHhqBKgg6ZDCvYBygVmUoEGoh5JTRvIJwhJo1aUOoh4CLPMyvxxi7EWOMgnCGsXXI1GIXlZUYX7ucU+kbR8NW8lh3O7cue0Pk32MKndfUxQFAwxdirk3fHappAnc0oqDPzDfGTBrCfHP04dM4oTV8cxr0SVzH9FF07xD3ib6xCDE+M+aUcVygtWzzbtGX2rPBrEUYfecfQkaFzYi6HjVnGBdtL7epqAlc1+jRdAap74RrnPc4BCijttY2tRcdN0g17w7HqZrXhdJTYAuS3hd8z+vKgK3V1zWPae0mZDMykadBn1hTQBLnZNwVrJpSe/NwEeDsEwCctEOsJTsgxLvCqUl2ACftEGvJDgjxrnBqkh3ASTvEWrIDQrwrnJpkB3DSDrGW7IAQ7wqnJtkBnLRztejXXVu4+mxz/nQ9jR1w5VB86ejLTFcnnDwhzV+F6T+CHZlx6THSjn76eyyBIOPHyDakhBAQAkJACAgBISAEhIAQYCLwC8JxpAmsEGt6AAAAAElFTkSuQmCC') no-repeat;
+  background-size: 22px;
+  width: 22px;
+  height: 22px;
+  float: left;
+  margin-left: -22px;
+}
+
+th[sortable].desc:before {
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+}
+----
+
+=== Add Sorting and Paging in Spring Boot with Spring Data JPA
+
+On the server, you can use https://docs.spring.io/spring-data/rest/docs/current/reference/html/#paging-and-sorting[Spring Data's support for paging and sorting]. Add a `Pageable` argument to `UserController#notes()` and return a `Page` instead of a `List`.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
+----
+package com.okta.developer.notes
+
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.core.oidc.user.OidcUser
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
+
+@RestController
+class UserController(val repository: NotesRepository) {
+
+    @GetMapping("/user/notes")
+    fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
+        println("Fetching notes for user: ${principal.name}")
+        return if (title.isNullOrEmpty()) {
+            repository.findAllByUser(principal.name, pageable)
+        } else {
+            println("Searching for title: ${title}")
+            repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title, pageable)
+        }
+    }
+
+    @GetMapping("/user")
+    fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
+        return user;
+    }
+}
+----
+
+Modify `NotesRepository` to add a `Pageable` argument to its methods and return a `Page`.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+----
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+
+...
+
+@RepositoryRestResource
+interface NotesRepository : JpaRepository<Note, Long> {
+    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
+    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
+}
+----
+
+While you're updating the Spring Boot side of things, modify `DataInitializer` to create a thousand notes for your user. Make sure to replace `<your username>` with the email address you use to log in to Okta.
+
+[source,kotlin]
+----
+@Component
+class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
+
+    @Throws(Exception::class)
+    override fun run(args: ApplicationArguments) {
+        for (x in 0..1000) {
+            repository.save(Note(title = "Note ${x}", user = "<your username>"))
+        }
+        repository.findAll().forEach { println(it) }
+    }
+}
+----
+
+Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
+
+[[notes-list-with-sorting]]
+.Notes list with sorting
+image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
+
+=== Add Pagination with Angular and Bootstrap
+
+The last feature to add is pagination with NG Bootstrap's `<ngb-pagination>` component. Begin by adding `page` and `size` variables (with default values) to `note-filter.ts`.
+
+[source,ts]
+.src/app/note/note-filter.ts
+----
+export class NoteFilter {
+  title = '';
+  column: string;
+  direction: string;
+  page = 0;
+  size = 20;
+}
+----
+
+At the bottom of `note-list.component.html` (just after `</table>`), add the pagination component, along with a page-size selector.
+
+[source,html]
+.src/app/note/note-list/note-list.component.html
+----
+<div class="d-flex justify-content-between p-2">
+  <ngb-pagination [maxSize]="10"
+    [collectionSize]="total$ | async" [(page)]="filter.page" [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
+  </ngb-pagination>
+
+  <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="filter.size" (ngModelChange)="onChange(filter.size)">
+    <option [ngValue]="10">10 items per page</option>
+    <option [ngValue]="20">20 items per page</option>
+    <option [ngValue]="100">100 items per page</option>
+  </select>
+</div>
+----
+
+Add `NgbModule` as an import to `note.module.ts`.
+
+[source,ts]
+.src/app/note/note.module.ts
+----
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+@NgModule({
+  imports: [
+    ...
+    NgbModule
+  ],
+  ...
+}
+----
+
+In `note-list.component.ts`, add a `total$` observable and set it from the `search()` method. Then add an `onPageChange()` method and an `onChange()` method, and modify `onSort()` to set the page to 0.
+
+[source,ts]
+.src/app/note/note-list/note-list.component.ts
+----
+import { Observable } from 'rxjs';
+
+export class NoteListComponent implements OnInit {
+  total$: Observable<number>;
+
+  ...
+
+  search(): void {
+    this.noteService.load(this.filter);
+    this.total$ = this.noteService.size$;
+  }
+
+  onChange(pageSize: number) {
+    this.filter.size = pageSize;
+    this.filter.page = 0;
+    this.search();
+  }
+
+  onPageChange(page: number) {
+    this.filter.page = page - 1;
+    this.search();
+    this.filter.page = page;
+  }
+
+  onSort({column, direction}: SortEvent) {
+    // reset other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
+
+    this.filter.column = column;
+    this.filter.direction = direction;
+    this.filter.page = 0;
+    this.search();
+  }
+}
+----
+
+Then update `notes.service.ts` to add a `size$` observable and parameters for the page size and page number.
+
+[source,ts]
+.src/app/note/note.service.ts
+----
+import { BehaviorSubject, Observable } from 'rxjs';
+
+...
+
+export class NoteService {
+  ...
+  size$ = new BehaviorSubject<number>(0);
+
+  ...
+
+  find(filter: NoteFilter): Observable<Note[]> {
+    const params: any = {
+      title: filter.title,
+      sort: `${filter.column},${filter.direction}`,
+      size: filter.size,
+      page: filter.page
+    };
+    if (!filter.direction) { delete params.sort; }
+
+    const userNotes = 'http://localhost:8080/user/notes';
+    return this.http.get(userNotes, {params, headers}).pipe(
+      map((response: any) => {
+        this.size$.next(response.totalElements);
+        return response.content;
+      })
+    );
+  }
+
+  ...
+}
+----
+
+Now your note list should have a working pagination feature at the bottom. Pretty slick, eh?
+
+[[notes-list-with-pagination]]
+.Notes with pagination
+image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%"]
+
+
+== Angular with Bootstrap + Spring Boot is Powerful
+
+Phew! That was a lot of code. I hope this tutorial has helped you see how powerful Angular and Spring Boot with Bootstrap can be! You can find all of the https://github.com/oktadeveloper/okta-angular-bootstrap-example[source code for this example on GitHub].
+
+NOTE: I fixed the Angular tests so they work with Bootstrap in https://github.com/oktadeveloper/okta-angular-bootstrap-example/pull/1/commits/9458b76e98cda130763cfd10ab2bfa050db78869[this commit].
+
+I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
+
+1. Install JHipster and KHipster
+
+ npm install -g generator-jhipster@6.6.0 generator-jhipster-kotlin@1.4.0
+
+2. Create an `easy-notes` directory and a `notes.jdl` file in it
+
+  application {
+    config {
+      baseName notes
+      authenticationType oauth2
+      buildTool gradle
+      searchEngine elasticsearch
+      testFrameworks [protractor]
+    }
+    entities *
+  }
+  entity Note {
+    title String required
+    text TextBlob
+  }
+  relationship ManyToOne {
+    Note{user(login)} to User
+  }
+  paginate Note with pagination
+
+3. In a terminal, navigate to the `easy-notes` directory and run `khipster import-jdl notes.jdl`
+
+That's it!
+
+Of course, you probably want to see it running. Run the following commands to start Keycloak (as a local OAuth 2.0 server) and Elasticsearch, and launch the app.
+
+[source,shell]
+----
+docker-compose -f src/main/docker/keycloak.yml up -d
+docker-compose -f src/main/docker/elasticsearch.yml up -d
+./gradlew
+----
+
+Then, run `npm run e2e` in another terminal window to verify everything works. Here's a screenshot of the app's Notes form with validation.
+
+[[khipster-notes]]
+.KHipster Notes
+image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
+
+Want to make it work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
+
+== Learn More About Angular and Spring Boot
+
+I used the following resources to gather historical information about Angular and Bootstrap.
+
+* https://raibledesigns.com/rd/entry/refreshing_appfuse_s_ui_with[Refreshing AppFuse's UI with Twitter Bootstrap]
+* https://alistapart.com/article/building-twitter-bootstrap/[Building Twitter Bootstrap]
+* https://v4-alpha.getbootstrap.com/about/history/[Bootstrap > About > History]
+* https://medium.com/dailyjs/angular-1-0-turns-five-years-old-4d7108a5e412[Angular 1.0 Turns Five Years Old]
+
+If you want to learn more about Angular or Spring Boot, I recommend these blog posts:
+
+* link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
+* link:/blog/2020/05/29/angular-deployment[Angular Deployment with a Side of Spring Boot]
+* link:/blog/2020/06/17/angular-docker-spring-boot[Angular + Docker with a Big Hug from Spring Boot]
+* link:/blog/2020/02/12/angular-ivy[What Is Angular Ivy and Why Is It Awesome?]
+* link:/blog/2020/01/21/angular-material-login[Build a Beautiful App + Login with Angular Material]
+* link:/blog/2020/01/31/java-graphql[How to GraphQL in Java]
+* link:/blog/2019/04/04/java-11-java-12-jhipster-oidc[Better, Faster, Lighter Java with Java 12 and JHipster 6]
+
+If you have questions, please leave a comment below. If you liked this tutorial, follow https://twitter.com/oktadev[@oktadev on Twitter] and subscribe to https://youtube.com/c/oktadev[our YouTube channel].
+
+**Changelog:**
+
+* May 18, 2020: Updated to remove `/implicit` from Login redirect URI. See the code changes in the https://github.com/oktadeveloper/okta-angular-bootstrap-example/pull/4[example app on GitHub]. Changes to this article can be viewed in https://github.com/oktadeveloper/okta-blog/pull/298[oktadeveloper/okta-blog#298].
