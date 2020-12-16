@@ -4,7 +4,7 @@
 :email: matt@raibledesigns.com
 :revnumber: 1.0.0
 :revdate: {docdate}
-:revyear: 2020
+:revyear: 2022
 :subject: Angular
 :keywords: Angular, TypeScript, Bootstrap, Spring Boot
 :doctype: book
@@ -21,7 +21,7 @@ endif::[]
 :experimental:
 :pdf-fontsdir: ./styles/pdf/fonts
 :pdf-stylesdir: ./styles/pdf
-:pdf-style: infoq-screen
+:pdf-style: screen
 ifndef::ebook-format[:leveloffset: 1]
 
 [colophon#colophon%nonfacing]
@@ -47,8 +47,3 @@ include::chapters/chapter3.adoc[]
 include::chapters/action.adoc[]
 
 include::chapters/about.adoc[]
-
-//ifdef::backend-pdf,backend-docbook[]
-//[index]
-//== Index
-//endif::[]s
