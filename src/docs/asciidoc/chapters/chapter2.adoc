@@ -3,7 +3,7 @@
 
 == Combine Angular with Spring Boot and Kotlin
 
-- Spring Boot 2.3
+- Spring Boot 2.4
 - Spring Boot with Spring Security
 - Spring Boot as an OAuth 2.0 Resource Server
 - Spring Data REST
@@ -12,7 +12,7 @@
 - Security Patterns for Spring Boot
 - Add a Data Table with Searching, Sorting, and Pagination
 
-Angular is a web framework for building mobile and desktop applications. Its first version, AngularJS, was one of the first JavaScript MVC frameworks to dominate the web landscape. Developers loved it, and it rose to popularity in the early 2010s. AngularJS 1.0 was released on June 14, 2014. Angular 9 was recently released, giving Angular quite a successful run in the land of web frameworks.
+Angular is a web framework for building mobile and desktop applications. Its first version, AngularJS, was one of the first JavaScript MVC frameworks to dominate the web landscape. Developers loved it, and it rose to popularity in the early 2010s. AngularJS 1.0 was released on June 14, 2014. Angular 11 was https://blog.angular.io/version-11-of-angular-now-available-74721b7952f7?gi=6131f1d297e3[released on November 12, 2020], giving Angular quite a successful run in the land of web frameworks.
 
 Spring Boot is one of the most popular frameworks for developing Java applications and REST APIs. It also has first-class support for Kotlin!
 
@@ -24,7 +24,9 @@ Long story short, they're a match made in heaven!
 .Bootiful Angular
 image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%"]
 
-== What's New In Angular 9?
+== What's New In Angular?
+
+// todo: angular release timeline
 
 Angular 9's most prominent new feature is Ivy. Ivy is Angular's new compiler and renderer. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
 
@@ -39,17 +41,19 @@ To use Angular CLI's i18n feature, you simply need to add the `i18n` attribute t
 
 `TestBed.inject(Component)` is the new way to get references to components in tests. `TestBed.get(Component)` is deprecated.
 
-== What's New in Spring Boot 2.2?
+== What's New in Spring Boot?
+
+// todo: spring boot timeline
 
 Spring Boot 2.2 was released in September 2019 and focuses on performance improvements and reduced memory usage. It adds Java 13 support, RSocket support, and the ability to group health indicators. Grouping indicators can be useful if you're deploying to Kubernetes and want different groups for "liveness" and "readiness" probes.
 
-In this post, I'll show you how to build a CRUD application with Angular 9 and Spring Boot 2.2. Along the way, I'll do my best to weave in security tips and how to make your apps more secure.
+In this post, I'll show you how to build a CRUD application with Angular 11 and Spring Boot 2.4. Along the way, I'll do my best to weave in security tips and how to make your apps more secure.
 
 **Prerequisites:**
 
-* https://nodejs.org/[Node 12]+
+* https://nodejs.org/[Node 14]+
 * https://adoptopenjdk.net/[Java 11]+
-* An https://developer.okta.com/signup/[Okta Developer Account]
+//* An https://developer.okta.com/signup/[Okta Developer Account]
 
 To install Node and Java on a Mac, Linux, or Windows Subsystem for Linux (WSL), you can use https://docs.brew.sh/Installation[Homebrew].
 
@@ -69,13 +73,13 @@ sdk install java 11.0.5.hs-adpt
 
 You can refer to the table of contents below for the steps in this tutorial.
 
-== Create an Angular 9 App
+== Create an Angular App
 
-To create an Angular 9 app, you first need to install Angular CLI.
+To create an Angular app, you first need to install Angular CLI.
 
 [source,shell]
 ----
-npm install -g @angular/cli@9.0.2
+npm install -g @angular/cli@11
 ----
 
 Then create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` to create an Angular application.
@@ -106,11 +110,11 @@ OpenID Connect (also called OIDC) is an identity later based on the OAuth 2.0 sp
 
 Okta has Authentication and User Management APIs that reduce development time with instant-on, scalable user infrastructure. Okta's intuitive API and expert support make it easy for developers to authenticate, manage, and secure users + roles in any application.
 
-To add OIDC login support to your Angular 9 app, you'll first need an https://developer.okta.com/signup[free Okta developer account]. After you've created your account and logged in to your Okta dashboard, create a new OIDC app using the following steps:
+To add OIDC login support to your Angular app, you'll first need an https://developer.okta.com/signup[free Okta developer account]. After you've created your account and logged in to your Okta dashboard, create a new OIDC app using the following steps:
 
 1. Navigate to **Applications** > **Add Application**
 2. Select **Single-Page App** and click **Next**
-3. Provide a name (e.g., `Angular 9`) and change the Login redirect URI to `http://localhost:4200/callback`
+3. Provide a name (e.g., `Angular`) and change the Login redirect URI to `http://localhost:4200/callback`
 4. Click **Done**
 
 Your app's settings should resemble the following.
@@ -230,9 +234,9 @@ Enter valid credentials, and you'll be redirected back to your app. There will n
 .Logout button
 image::../images/angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%"]
 
-Now that you've created a secure Angular 9 app let's create a Spring Boot app to serve up data with a REST API.
+Now that you've created a secure Angular app let's create a Spring Boot app to serve up data with a REST API.
 
-== Create a Spring Boot 2.2 App
+== Create a Spring Boot App
 
 The good folks at Pivotal created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with https://httpie.org/[HTTPie].
 
@@ -242,7 +246,7 @@ Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the nece
 
 [source,shell]
 ----
-http https://start.spring.io/starter.zip javaVersion==11 language==kotlin \
+http https://start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.4.1.RELEASE \
 artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
 type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
@@ -527,7 +531,7 @@ Restart your Spring Boot app after adding this bean.
 
 To see how your final `DemoApplication` file should look, you can https://github.com/oktadeveloper/okta-spring-boot-2-angular-9-example/blob/master/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt[view the completed version in GitHub].
 
-Now that your API is working, it's time to develop a UI for it with Angular 9!
+Now that your API is working, it's time to develop a UI for it with Angular!
 
 == Add a Notes CRUD Feature in Angular
 
@@ -946,7 +950,7 @@ TIP: Once you've deployed your Spring Boot app to a public URL, you can test you
 
 == Learn More About Angular, Spring Boot, and Kotlin
 
-In this tutorial, I showed you how to create an Angular 9 app, a Spring Boot 2.2 app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
+In this tutorial, I showed you how to create an Angular app, a Spring Boot app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
 
 This tutorial did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in an link:/blog/2020/03/02/angular-bootstrap[upcoming post]. In the meantime, you can see a previous tutorial I wrote to see how this app might look with Angular Material.
 
@@ -963,10 +967,14 @@ Our blog has a bunch of Angular, Spring Boot, and Kotlin tutorials. Here are som
 * link:/blog/2019/08/28/reactive-microservices-spring-cloud-gateway[Secure Reactive Microservices with Spring Cloud Gateway]
 * link:/blog/2019/09/17/build-a-spring-boot-kotlin-app[Build an Application with Spring Boot and Kotlin]
 
+
+////
 To read more about the Angular 9 and Spring Boot 2.2 releases, I recommend these articles:
 
 * https://www.grapecity.com/blogs/what-to-expect-in-angular-9[What's New in Angular 9]
 * https://spring.io/blog/2019/10/16/spring-boot-2-2-0[Spring Boot 2.2.0] from the Spring Team's Blog
+////
+
 
 For Angular 8, 7, and 5 versions of this tutorial, see my past posts.
 
@@ -1000,10 +1008,14 @@ image::../images/angular-spring-boot/angular-bootstrap.png[Angular + Bootstrap, 
 
 I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "legacy." Others call them "revenue-generating."
 
-Whatever you want to call it, Angular is far from dead. At least according to the popularity of two recent articles we've published! Many of you have flocked to our recent Angular posts&mdash;the proof is in the traffic numbers.
+Whatever you want to call it, Angular is far from dead.
+////
+At least according to the popularity of two recent articles we've published! Many of you have flocked to our recent Angular posts&mdash;the proof is in the traffic numbers.
 
 * link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
 * link:/blog/2020/01/21/angular-material-login[Build a Beautiful App + Login with Angular Material]
+////
+
 
 == Angular Still Loves Bootstrap
 
@@ -1015,9 +1027,9 @@ You might think that Angular Material is more popular than Bootstrap these days.
 </div>
 ++++
 
-== Integrate Bootstrap with Angular 9
+== Integrate Bootstrap with Angular
 
-Today I'd like to show you how to integrate Bootstrap into an Angular 9 application. I'll start with the CRUD example from my aforementioned Angular 9 + Spring Boot 2.2 tutorial. I'll integrate Bootstrap, convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
+Today I'd like to show you how to integrate Bootstrap into an Angular application. I'll start with the CRUD example from my aforementioned Angular 9 + Spring Boot 2.2 tutorial. I'll integrate Bootstrap, convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
 
 **Prerequisites:**
 
@@ -1988,6 +2000,8 @@ I used the following resources to gather historical information about Angular an
 * https://v4-alpha.getbootstrap.com/about/history/[Bootstrap > About > History]
 * https://medium.com/dailyjs/angular-1-0-turns-five-years-old-4d7108a5e412[Angular 1.0 Turns Five Years Old]
 
+
+////
 If you want to learn more about Angular or Spring Boot, I recommend these blog posts:
 
 * link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
@@ -2003,3 +2017,5 @@ If you have questions, please leave a comment below. If you liked this tutorial,
 **Changelog:**
 
 * May 18, 2020: Updated to remove `/implicit` from Login redirect URI. See the code changes in the https://github.com/oktadeveloper/okta-angular-bootstrap-example/pull/4[example app on GitHub]. Changes to this article can be viewed in https://github.com/oktadeveloper/okta-blog/pull/298[oktadeveloper/okta-blog#298].
+////
+
