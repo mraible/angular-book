@@ -1667,6 +1667,8 @@ You can find the source code for this example on GitHub at https://github.com/ok
 
 As a developer, you probably don't want to do a series of tutorials to get to a baseline to start a project. The good news is https://jhipster.tech[JHipster] does everything in this series. It allows you to run your Angular and Spring Boot apps separately, use Kotlin on the server, package your apps together for production, and use Docker for distribution.
 
+
+////
 To learn more about Angular, Spring Boot, and Docker, see some of our other blog posts.
 
 - link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
@@ -1676,3 +1678,5 @@ To learn more about Angular, Spring Boot, and Docker, see some of our other blog
 - https://developer.okta.com/blog/2017/10/11/developers-guide-to-docker-part-3[A Developer's Guide To Docker - Docker Compose]
 
 https://twitter.com/oktadev[Follow @oktadev on Twitter] for more posts like this one. We also have a https://youtube.com/c/oktadev[YouTube channel] you might enjoy. As always, please leave a comment below if you have any questions!
+////
+

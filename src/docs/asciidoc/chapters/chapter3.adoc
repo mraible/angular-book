@@ -22,10 +22,14 @@ image::../images/angular-deployment/angular-deployment.png[Angular Deployment wi
 
 == Create an Angular + Spring Boot App
 
-Since this tutorial is more about deployment than app creation, you can start with an existing Angular + Spring Boot app that I created previously. It's a note-taking app that uses Kotlin and Spring Boot 2.2 on the backend and Angular 9 on the frontend. It's secured with OpenID Connect (OIDC). If you'd like to see how I built it, you can read the following tutorials:
+Since this tutorial is more about deployment than app creation, you can start with an existing Angular + Spring Boot app that I created previously. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+////
+If you'd like to see how I built it, you can read the following tutorials:
 
 * link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
 * link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap]
+////
+
 
 One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
 
@@ -46,7 +50,11 @@ git clone https://github.com/oktadeveloper/okta-angular-bootstrap-example.git \
 * https://adoptopenjdk.net/[Java 11]+
 * https://nodejs.org/[Node 12]+
 * https://docs.docker.com/get-docker/[Docker]
+
+////
 * An https://developer.okta.com/signup/[Okta Developer Account]
+////
+
 
 === Secure Your Angular + Spring Boot App with OIDC
 
@@ -207,12 +215,16 @@ npm i -g npm-check-updates
 ncu -u
 ----
 
+
+////
 At the time of this writing, this will upgrade Angular to version 9.1.9 and TypeScript to version 3.9.3. Angular 9 supports TypeScript versions >=3.6.4 and <3.9.0, so you'll need to change `package.json` to specify TypeScript 3.8.3.
 
 [source,json]
 ----
 "typescript": "~3.8.3"
 ----
+////
+
 
 Then run the following commands in the `notes` directory:
 
@@ -1237,13 +1249,19 @@ In this tutorial, you learned how to upgrade Angular and Spring Boot to their la
 
 You learned how to make your Angular app more secure with security headers, force HTTPS, and make each cloud provider SPA-aware. You can find the source code for the completed example in the https://github.com/oktadeveloper/okta-angular-deployment-example[@oktadeveloper/okta-angular-deployment-example] repository.
 
+
+////
 This blog post is the third in a series. The first two posts are below.
 
 1. link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
-2. link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap]
+2. link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap
+////
+]
 
 I'll be publishing a link:/blog/2020/06/17/angular-docker-spring-boot[4th and final blog post that shows you how to containerize and deploy your Angular + Spring Boot apps with Docker]. This tutorial will also show how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll show you how to deploy to Heroku, Knative on Google Cloud, and Cloud Foundry!
 
+
+////
 If you liked this tutorial, we have several others on Angular and Spring Boot.
 
 - link:/blog/2020/01/21/angular-material-login[Build a Beautiful App + Login with Angular Material]
@@ -1254,6 +1272,7 @@ If you liked this tutorial, we have several others on Angular and Spring Boot.
 - link:/blog/2019/09/17/build-a-spring-boot-kotlin-app[Build an Application with Spring Boot and Kotlin]
 
 If you have any questions, please leave a comment below. Follow us on https://twitter.com/oktadev[Twitter], https://www.linkedin.com/company/oktadev[LinkedIn], or https://www.facebook.com/oktadevelopers/[Facebook] to be notified when we publish new tutorials. We have a popular https://youtube.com/c/oktadev[YouTube channel] too!
+////
 
 
 == Angular Docker
@@ -1264,8 +1283,12 @@ Building modern apps with Angular and Spring Boot is a common practice these day
 .Keyword Planner results
 image::../images/angular-docker/keyword-planner-angular-results.png[Keyword Planner results, 375, scaledwidth="100%"]
 
-This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS. You can find links to previous tutorials below.
+This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS.
+////
+You can find links to previous tutorials below.
 
 1. link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
 2. link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap]
 3. link:/blog/2020/05/29/angular-deployment[Angular Deployment with a Side of Spring Boot]
+////
+
