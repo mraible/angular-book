@@ -192,7 +192,8 @@ In `src/app/app-routing.module.ts`, modify the `routes` constant to add `SearchC
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
-  { path: '', component: SearchComponent }
+  { path: 'search', component: SearchComponent },
+  { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];
 ----
 
@@ -516,7 +517,7 @@ import { map } from 'rxjs/operators';
     }
     return this.getAll().pipe(
       map((data: any) => data
-        .filter((item: any) => JSON.stringify(item).toLowerCase().includes(q)))
+        .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q)))
     );
   }
 ----
@@ -586,7 +587,7 @@ const routes: Routes = [
 ];
 ----
 
-Update `src/app/edit/edit.component.html` to display an editable form. You might notice I've added `id` attributes to most elements. This is to make things easier when writing integration tests with Protractor.
+Update `src/app/edit/edit.component.html` to display an editable form. You might notice I've added `id` attributes to most elements. This is to make it easier to locate elements when writing integration tests.
 
 [source,html]
 .src/app/edit/edit.component.html
@@ -635,12 +636,12 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./edit.component.css']
 })
 export class EditComponent implements OnInit, OnDestroy {
-  person: Person;
-  editName: string;
-  editPhone: string;
-  editAddress: Address;
+  person!: Person;
+  editName!: string;
+  editPhone!: string;
+  editAddress!: Address;
 
-  sub: Subscription;
+  sub!: Subscription;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -704,9 +705,9 @@ search(q: string): Observable<any> {
   }
   return this.getAll().pipe(
     map((data: any) => data
-        .map(item => !!localStorage['person' + item.id] ?
-          JSON.parse(localStorage['person' + item.id]) : item)
-        .filter(item => JSON.stringify(item).toLowerCase().includes(q))
+      .map((item: Person) => !!localStorage['person' + item.id] ?
+        JSON.parse(localStorage['person' + item.id]) : item)
+      .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q))
     ));
 }
 
@@ -715,7 +716,7 @@ get(id: number) {
     if (localStorage['person' + id]) {
       return JSON.parse(localStorage['person' + id]);
     }
-    return all.find(e => e.id === id);
+    return all.find((e: Person) => e.id === id);
   }));
 }
 
@@ -745,8 +746,7 @@ At this point, you should be able to search for a person and update their inform
 .Edit component
 image::../images/ng-demo/edit-form.png[Edit form, 800, scaledwidth="100%"]
 
-The &lt;form> in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above.
-The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
+The &lt;form> in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above. The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
 
 [source,typescript]
 .src/app/edit/edit.component.ts
@@ -760,7 +760,7 @@ gotoList() {
 }
 ----
 
-Since the `SearchComponent` doesn't execute a search automatically when you execute this URL, add the following logic to do so in its `ngOnInit` method.
+Since the `SearchComponent` doesn't execute a search automatically when you execute this URL, add the following logic to do so in its `ngOnInit()` method.
 
 [source,typescript]
 .src/app/search/search.component.ts
@@ -769,7 +769,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 ...
 
-sub: Subscription;
+sub!: Subscription;
 
 constructor(private searchService: SearchService, private route: ActivatedRoute) { }
 
@@ -788,7 +788,7 @@ You'll want to implement `OnDestroy` and define the `ngOnDestroy` method to clea
 [source,typescript]
 .src/app/search/search.component.ts
 ----
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 export class SearchComponent implements OnInit, OnDestroy {
 ...
