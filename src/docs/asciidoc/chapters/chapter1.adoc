@@ -1,16 +1,39 @@
 = Build an Angular App
 
-Developers like to see things working in minutes. I'm a developer and I like to evaluate software with a "10 minute test". If I can get it working in 10 minutes, sign me up!
+I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of :
+
+* Modules: A mechanism to organize related code into functional sets.
+* Components: Classes that retrieve data from services and expose it to templates.
+* Services: Classes that make HTTP calls to APIs.
+* Templates: HTML pages that display data. Use Angular directives to iterate over collections and show/hide elements.
+* Pipes: Data-manipulation tools that can transform data (e.g. uppercase, lowercase, ordering, and searching).
+* Directives: HTML processors that allow manipulate data before it's displayed.
+
+== A Brief History of Angular
+
+AngularJS was started by Miško Hevery in 2009. He was working on a project that was using GWT (Google Web Toolkit). Three developers had been developing the product for six months, and Miško rewrote the whole thing in AngularJS in three weeks. At that time, AngularJS was a side project he'd created. It didn't require you to write much in JavaScript as you could program most of the logic in HTML. The GWT version of the product contained 17,000 lines of code. The AngularJS version was only 1,000 lines of code!
+
+In October 2014, the AngularJS team announced they were building http://www.infoq.com/news/2014/10/angular-2-atscript[Angular 2.0]. The announcement led to a bit of upheaval in the Angular developer community. The API for writing Angular applications was going to change and it was to be based on a new language, AtScript. There would be no migration path and users would have to continue using 1.x or rewrite their applications for 2.x.
+
+In March 2015, the Angular team http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns], announcing that they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "Angular" instead of Angular 2.0].
+
+Angular 2.0 was released September 2016. Angular 4.0 was released March 2017. The Angular project tries to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 12 on May 12, 2021.
+
+You can find the Angular project at https://angular.io[angular.io].
+
+Developers like to see things working in minutes. I'm a developer and I like to evaluate software with a "10-minute test". If I can get it working in 10 minutes, sign me up!
 
 Rather than explain all the concepts in Angular, I prefer to show you how it works. In this chapter, I'll show you how to build a basic Angular application.
 
-Along the way, I'll show you how to unit test your Angular components and deploy to production.
+Along the way, I'll show you how to unit test your Angular components, and deploy to production.
+
+NOTE: I should warn you about my teaching style. I'll show how to do things and errors will happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading. 🙂
 
 **Prerequisites:**
 
 * A favorite text editor or IDE. I recommend https://www.jetbrains.com/idea/[IntelliJ IDEA].
 * http://nodejs.org/[Node.js] and npm installed.
-* https://github.com/angular/angular-cli[Angular CLI] installed. If you don't have Angular CLI installed, install it using `npm install -g @angular/cli@11`.
+* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@12`.
 
 == Create a new Angular project
 
@@ -24,7 +47,7 @@ When prompted to install Angular routing, type "Y". For the stylesheet format, c
 
 This will create a `ng-demo` project and run `npm install` in it. It takes about a minute to complete, but will vary based on your internet connection speed.
 
-You can see the what version of Angular CLI you're using with `ng version`.
+You can see the version of Angular CLI you're using with `ng version`.
 
 ----
 $ ng version
@@ -36,45 +59,52 @@ $ ng version
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-Angular CLI: 10.1.4
-Node: 14.10.1
+
+Angular CLI: 12.0.0-rc.1
+Node: 14.16.1
+Package Manager: npm 7.11.2
 OS: darwin x64
 
-Angular:
+Angular: undefined
 ...
-Ivy Workspace:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1001.4 (cli-only)
-@angular-devkit/core         10.1.4 (cli-only)
-@angular-devkit/schematics   10.1.4 (cli-only)
-@schematics/angular          10.1.4 (cli-only)
-@schematics/update           0.1001.4 (cli-only)
+@angular-devkit/architect    0.1200.0-rc.1 (cli-only)
+@angular-devkit/core         12.0.0-rc.1 (cli-only)
+@angular-devkit/schematics   12.0.0-rc.1 (cli-only)
+@schematics/angular          12.0.0-rc.1 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
 
 ----
-Angular CLI: 10.1.4
-Node: 14.10.1
+     _                      _                 ____ _     ___
+    / \   _ __   __ _ _   _| | __ _ _ __     / ___| |   |_ _|
+   / △ \ | '_ \ / _` | | | | |/ _` | '__|   | |   | |    | |
+  / ___ \| | | | (_| | |_| | | (_| | |      | |___| |___ | |
+ /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
+                |___/
+
+
+Angular CLI: 12.0.0-rc.1
+Node: 14.16.1
+Package Manager: npm 7.11.2
 OS: darwin x64
 
-Angular: 10.1.4
+Angular: 12.0.0-rc.1
 ... animations, cli, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
-Ivy Workspace: Yes
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1001.4
-@angular-devkit/build-angular   0.1001.4
-@angular-devkit/core            10.1.4
-@angular-devkit/schematics      10.1.4
-@schematics/angular             10.1.4
-@schematics/update              0.1001.4
-rxjs                            6.6.3
-typescript                      4.0.3
+@angular-devkit/architect       0.1200.0-rc.1
+@angular-devkit/build-angular   12.0.0-rc.1
+@angular-devkit/core            12.0.0-rc.1
+@angular-devkit/schematics      12.0.0-rc.1
+@schematics/angular             12.0.0-rc.1
+rxjs                            6.6.7
+typescript                      4.2.4
 ----
 
 == Run the application
@@ -85,7 +115,7 @@ The project is configured with a simple web server for development. To start it,
 ng serve
 ----
 
-You should see a screen like the one below at http://localhost:4200.
+You should see a screen like the one below at `http://localhost:4200`.
 
 [[default-homepage]]
 .Default homepage
@@ -96,7 +126,7 @@ You can make sure your new project's tests pass, run `ng test`:
 ----
 $ ng test
 ...
-Chrome 85.0.4183.83 (Mac OS 10.15.6): Executed 3 of 3 SUCCESS (0.156 secs / 0.118 secs)
+Chrome 90.0.4430.93 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.2 secs / 0.144 secs)
 ----
 
 == Add a search feature
@@ -138,7 +168,7 @@ To fix this, add a `query` property to `src/app/search/search.component.ts`. Whi
 .src/app/search/search.component.ts
 ----
 export class SearchComponent implements OnInit {
-  query: string;
+  query: string | undefined;
   searchResults: any;
 
   constructor() { }
@@ -150,10 +180,9 @@ export class SearchComponent implements OnInit {
 }
 ----
 
-.Adding a Search Route
-****
+=== Adding a Search Route
 
-The https://angular.io/guide/router[Router and navigation docs] for Angular provides the information you need to setup a route to the `SearchComponent` you just generated. Here's a quick summary:
+The https://angular.io/guide/router[Router and navigation docs] for Angular provides the information you need to set up a route to the `SearchComponent` you just generated. Here's a quick summary:
 
 In `src/app/app-routing.module.ts`, modify the `routes` constant to add `SearchComponent` as the default:
 
@@ -163,11 +192,9 @@ In `src/app/app-routing.module.ts`, modify the `routes` constant to add `SearchC
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
-  { path: 'search', component: SearchComponent },
-  { path: '', redirectTo: '/search', pathMatch: 'full' }
+  { path: '', component: SearchComponent }
 ];
 ----
-****
 
 Run `ng serve` again you will see a compilation error.
 
@@ -260,18 +287,18 @@ mkdir -p src/assets/data
       "street": "2654 Washington Street",
       "city": "Lakewood",
       "state": "CO",
-      "zip": "80568"
+      "zip": "80123"
     }
   },
   {
     "id": 3,
-    "name": "Gary Harris",
-    "phone": "(303) 323-1233",
+    "name": "Michael Porter Jr.",
+    "phone": "(303) 623-1337",
     "address": {
-      "street": "99 Westside Way",
+      "street": "99 Fluid Way",
       "city": "Breckenridge",
       "state": "CO",
-      "zip": "82210"
+      "zip": "80424"
     }
   }
 ]
@@ -352,8 +379,8 @@ You can now add a proper type to the `searchResults` variable. While you're ther
 .src/app/search/search.component.ts
 ----
 export class SearchComponent implements OnInit {
-  query: string;
-  searchResults: Array<Person>;
+  query: string | undefined;
+  searchResults: Array<Person> = [];
 
   constructor(private searchService: SearchService) { }
 ----
@@ -400,7 +427,7 @@ Now clicking the search button should work. To make the results look better, rem
 [source,xml]
 .src/app/search/search.component.html
 ----
-<table *ngIf="searchResults">
+<table *ngIf="searchResults?.length">
   <thead>
   <tr>
     <th>Name</th>
@@ -419,6 +446,30 @@ Now clicking the search button should work. To make the results look better, rem
   </tbody>
 </table>
 ----
+
+.What's up with `*ngIf` and `.?`
+****
+You might be asking yourself why there's an asterisk in front of `ngIf`. From https://angular.io/docs/ts/latest/guide/structural-directives#asterisk[Angular's docs]:
+
+> Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
+
+These two HTML snippets render the same output:
+
+[source,html]
+----
+<p *ngIf="condition">
+  Not all heroes wear capes!
+</p>
+
+<template [ngIf]="condition">
+  <p>
+    Not all heroes wear capes!
+  </p>
+</template>
+----
+
+As far as the `.?` is concerned, that's how you do null-safe property traversal in TypeScript. It's officially called https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html[optional chaining] and was introduced in TypeScript 3.7.
+****
 
 Then add some additional CSS to `search.component.css` to improve its table layout.
 
@@ -465,7 +516,7 @@ import { map } from 'rxjs/operators';
     }
     return this.getAll().pipe(
       map((data: any) => data
-        .filter(item => JSON.stringify(item).toLowerCase().includes(q)))
+        .filter((item: any) => JSON.stringify(item).toLowerCase().includes(q)))
     );
   }
 ----
@@ -482,6 +533,23 @@ search(): void {
   );
 }
 ----
+
+This won't compile right away.
+
+[source,shell]
+----
+Error: src/app/search/search.component.ts:18:31 - error TS2345:
+ Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+----
+
+Since `query` will always be assigned (even if it's empty), change its variable declaration to.
+
+[source,ts]
+----
+query!: string; // query: string = ''; will also work
+----
+
+This is called a https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions[definite assignment assertion]. It's a way to tell TypeScript "I know what I'm doing, the variable will be assigned."
 
 Now search results will be filtered by the query value you type in.
 
@@ -1080,7 +1148,7 @@ describe('EditComponent', () => {
   it('should fetch a single record', () => {
     const fixture = TestBed.createComponent(EditComponent);
 
-    const person = new Person({id: 1, name: 'Gary Harris'});
+    const person = new Person({id: 1, name: 'Michael Porter Jr.'});
     person.address = new Address({city: 'Denver'});
 
     // mock response
@@ -1098,7 +1166,7 @@ describe('EditComponent', () => {
 
     // verify HTML renders as expected
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h3').innerHTML).toBe('Gary Harris');
+    expect(compiled.querySelector('h3').innerHTML).toBe('Michael Porter Jr.');
   });
 });
 ----

@@ -25,8 +25,8 @@
     "watch:all": "concurrently --kill-others \"npm run watch:adoc\" \"npm run watch:html\""
   },
   "devDependencies": {
-    "concurrently": "6.0.2",
     "browser-sync": "2.26.14",
+    "concurrently": "6.0.2",
     "nodemon": "2.0.7"
   }
 }
