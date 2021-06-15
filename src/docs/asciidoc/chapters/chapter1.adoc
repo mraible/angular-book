@@ -1165,22 +1165,66 @@ You should see "Executed 11 of 11 [green]#SUCCESS# (0.224 secs / 0.164 secs)" in
 
 === Integration test the search UI
 
-To test if the application works end-to-end, you can write tests with http://www.protractortest.org/[Protractor]. These are also known as integration tests, since they test the _integration_ between all layers of your application.
+To test if the application works end-to-end, you can write tests with http://www.cypress.io/[Cypress]. These are also known as integration tests, since they test the _integration_ between all layers of your application.
 
-To verify end-to-end tests work in the project before you begin, run the following command in a terminal window.
+If you're an experienced Angular developer, you might be wondering, "What happened to Protractor?" Protractor support was https://github.com/angular/protractor/issues/5502[removed in Angular 12] and other options such as Cypress, WebdriverIO, and TestCafe are being considered for future versions.
 
-----
-ng e2e
-----
-
-You'll likely see the following error:
+You can use the https://github.com/briebug/cypress-schematic[Cypress Angular Schematic] to add Cypress to your Angular project.
 
 ----
-1) workspace-project App should display welcome message
-  - Failed: No element found using locator: By(css selector, app-root .content span)
+ng add @briebug/cypress-schematic
 ----
 
-This happens because you changed the HTML structure of `app.component.html`. To fix it, change the selector in `app.po.ts` to look for the `<h1>` element.
+This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Modify `cypress/integration/spec.ts` to look for the title of your app.
+
+[source,ts]
+.cypress/integration/spec.ts
+----
+it('loads examples', () => {
+  cy.visit('/');
+  cy.contains('Welcome to ng-demo!');
+});
+----
+
+Then, run `ng e2e`. This will compile your app, start in on `http://localhost:4200`, and launch the Cypress app.
+
+[[cypress-app]]
+.Edit form with names and validation
+image::../images/ng-demo/cypress-app.png[Cypress App, 800, scaledwidth="100%"]
+
+If you click on the file name or "Run 1 integration test spec", it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more.
+
+// https://armno.in.th/2020/02/26/cypress-angular-integration-testing/
+
+Personally, I prefer the Protractor experience where you could just run the command, it'd run all the tests, and no interaction is required from the user. You can do this with Cypress too!
+
+Add the following scripts to your `package.json` file.
+
+[source,json]
+----
+"scripts": {
+  ...
+  "cypress": "cypress open",
+  "e2e": "npm run e2e:cypress",
+  "e2e:cypress": "cypress run --browser chrome --record ${CYPRESS_ENABLE_RECORD:-false}"
+}
+----
+
+Now, you should be able to start your app:
+
+----
+npm start
+----
+
+And, run the Cypress tests for it in another window:
+
+----
+npm run e2e
+----
+
+TIP: You might notice a video is created. You can disable this by adding `"video": false` to your `cypress.json` file.
+
+// todo: Add Cypress tests
 
 [source,ts]
 .e2e/src/app.po.ts
