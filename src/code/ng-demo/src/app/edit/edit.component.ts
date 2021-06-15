@@ -44,7 +44,7 @@ export class EditComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/search']);
   }
 
   save() {
@@ -57,9 +57,9 @@ export class EditComponent implements OnInit, OnDestroy {
 
   gotoList() {
     if (this.person) {
-      this.router.navigate(['/', {term: this.person.name} ]);
+      this.router.navigate(['/search', {term: this.person.name} ]);
     } else {
-      this.router.navigate(['/']);
+      this.router.navigate(['/search']);
     }
   }
 }

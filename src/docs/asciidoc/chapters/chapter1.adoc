@@ -802,7 +802,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
 After making all these changes, you should be able to search/edit/update a person's information. If it works - nice job!
 
-=== Form Validation
+=== Add Form Validation
 
 One thing you might notice is you can clear any input element in the form and save it. At the very least, the `name` field should be required. Otherwise, there's nothing to click on in the search results.
 
@@ -868,26 +868,15 @@ To learn more about forms and validation, see https://angular.io/guide/form-vali
 
 == Test your Angular app
 
-Now that you've built an application, it's important to test it to ensure it works. The best reason for writing tests is
-to automate your testing. Without tests, you'll likely be testing manually. This manual testing will take longer and longer as your application grows.
+Now that you've built an application, it's important to test it to ensure it works. The best reason for writing tests is to automate your testing. Without tests, you'll likely be testing manually. This manual testing will take longer and longer as your application grows.
 
-[TIP]
-====
-If you didn't complete the previous section, you can clone the `ng-demo` repository and checkout the `test-start` branch.
-
-----
-git clone -b test-start https://github.com/mraible/ng-demo.git
-cd ng-demo && npm i
-----
-====
-
-In this section, you'll learn to use http://jasmine.github.io/[Jasmine] for unit testing controllers and http://www.protractortest.org/[Protractor] for integration testing. Angular's testing documentation lists https://angular.io/guide/testing[good reasons] to test, but doesn't currently have many examples.
+In this section, you'll learn to use http://jasmine.github.io/[Jasmine] for unit testing controllers and https://www.cypress.io/[Cypress] for integration testing. Angular's testing documentation lists many https://angular.io/guide/testing[good reasons] to test.
 
 === Fix the Tests
 
-If you run `ng test`, you'll likely get failures for the components and service you created. These failures will be solved as you complete the section below.
+If you run `ng test`, you'll likely get failures for the components and service you created. These failures will be solved as you complete the section below. The `ng test` command will start a process that listens for changes so all you need to do is edit/save files and tests will be automatically run again.
 
-TIP: You can use `x` and `f` prefixes Jasmine's `describe` and `it` functions to _exclude_ only run only a particular test.
+TIP: You can use `x` and `f` prefixes in front of `describe` and `it` functions to _exclude_ or _only_ run a particular test.
 
 === Fix the `AppComponent` test
 
@@ -1033,6 +1022,7 @@ export class MockActivatedRoute extends ActivatedRoute {
 
   constructor(parameters?: { [key: string]: any; }) {
     super();
+    // @ts-ignore
     this.params = of(parameters);
   }
 }
@@ -1110,7 +1100,7 @@ it('should search automatically when a term is on the URL', () => {
 });
 ----
 
-Update the test for `EditComponent`, verifying fetching a single record works. Notice how you can access the component directly with `fixture.debugElement.componentInstance`, or its rendered version with `fixture.debugElement.nativeElement`.
+Update the test for `EditComponent`, verifying fetching a single record works. Notice how you can access the component directly with `fixture.componentInstance`, or its rendered version with `fixture.nativeElement`.
 
 [source,typescript]
 .src/app/edit/edit.component.spec.ts
@@ -1161,17 +1151,17 @@ describe('EditComponent', () => {
     expect(mockSearchService.get).toHaveBeenCalledWith(1);
 
     // verify data was set on component when initialized
-    const editComponent = fixture.debugElement.componentInstance;
+    const editComponent = fixture.componentInstance;
     expect(editComponent.editAddress.city).toBe('Denver');
 
     // verify HTML renders as expected
-    const compiled = fixture.debugElement.nativeElement;
+    const compiled = fixture.nativeElement;
     expect(compiled.querySelector('h3').innerHTML).toBe('Michael Porter Jr.');
   });
 });
 ----
 
-You should see "Executed 11 of 11 [green]#SUCCESS# (0.118 secs / 0.096 secs)" in the shell window that's running `ng test`. If you don't, try cancelling the command and restarting.
+You should see "Executed 11 of 11 [green]#SUCCESS# (0.224 secs / 0.164 secs)" in the shell window that's running `ng test`. If you don't, try cancelling the command and restarting.
 
 === Integration test the search UI
 
