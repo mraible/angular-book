@@ -30,4 +30,5 @@ jobs:
         with:
           build: npm run build
           start: npm start
+          working-directory: ./src/code/ng-demo
           wait-on: http://localhost:4200
