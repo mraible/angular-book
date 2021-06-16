@@ -1231,6 +1231,25 @@ The `npm run cypress:run` command will run a headless browser, so you won't see 
 
 If you want to see the tests run, append `--browser chrome` to the command. Add this to your `package.json` if you want to make it the default. See Cypress's https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
 
+You can also install https://www.npmjs.com/package/concurrently[concurrently] so you can run multiple tasks with one command.
+
+[source,shell]
+----
+npm install -D concurrently
+----
+
+Then, add a `cy:run` script to your `package.json`:
+
+[source,json]
+----
+"scripts": {
+  ...
+  "cy:run": "concurrently \"ng serve\" \"cypress run\""
+}
+----
+
+Then, you can run `npm run cy:run` to start your app and continuously run end-to-end tests on it when you change files.
+
 === Testing the search feature
 
 Create another end-to-end tests in `cypress/integration/search.spec.ts` to verify the search feature works. Populate it with the following code:
@@ -1327,11 +1346,11 @@ CAUTION: In the commands below, I use `master` as the branch name. I use this be
 
 If you've checked your project into GitHub, you can use GitHub Actions.
 
-Create a `.github/workflows/main.yml` file. Add the following YAML to it. This will run both unit tests and integrations tests.
+Create a `.github/workflows/main.yml` file. Add the following YAML to it. This will run both unit tests and integrations tests with Cypress.
 
 [source,yaml]
 ----
-name: ng-demo CI
+name: Demo CI
 
 on: [push, pull_request]
 
@@ -1356,7 +1375,11 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        run: xvfb-run --server-args="-screen 0 1024x768x24" --auto-servernum npm start && npm run cypress:run
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run build
+          start: npm start
+          wait-on: http://localhost:4200
 ----
 
 Check it in on a branch, create a pull request for that branch, and you should see your tests running.

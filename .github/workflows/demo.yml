@@ -1,4 +1,4 @@
-name: ng-demo CI
+name: Demo CI
 
 on: [push, pull_request]
 
@@ -26,4 +26,8 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        run: xvfb-run --server-args="-screen 0 1024x768x24" --auto-servernum npm start && npm run cypress:run
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run build
+          start: npm start
+          wait-on: http://localhost:4200
