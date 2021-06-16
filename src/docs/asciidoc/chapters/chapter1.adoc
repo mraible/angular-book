@@ -1169,21 +1169,26 @@ To test if the application works end-to-end, you can write tests with http://www
 
 If you're an experienced Angular developer, you might be wondering, "What happened to Protractor?" Protractor support was https://github.com/angular/protractor/issues/5502[removed in Angular 12] and other options such as Cypress, WebdriverIO, and TestCafe are being considered for future versions.
 
-You can use the https://github.com/briebug/cypress-schematic[Cypress Angular Schematic] to add Cypress to your Angular project.
+TIP: If you're experienced with Protractor, see https://docs.cypress.io/guides/migrating-to-cypress/protractor[Migrating from Protractor to Cypress].
+
+You can use the official https://www.npmjs.com/package/@cypress/schematic[Cypress Angular Schematic] to add Cypress to your Angular project.
 
 ----
-ng add @briebug/cypress-schematic
+ng add @cypress/schematic
 ----
 
-This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Modify `cypress/integration/spec.ts` to look for the title of your app.
+This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Rename `cypress/integration/spec.ts` to `home.spec.ts` and change it to look for the title of your app.
 
 [source,ts]
-.cypress/integration/spec.ts
+.cypress/integration/home.spec.ts
 ----
-it('loads examples', () => {
-  cy.visit('/');
-  cy.contains('Welcome to ng-demo!');
-});
+describe('Home', () => {
+  it('Visits the initial project page', () => {
+    cy.visit('/')
+    cy.contains('Welcome to ng-demo!')
+    cy.contains('Search')
+  })
+})
 ----
 
 Then, run `ng e2e`. This will compile your app, start in on `http://localhost:4200`, and launch the Cypress app.
@@ -1192,162 +1197,102 @@ Then, run `ng e2e`. This will compile your app, start in on `http://localhost:42
 .Edit form with names and validation
 image::../images/ng-demo/cypress-app.png[Cypress App, 800, scaledwidth="100%"]
 
-If you click on the file name or "Run 1 integration test spec", it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more.
+If you click on the file name, it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more. You can learn more about Cypress's features in https://armno.in.th/2020/02/26/cypress-angular-integration-testing/[Setting up Cypress for an Angular Project].
 
-// https://armno.in.th/2020/02/26/cypress-angular-integration-testing/
+Personally, I prefer the Protractor experience where you could just run the command, it'd run all the tests, and the user doesn't need to interact. You can do this with Cypress too!
 
-Personally, I prefer the Protractor experience where you could just run the command, it'd run all the tests, and no interaction is required from the user. You can do this with Cypress too!
-
-Add the following scripts to your `package.json` file.
+The Cypress Angular Schematic added a few scripts to your `package.json`:
 
 [source,json]
 ----
 "scripts": {
   ...
-  "cypress": "cypress open",
-  "e2e": "npm run e2e:cypress",
-  "e2e:cypress": "cypress run --browser chrome --record ${CYPRESS_ENABLE_RECORD:-false}"
+  "e2e": "ng e2e",
+  "cypress:open": "cypress open",
+  "cypress:run": "cypress run"
 }
 ----
 
-Now, you should be able to start your app:
+To use the no-interaction approach, you'll need to start your app:
 
 ----
 npm start
 ----
 
-And, run the Cypress tests for it in another window:
+Then, run the Cypress tests for it in another window:
 
 ----
-npm run e2e
+npm run cypress:run
 ----
 
-TIP: You might notice a video is created. You can disable this by adding `"video": false` to your `cypress.json` file.
+TIP: You might notice Cypress creates a video. You can disable this by adding `"video": false` to your `cypress.json` file.
 
-// todo: Add Cypress tests
+The `npm run cypress:run` command will run a headless browser, so you won't see anything happening on your screen.
 
-[source,ts]
-.e2e/src/app.po.ts
-----
-getTitleText(): Promise<string> {
-  return element(by.css('app-root h1')).getText() as Promise<string>;
-}
-----
-
-You'll also need to change the test in `app.e2e-spec.ts` to use the new welcome message.
-
-[source,ts]
-.e2e/src/app.e2e-spec.ts
-----
-it('should display welcome message', () => {
-  page.navigateTo();
-  expect(page.getTitleText()).toEqual('Welcome to ng-demo!');
-});
-----
-
-Now you should be able to run `ng e2e` and have everything pass.
-
-----
-$ ng e2e
-[23:47:29] I/update - chromedriver: file exists /Users/mraible/ng-demo/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_85.0.4183.87.zip
-[23:47:29] I/update - chromedriver: unzipping chromedriver_85.0.4183.87.zip
-[23:47:29] I/update - chromedriver: setting permissions to 0755 for /Users/mraible/ng-demo/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_85.0.4183.87
-[23:47:29] I/update - chromedriver: chromedriver_85.0.4183.87 up to date
-
-chunk {main} main.js, main.js.map (main) 41.5 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 141 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.15 kB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 12.5 kB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 2.99 MB [initial] [rendered]
-Date: 2020-09-05T05:47:35.554Z - Hash: 1f37ff085dda89695218 - Time: 4956ms
-** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
-: Compiled successfully.
-[23:47:35] I/launcher - Running 1 instances of WebDriver
-[23:47:35] I/direct - Using ChromeDriver directly...
-Jasmine started
-
-  workspace-project App
-    ✓ should display welcome message
-
-Executed 1 of 1 spec SUCCESS in 0.315 sec.
-[23:47:38] I/launcher - 0 instance(s) of WebDriver still running
-[23:47:38] I/launcher - chrome #01 passed
-Execution time: 11 s.
-----
+If you want to see the tests run, append `--browser chrome` to the command. Add this to your `package.json` if you want to make it the default. See Cypress's https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
 
 === Testing the search feature
 
-Create end-to-end tests in `e2e/src/search.e2e-spec.ts` to verify the search feature works. Populate it with the following code:
+Create another end-to-end tests in `cypress/integration/search.spec.ts` to verify the search feature works. Populate it with the following code:
 
 [source,typescript]
-.e2e/src/search.e2e-spec.ts
+.cypress/integration/search.spec.ts
 ----
-import { browser, by, element } from 'protractor';
-
 describe('Search', () => {
 
-  beforeEach(async () => {
-    await browser.get('/search');
+  beforeEach(() => {
+    cy.visit('/')
   });
 
   it('should have an input and search button', () => {
-    expect(element(by.css('app-root app-search form input')).isPresent()).toEqual(true);
-    expect(element(by.css('app-root app-search form button')).isPresent()).toEqual(true);
+    cy.get('app-root app-search form input').should('exist');
+    cy.get('app-root app-search form button').should('exist');
   });
 
-  it('should allow searching', async () => {
-    const searchButton = element(by.css('button'));
-    const searchBox = element(by.css('input'));
-    await searchBox.sendKeys('A');
-    await searchButton.click();
-    const list = element.all(by.css('app-search table tbody tr'));
-    expect(list.count()).toBe(3);
+  it('should allow searching', () => {
+    cy.get('input').type('A');
+    cy.get('button').click();
+    const list = cy.get('app-search table tbody tr');
+    list.should('have.length', 3);
   });
 });
 ----
 
 === Testing the edit feature
 
-Create a `e2e/src/edit.e2e-spec.ts` test to verify the `EditComponent` renders a person's information and that their information can be updated.
+Create a `cypress/integration/edit.spec.ts` test to verify the `EditComponent` renders a person's information and that their information can be updated.
 
 [source,typescript]
-.e2e/src/edit.e2e-spec.ts
+.cypress/integration/edit.spec.ts
 ----
-import { browser, by, element } from 'protractor';
-
 describe('Edit', () => {
 
-  beforeEach(async () => {
-    await browser.get('/edit/1');
+  beforeEach(() => {
+    cy.visit('/edit/1')
   });
 
-  const name = element(by.id('name'));
-  const street = element(by.id('street'));
-  const city = element(by.id('city'));
-
-  it('should allow viewing a person', async () => {
-    expect(await element(by.css('h3')).getText()).toEqual('Nikola Jokić');
-    expect(await name.getAttribute('value')).toEqual('Nikola Jokić');
-    expect(await street.getAttribute('value')).toEqual('2000 16th Street');
-    expect(await city.getAttribute('value')).toEqual('Denver');
+  it('should allow viewing a person',  () => {
+    cy.get('h3').should('have.text', 'Nikola Jokić');
+    cy.get('#name').should('have.value', 'Nikola Jokić');
+    cy.get('#street').should('have.value', '2000 16th Street');
+    cy.get('#city').should('have.value', 'Denver');
   });
 
-  it('should allow updating a name', async () => {
-    const save = element(by.id('save'));
-    name.sendKeys(' Rocks!');
-    await save.click();
+  it('should allow updating a name', () => {
+    cy.get('#name').type(' Rocks!');
+    cy.get('#save').click();
     // verify one element matched this change
-    const list = element.all(by.css('app-search table tbody tr'));
-    expect(list.count()).toBe(1);
+    const list = cy.get('app-search table tbody tr');
+    list.should('have.length', 1);
   });
 });
 ----
 
-Run `ng e2e` to verify all your end-to-end tests pass. You should see a success message similar to the one below in your terminal window.
+With your app running, execute `npm run cypress:run` to verify all your end-to-end tests pass. You should see a success message similar to the one below in your terminal window.
 
-[[protractor-success]]
-.Protractor success
-image::../images/ng-demo/protractor-success.png[Protractor success, 800, scaledwidth="100%"]
+[[cypress-success]]
+.Cypress success
+image::../images/ng-demo/cypress-success.png[Cypress success, 800, scaledwidth="100%"]
 
 If you made it this far and have all your specs passing - congratulations! You're well on your way to writing quality code with Angular and verifying it works.
 
@@ -1357,10 +1302,10 @@ You'll see a print out of code coverage in your terminal window.
 
 ----
 =============================== Coverage summary ===============================
-Statements   : 80.56% ( 58/72 )
+Statements   : 80.82% ( 59/73 )
 Branches     : 71.43% ( 30/42 )
 Functions    : 82.76% ( 24/29 )
-Lines        : 78.79% ( 52/66 )
+Lines        : 79.1% ( 53/67 )
 ================================================================================
 ----
 
@@ -1374,7 +1319,7 @@ image::../images/ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%
 
 == Continuous Integration
 
-At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to setup continuous integration with https://github.com/features/actions[GitHub Actions], https://travis-ci.org/[Travis CI] and https://jenkins.io/[Jenkins].
+At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to setup continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
 
 CAUTION: In the commands below, I use `master` as the branch name. I use this because it's the default. I recommend you https://www.hanselman.com/blog/EasilyRenameYourGitDefaultBranchFromMasterToMain.aspx[change your default branch name to `main`].
 
@@ -1397,7 +1342,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node 12.x
+      - name: Use Node 14.x
         uses: actions/setup-node@v1
         with:
           node-version: '14.x'
@@ -1411,55 +1356,12 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        run: xvfb-run --server-args="-screen 0 1024x768x24" --auto-servernum npm run e2e
+        run: xvfb-run --server-args="-screen 0 1024x768x24" --auto-servernum npm start && npm run cypress:run
 ----
 
 Check it in on a branch, create a pull request for that branch, and you should see your tests running.
 
-https://github.com/mraible/ng-demo/pull/76/checks?check_run_id=1107490951[Here is a build] showing all unit and integration tests passing.
-
-=== Travis CI
-
-If you've checked in your project to GitHub, you can use Travis CI.
-
-. Login to https://travis-ci.org/[Travis CI] and enable builds for the GitHub repo you published the project to.
-. Add the following `.travis.yml` in your root directory and `git commit/push` it. This will trigger the first build.
-
-[source,yaml]
-----
-dist: bionic
-os:
-  - linux
-services:
-  - docker
-  - xvfb
-language: node_js
-node_js:
-  - "14.x"
-addons:
-  apt:
-    packages:
-      - dpkg
-  chrome: stable
-cache:
-  directories:
-  - node_modules
-branches:
-  only:
-  - master
-install:
-  - npm ci
-script:
-  - npm test -- --watch=false
-  - npm run e2e
-notifications:
-  webhooks:
-    on_success: change
-    on_failure: always
-    on_start: false
-----
-
-https://travis-ci.org/github/mraible/ng-demo/builds/726701970[Here is a build] showing all unit and integration tests passing.
+// https://github.com/mraible/ng-demo/pull/76/checks?check_run_id=1107490951[Here is a build] showing all unit and integration tests passing.
 
 === Jenkins
 
@@ -1489,8 +1391,9 @@ node {
         sh "npm test -- --watch=false"
     }
 
-    stage('protractor tests') {
-        sh "npm run e2e"
+    stage('cypress tests') {
+        sh "npm start"
+        sh "npm run cypress:run"
     }
 }
 ----
@@ -1540,21 +1443,6 @@ NOTE: In this code, you might notice that some https URLs are allowed in the con
 
 For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack].
 
-Add `--prod` to the `build` script since the static buildback uses this command.
-
-[source,json]
-.package.json
-----
-"scripts": {
-  "ng": "ng",
-  "start": "ng serve",
-  "build": "ng build --prod",
-  "test": "ng test",
-  "lint": "ng lint",
-  "e2e": "ng e2e"
-},
-----
-
 Commit your changes to Git, add the Node.js + static buildpack, and redeploy your Angular app.
 
 [source,shell]
@@ -1566,7 +1454,7 @@ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git
 git push heroku master
 ----
 
-View the application in your browser with `heroku open`. Try your app's URL on <https://securityheaders.com> to be pleasantly suprised.
+View the application in your browser with `heroku open`. Try your app's URL on <https://securityheaders.com> to be pleasantly surprised.
 
 TIP: You can watch your app's logs using `heroku logs --tail`.
 
@@ -1575,7 +1463,7 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 To integrate Bootstrap 4 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[ng-bootstrap].
 
 ----
-ng add @ng-bootstrap/ng-bootstrap@7
+ng add @ng-bootstrap/ng-bootstrap
 ----
 
 This will Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
@@ -1604,7 +1492,7 @@ image::../images/ng-demo/bootstrap4.png[Bootstrap 4, 800, scaledwidth="100%"]
 To integrate Angular Material into your Angular CLI-generated app, install https://material.angular.io/[Angular Material].
 
 ----
-ng add @angular/material@10
+ng add @angular/material
 ----
 
 When prompted for the theme, pick the one you prefer, using the links to preview them. Accept the defaults for the other questions.
@@ -1649,38 +1537,37 @@ image::../images/ng-demo/angular-material.png[Angular Material, 800, scaledwidth
 
 == Add Authentication with OpenID Connect
 
-To integrate http://developer.okta.com[Okta] for user authentication, you'll first need to https://developer.okta.com/signup/[register] and create an OpenID Connect application.
+Before you begin, you’ll need a free Okta developer account. Install the https://cli.okta.com[Okta CLI] and run `okta register` to sign up for a new account. If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press **Enter**.
 
-=== Create an OpenID Connect App in Okta
+Use `http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `http://localhost:4200`.
 
-OpenID Connect is built on top of the OAuth 2.0 protocol. It allows clients to verify the identity of the user and, as well as to obtain their basic user information.
+.What does the Okta CLI do?
+****
+The Okta CLI will create an OIDC Single-Page App in your Okta Org. It will add the redirect URIs you specified and grant access to the Everyone group. It will also add a trusted origin for `http://localhost:4200`. You will see output like the following when it’s finished:
 
-Login to your Okta account, then follow the steps below.
+[source,shell]
+----
+Okta application configuration:
+Issuer:    https://dev-133337.okta.com/oauth2/default
+Client ID: 0oab8eb55Kb9jdMIr5d6
+----
 
-* Navigate to *Applications* > *Add Application*.
-* Select *Single-Page App (SPA)* and click *Next*.
-* Click *Create* and give your application a name (e.g., "Angular 10").
-* On the next screen, change all URIs to use port `4200` and add `http://localhost:4200/callback` as a *Login redirect URI*.
-* Select **Authorization Code** as a grant type and click *Done*.
-
-When you are finished, your settings should look similar to the screenshot below.
-
-.OIDC App Settings
-image::../images/ng-demo/oidc-settings.png[OIDC App Settings, 730, scaledwidth="100%"]
+NOTE: You can also use the Okta Admin Console to create your app. See https://developer.okta.com/docs/guides/sign-into-spa/angular/create-okta-application/[Create an Angular App] for more information.
+****
 
 === Add OIDC Authentication with OktaDev Schematics
 
-Use https://github.com/oktadeveloper/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
+Use https://github.com/oktadev/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
 
 ----
-ng add @oktadev/schematics@3
+ng add @oktadev/schematics
 ----
 
-You'll be prompted for an issuer, which you can find in your Okta dashboard at **API** > **Authorization Servers**. For the client ID, use the Client ID from the app you just created.
+You'll be prompted for an issuer and client ID. You should have these from the OIDC app you just created.
 
 This process will perform the following steps for you.
 
-1. Install the https://github.com/okta/okta-oidc-js/tree/master/packages/okta-angular[Okta Angular SDK] using `npm install @okta/okta-angular`.
+1. Install the https://github.com/okta/okta-angular[Okta Angular SDK] using `npm install @okta/okta-angular`.
 2. Add `src/app/auth-routing.module.ts` with OIDC configuration and initialization logic.
 3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header to outbound requests.
 4. Add authenticated logic to `src/app/app.component.ts`.
@@ -1716,7 +1603,7 @@ const routes: Routes = [
 ];
 ----
 
-After making these changes, you should be able to run `ng serve` and see a login button at http://localhost:4200.
+After making these changes, you should be able to run `ng serve` and see a login button at `http://localhost:4200`.
 
 [[okta-login-button]]
 .Okta login button
@@ -1776,7 +1663,7 @@ Refresh your app and you should see your name with a link to *Search*.
 .View after login
 image::../images/ng-demo/okta-post-login.png[View after login, 800, scaledwidth="100%"]
 
-If you logout and manually navigate to http://localhost:4200/search, you'll be required to log in.
+If you log out and manually navigate to `http://localhost:4200/search`, you'll be required to log in.
 
 If everything works - congrats!
 
@@ -1873,5 +1760,7 @@ TIP: If you want to embed your own login form in your app, you can https://devel
 I hope you've enjoyed this introduction to Angular. You learned how to create a basic application without worrying about the backend.
 
 I created a GitHub repo with all of the code from this chapter. You can find it on GitHub in the https://github.com/mraible/ng-demo[mraible/ng-demo repository].
+
+// todo: Figure out how to share source code - maybe as a .zip on InfoQ until this repo is public?
 
 In the next section, I'll show you how to use a modern backend to provide you data, security, and production-ready features.
