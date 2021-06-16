@@ -1331,7 +1331,7 @@ Create a `.github/workflows/main.yml` file. Add the following YAML to it. This w
 
 [source,yaml]
 ----
-name: Angular
+name: ng-demo CI
 
 on: [push, pull_request]
 
