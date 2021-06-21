@@ -1487,13 +1487,15 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 
 To integrate Bootstrap 4 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[ng-bootstrap].
 
+// todo: check if Bootstrap 5 is supported before releasing
+
 ----
 ng add @ng-bootstrap/ng-bootstrap
 ----
 
 This will Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
-Change HTML to use Bootstrap classes. For example, change the `<h1>` in `app.component.html` to be the following:
+Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
 [source,html]
 .src/app/app.component.html
@@ -1501,10 +1503,97 @@ Change HTML to use Bootstrap classes. For example, change the `<h1>` in `app.com
 <nav class="navbar navbar-light bg-secondary">
   <a class="navbar-brand text-light" href="#">Welcome to {{ title }}!</a>
 </nav>
+
+<div class="container-fluid">
+  <router-outlet></router-outlet>
+</div>
 ----
 
-// todo: show all changes necessary to templates
-// copy images from ng-demo into this project
+You'll also need to change its test to look for `nav` instead of `h1`.
+
+[source,typescript]
+.src/app/app.component.spec.ts
+----
+expect(compiled.querySelector('nav').textContent).toContain('Welcome to ng-demo!');
+----
+
+Update `search.component.html` to add a top margin to the H2, make the form inline, and add classes to input/button/table elements.
+
+[source,html]
+.src/app/search/search.component.html
+----
+<h2 class="mt-2">Search</h2>
+<form class="form-inline">
+  <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()"
+         placeholder="Search" class="form-control mr-sm-2">
+  <button type="button" (click)="search()" class="btn btn-primary">Search</button>
+</form>
+<table *ngIf="searchResults" class="table">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Phone</th>
+    <th>Address</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let person of searchResults; let i=index">
+    <td><a [routerLink]="['/edit', person.id]">{{person.name}}</a></td>
+    <td>{{person.phone}}</td>
+    <td>{{person.address.street}}<br/>
+      {{person.address.city}}, {{person.address.state}} {{person.address.zip}}
+    </td>
+  </tr>
+  </tbody>
+</table>
+----
+
+Make similar changes to `edit.component.html`:
+
+[source,html]
+.src/app/edit/edit.component.html
+----
+<div *ngIf="person" class="col-8">
+  <h3 class="mt-2">{{editName}}</h3>
+  <form (ngSubmit)="save()" #editForm="ngForm">
+    <div>
+      <label>Id:</label>
+      {{person.id}}
+    </div>
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input [(ngModel)]="editName" name="name" id="name" placeholder="name" required class="form-control" #name="ngModel"
+             [ngClass]="{'is-invalid': name.touched && name.invalid,  'is-valid': name.touched && name.valid}"/>
+      <div [hidden]="name.valid || name.pristine" style="display: block" class="invalid-feedback">
+        Name is required
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Phone:</label>
+      <input [(ngModel)]="editPhone" name="phone" id="phone" placeholder="Phone" class="form-control"/>
+    </div>
+    <fieldset class="form-group">
+      <legend class="col-form-legend">Address:</legend>
+      <address>
+        <input [(ngModel)]="editAddress.street" name="street" id="street" class="form-control mb-2">
+        <div class="row">
+          <div class="col-6">
+            <input [(ngModel)]="editAddress.city" name="city" id="city" class="form-control">
+          </div>
+          <div class="col-3">
+            <input [(ngModel)]="editAddress.state" name="state" id="state" size="2" class="form-control">
+          </div>
+          <div class="col-3">
+            <input [(ngModel)]="editAddress.zip" name="zip" id="zip" size="5" class="form-control">
+          </div>
+        </div>
+      </address>
+    </fieldset>
+    <button type="submit" id="save" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
+    <button (click)="cancel()" id="cancel" class="btn btn-light">Cancel</button>
+  </form>
+</div>
+----
 
 After modifying your templates, the edit screen will look as follows.
 
@@ -1549,26 +1638,192 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 })
 ----
 
-Change HTML to use Material components. For example, change `<h1>` in `app.component.html` to be `<mat-toolbar>`.
+Then, change your HTML templates to use Material components. For example, change `<h1>` in `app.component.html` to be `<mat-toolbar>`.
 
-// todo: show all changes necessary to templates
-// copy images from ng-demo into this project
+[source,html]
+.src/app/app.component.html
+----
+<mat-toolbar>Welcome to {{ title }}!</mat-toolbar>
+----
 
-After modifying your templates, the edit screen will look as follows.
+You'll also need to change its test to import Material modules and look for `mat-toolbar` instead of `h1`.
+
+[source,typescript]
+.src/app/app.component.spec.ts
+----
+import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
+
+describe('AppComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      imports: [RouterTestingModule, MatListModule, MatToolbarModule]
+    }).compileComponents();
+  });
+
+  ...
+  it('should render title', () => {
+     ...
+     expect(compiled.querySelector('mat-toolbar').textContent).toContain('Welcome to ng-demo!');
+  });
+}
+----
+
+Update `search.component.html` to add use Material components.
+
+[source,html]
+.src/app/search/search.component.html
+----
+<h2>Search</h2>
+<form>
+  <mat-form-field>
+    <input matInput type="search" name="query" placeholder="Search" [(ngModel)]="query" (keyup.enter)="search()">
+  </mat-form-field>
+  <button mat-mini-fab (click)="search()"><mat-icon>search</mat-icon></button>
+</form>
+<mat-list *ngIf="searchResults?.length" flex>
+  <mat-list-item *ngFor="let person of searchResults; let i=index">
+    <div class="mat-list-item-text">
+      <div mat-line><a [routerLink]="['/edit', person.id]">{{person.name}}</a></div>
+      <div mat-line>{{person.phone}}</div>
+      <div mat-line>{{person.address.street}}<br/>
+        {{person.address.city}}, {{person.address.state}} {{person.address.zip}}</div>
+    </div>
+  </mat-list-item>
+</mat-list>
+----
+
+Update this components' test to be aware of these components.
+
+[source,typescript]
+.src/app/search/search.component.spec.ts
+----
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+
+describe('SearchComponent', () => {
+  ...
+  beforeEach((() => {
+    ...
+
+    TestBed.configureTestingModule({
+      ...
+      imports: [FormsModule, RouterTestingModule, HttpClientTestingModule,
+        MatListModule, MatIconModule, MatInputModule, NoopAnimationsModule]
+    }).compileComponents();
+  }));
+
+  ...
+}
+----
+
+Replace the plain ol' HTML inputs in `edit.component.html` with Material components.
+
+[source,html]
+.src/app/edit/edit.component.html
+----
+<div *ngIf="person">
+  <h3>{{editName}}</h3>
+  <form (ngSubmit)="save()" #editForm="ngForm">
+    <div>
+      <label>Id:</label>
+      {{person.id}}
+    </div>
+    <p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="editName" name="name" id="name" placeholder="Name" required/>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="editPhone" name="phone" id="phone" placeholder="Phone"/>
+      </mat-form-field>
+    </p>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="Address" [(ngModel)]="editAddress.street" name="street" id="street">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="City" [(ngModel)]="editAddress.city" name="city" id="city">
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="State" #state [(ngModel)]="editAddress.state" name="state" id="state" maxlength="2">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="Zip" #postalCode maxlength="5" [(ngModel)]="editAddress.zip" name="zip" id="zip">
+            <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint>
+          </mat-form-field>
+        </td>
+      </tr>
+    </table>
+
+    <button mat-raised-button type="submit" color="primary" id="save"
+            [disabled]="!editForm.form.valid">Save</button>
+    <button mat-button (click)="cancel(); false" id="cancel">Cancel</button>
+  </form>
+</div>
+----
+
+And, import modules used in its test.
+
+[source,typescript]
+.src/app/edit/edit.component.spec.ts
+----
+import { MatInputModule } from '@angular/material/input';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('EditComponent', () => {
+  ...
+  beforeEach((() => {
+    ...
+
+    TestBed.configureTestingModule({
+      ...
+      imports: [FormsModule, HttpClientTestingModule, MatInputModule, NoopAnimationsModule]
+    }).compileComponents();
+  }));
+
+  ...
+}
+----
+
+After completing these changes, the edit screen will look as follows.
 
 [[angular-material]]
 .Angular Material
 image::../images/ng-demo/angular-material.png[Angular Material, 800, scaledwidth="100%"]
 
+Run `npm test` to confirm your unit tests pass.
+
+For Cypress tests, you'll need to modify the list reference in `search.spec.ts` and `edit.spec.ts` to look for Material components instead of table rows.
+
+[source,typescript]
+----
+const list = cy.get('app-search mat-list mat-list-item');
+----
+
 == Add Authentication with OpenID Connect
 
-Before you begin, you’ll need a free Okta developer account. Install the https://cli.okta.com[Okta CLI] and run `okta register` to sign up for a new account. If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press **Enter**.
+In order to add authentication with OpenID Connect, you'll first need a free Okta developer account. Install the https://cli.okta.com[Okta CLI] and run `okta register` to sign up for a new account. If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press **Enter**.
 
-Use `http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `http://localhost:4200`.
+Use `\http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `\http://localhost:4200`.
 
 .What does the Okta CLI do?
 ****
-The Okta CLI will create an OIDC Single-Page App in your Okta Org. It will add the redirect URIs you specified and grant access to the `Everyone` group. It will also add a trusted origin for `http://localhost:4200`. You will see output like the following when it’s finished:
+The Okta CLI will create an OIDC Single-Page App in your Okta Org. It will add the redirect URIs you specified and grant access to the `Everyone` group. It will also add a trusted origin for `http://localhost:4200`. You will see output like the following when it's finished:
 
 [source,shell]
 ----
@@ -1594,7 +1849,7 @@ This process will perform the following steps for you.
 
 1. Install the https://github.com/okta/okta-angular[Okta Angular SDK] using `npm install @okta/okta-angular`.
 2. Add `src/app/auth-routing.module.ts` with OIDC configuration and initialization logic.
-3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header to outbound requests.
+3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header with access token to outbound requests.
 4. Add authenticated logic to `src/app/app.component.ts`.
 5. Create a `HomeComponent` and configures it with authentication logic.
 
@@ -1753,7 +2008,7 @@ before(() => {
 });
 ----
 
-Refactor `home.spec.ts` to move its `cy.visit()` to a before block too.
+Refactor `home.spec.ts` to move its `cy.visit()` to a `before()` block too.
 
 [source,typescript]
 .cypress/integration/home.spec.ts
@@ -1830,7 +2085,7 @@ You might've noticed I turned off Chrome's web security in `cypress.json`.
 
 This configuration allows Chrome to navigate between domains and sign in to Okta. Unfortunately, this ties the e2e tests to Chrome as this setting doesn't exist for other browsers.
 
-A better solution is to hit Okta's APIs directly for authentication. https://www.jhipster.tech[JHipster] uses this technique for its Cypress tests. However, it also benefits from doing the OAuth flow on the server-side (with Spring Boot). This makes it easy to capture Okta's authorization endpoint with all its parameters. I tried using a similar technique in this example, but found I received a 404 when trying to hit `/search` with `cy.request` to get the redirected URI.
+A better solution is to hit Okta's APIs directly for authentication. https://www.jhipster.tech[JHipster] uses this technique for its Cypress tests. However, it also benefits from doing the OAuth flow on the server-side (with Spring Boot). This makes it easy to capture Okta's authorization endpoint with all its parameters. I tried using a similar technique in this example, but found I received a 404 when trying to hit `/search` with `cy.request()` to get the redirected URI.
 
 See Cypress's https://docs.cypress.io/guides/guides/web-security[Web Security documentation] for more information.
 
