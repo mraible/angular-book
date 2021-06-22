@@ -1852,6 +1852,7 @@ This process will perform the following steps for you.
 3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header with access token to outbound requests.
 4. Add authenticated logic to `src/app/app.component.ts`.
 5. Create a `HomeComponent` and configures it with authentication logic.
+6. Updates unit tests for `AppComponent` and `HomeComponent` to mock Okta.
 
 Remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
 
@@ -1895,7 +1896,7 @@ Click the *Login* button and sign-in with one of the people that's configured in
 .Okta login form
 image::../images/ng-demo/okta-login-form.png[Okta login form, 800, scaledwidth="100%"]
 
-=== Display Authenticated User's Name
+==== Display Authenticated User's Name
 
 To display the authenticated user's name, modify `home.component.ts` to add a `user` property and fetch the user in `ngOnInit()`.
 
@@ -1947,7 +1948,7 @@ If you log out and manually navigate to `http://localhost:4200/search`, you'll b
 
 If everything works - congrats!
 
-==== Add authentication to tests
+==== Add Authentication to Cypress tests
 
 To make it so you can run your e2e tests with authentication, add a `signIn()` Cypress command in `cypress/support/commands.ts`.
 
