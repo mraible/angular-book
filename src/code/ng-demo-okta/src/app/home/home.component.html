@@ -1,0 +1,8 @@
+<div>
+  <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()" id="login">Login</button>
+  <div *ngIf="isAuthenticated">
+    <h2>Welcome, {{user?.name}}!</h2>
+    <p><a routerLink="/search" routerLinkActive="active">Search</a></p>
+  </div>
+  <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()" id="logout">Logout</button>
+</div>

@@ -1,16 +1,39 @@
 = Build an Angular App
 
-Developers like to see things working in minutes. I'm a developer and I like to evaluate software with a "10 minute test". If I can get it working in 10 minutes, sign me up!
+I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of :
+
+* Modules: A mechanism to organize related code into functional sets.
+* Components: Classes that retrieve data from services and expose it to templates.
+* Services: Classes that make HTTP calls to APIs.
+* Templates: HTML pages that display data. Use Angular directives to iterate over collections and show/hide elements.
+* Pipes: Data-manipulation tools that can transform data (e.g. uppercase, lowercase, ordering, and searching).
+* Directives: HTML processors that allow manipulate data before it's displayed.
+
+== A Brief History of Angular
+
+AngularJS was started by Miško Hevery in 2009. He was working on a project that was using GWT (Google Web Toolkit). Three developers had been developing the product for six months, and Miško rewrote the whole thing in AngularJS in three weeks. At that time, AngularJS was a side project he'd created. It didn't require you to write much in JavaScript as you could program most of the logic in HTML. The GWT version of the product contained 17,000 lines of code. The AngularJS version was only 1,000 lines of code!
+
+In October 2014, the AngularJS team announced they were building http://www.infoq.com/news/2014/10/angular-2-atscript[Angular 2.0]. The announcement led to a bit of upheaval in the Angular developer community. The API for writing Angular applications was going to change and it was to be based on a new language, AtScript. There would be no migration path and users would have to continue using 1.x or rewrite their applications for 2.x.
+
+In March 2015, the Angular team http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns], announcing that they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "Angular" instead of Angular 2.0].
+
+Angular 2.0 was released September 2016. Angular 4.0 was released March 2017. The Angular project tries to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 12 on May 12, 2021.
+
+You can find the Angular project at https://angular.io[angular.io].
+
+Developers like to see things working in minutes. I'm a developer and I like to evaluate software with a "10-minute test". If I can get it working in 10 minutes, sign me up!
 
 Rather than explain all the concepts in Angular, I prefer to show you how it works. In this chapter, I'll show you how to build a basic Angular application.
 
-Along the way, I'll show you how to unit test your Angular components and deploy to production.
+Along the way, I'll show you how to unit test your Angular components, and deploy to production.
+
+NOTE: I should warn you about my teaching style. I'll show how to do things and errors will happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading. 🙂
 
 **Prerequisites:**
 
 * A favorite text editor or IDE. I recommend https://www.jetbrains.com/idea/[IntelliJ IDEA].
 * http://nodejs.org/[Node.js] and npm installed.
-* https://github.com/angular/angular-cli[Angular CLI] installed. If you don't have Angular CLI installed, install it using `npm install -g @angular/cli@11`.
+* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@12`.
 
 == Create a new Angular project
 
@@ -24,7 +47,7 @@ When prompted to install Angular routing, type "Y". For the stylesheet format, c
 
 This will create a `ng-demo` project and run `npm install` in it. It takes about a minute to complete, but will vary based on your internet connection speed.
 
-You can see the what version of Angular CLI you're using with `ng version`.
+You can see the version of Angular CLI you're using with `ng version`.
 
 ----
 $ ng version
@@ -36,45 +59,52 @@ $ ng version
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-Angular CLI: 10.1.4
-Node: 14.10.1
+
+Angular CLI: 12.0.0-rc.1
+Node: 14.16.1
+Package Manager: npm 7.11.2
 OS: darwin x64
 
-Angular:
+Angular: undefined
 ...
-Ivy Workspace:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1001.4 (cli-only)
-@angular-devkit/core         10.1.4 (cli-only)
-@angular-devkit/schematics   10.1.4 (cli-only)
-@schematics/angular          10.1.4 (cli-only)
-@schematics/update           0.1001.4 (cli-only)
+@angular-devkit/architect    0.1200.0-rc.1 (cli-only)
+@angular-devkit/core         12.0.0-rc.1 (cli-only)
+@angular-devkit/schematics   12.0.0-rc.1 (cli-only)
+@schematics/angular          12.0.0-rc.1 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
 
 ----
-Angular CLI: 10.1.4
-Node: 14.10.1
+     _                      _                 ____ _     ___
+    / \   _ __   __ _ _   _| | __ _ _ __     / ___| |   |_ _|
+   / △ \ | '_ \ / _` | | | | |/ _` | '__|   | |   | |    | |
+  / ___ \| | | | (_| | |_| | | (_| | |      | |___| |___ | |
+ /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
+                |___/
+
+
+Angular CLI: 12.0.0-rc.1
+Node: 14.16.1
+Package Manager: npm 7.11.2
 OS: darwin x64
 
-Angular: 10.1.4
+Angular: 12.0.0-rc.1
 ... animations, cli, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
-Ivy Workspace: Yes
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1001.4
-@angular-devkit/build-angular   0.1001.4
-@angular-devkit/core            10.1.4
-@angular-devkit/schematics      10.1.4
-@schematics/angular             10.1.4
-@schematics/update              0.1001.4
-rxjs                            6.6.3
-typescript                      4.0.3
+@angular-devkit/architect       0.1200.0-rc.1
+@angular-devkit/build-angular   12.0.0-rc.1
+@angular-devkit/core            12.0.0-rc.1
+@angular-devkit/schematics      12.0.0-rc.1
+@schematics/angular             12.0.0-rc.1
+rxjs                            6.6.7
+typescript                      4.2.4
 ----
 
 == Run the application
@@ -85,7 +115,7 @@ The project is configured with a simple web server for development. To start it,
 ng serve
 ----
 
-You should see a screen like the one below at http://localhost:4200.
+You should see a screen like the one below at `http://localhost:4200`.
 
 [[default-homepage]]
 .Default homepage
@@ -96,7 +126,7 @@ You can make sure your new project's tests pass, run `ng test`:
 ----
 $ ng test
 ...
-Chrome 85.0.4183.83 (Mac OS 10.15.6): Executed 3 of 3 SUCCESS (0.156 secs / 0.118 secs)
+Chrome 90.0.4430.93 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.2 secs / 0.144 secs)
 ----
 
 == Add a search feature
@@ -138,7 +168,7 @@ To fix this, add a `query` property to `src/app/search/search.component.ts`. Whi
 .src/app/search/search.component.ts
 ----
 export class SearchComponent implements OnInit {
-  query: string;
+  query: string | undefined;
   searchResults: any;
 
   constructor() { }
@@ -150,10 +180,9 @@ export class SearchComponent implements OnInit {
 }
 ----
 
-.Adding a Search Route
-****
+=== Adding a Search Route
 
-The https://angular.io/guide/router[Router and navigation docs] for Angular provides the information you need to setup a route to the `SearchComponent` you just generated. Here's a quick summary:
+The https://angular.io/guide/router[Router and navigation docs] for Angular provides the information you need to set up a route to the `SearchComponent` you just generated. Here's a quick summary:
 
 In `src/app/app-routing.module.ts`, modify the `routes` constant to add `SearchComponent` as the default:
 
@@ -167,7 +196,6 @@ const routes: Routes = [
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];
 ----
-****
 
 Run `ng serve` again you will see a compilation error.
 
@@ -260,18 +288,18 @@ mkdir -p src/assets/data
       "street": "2654 Washington Street",
       "city": "Lakewood",
       "state": "CO",
-      "zip": "80568"
+      "zip": "80123"
     }
   },
   {
     "id": 3,
-    "name": "Gary Harris",
-    "phone": "(303) 323-1233",
+    "name": "Michael Porter Jr.",
+    "phone": "(303) 623-1337",
     "address": {
-      "street": "99 Westside Way",
+      "street": "99 Fluid Way",
       "city": "Breckenridge",
       "state": "CO",
-      "zip": "82210"
+      "zip": "80424"
     }
   }
 ]
@@ -352,8 +380,8 @@ You can now add a proper type to the `searchResults` variable. While you're ther
 .src/app/search/search.component.ts
 ----
 export class SearchComponent implements OnInit {
-  query: string;
-  searchResults: Array<Person>;
+  query: string | undefined;
+  searchResults: Array<Person> = [];
 
   constructor(private searchService: SearchService) { }
 ----
@@ -400,7 +428,7 @@ Now clicking the search button should work. To make the results look better, rem
 [source,xml]
 .src/app/search/search.component.html
 ----
-<table *ngIf="searchResults">
+<table *ngIf="searchResults?.length">
   <thead>
   <tr>
     <th>Name</th>
@@ -419,6 +447,30 @@ Now clicking the search button should work. To make the results look better, rem
   </tbody>
 </table>
 ----
+
+.What's up with `*ngIf` and `.?`
+****
+You might be asking yourself why there's an asterisk in front of `ngIf`. From https://angular.io/docs/ts/latest/guide/structural-directives#asterisk[Angular's docs]:
+
+> Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
+
+These two HTML snippets render the same output:
+
+[source,html]
+----
+<p *ngIf="condition">
+  Not all heroes wear capes!
+</p>
+
+<template [ngIf]="condition">
+  <p>
+    Not all heroes wear capes!
+  </p>
+</template>
+----
+
+As far as the `.?` is concerned, that's how you do null-safe property traversal in TypeScript. It's officially called https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html[optional chaining] and was introduced in TypeScript 3.7.
+****
 
 Then add some additional CSS to `search.component.css` to improve its table layout.
 
@@ -465,7 +517,7 @@ import { map } from 'rxjs/operators';
     }
     return this.getAll().pipe(
       map((data: any) => data
-        .filter(item => JSON.stringify(item).toLowerCase().includes(q)))
+        .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q)))
     );
   }
 ----
@@ -482,6 +534,23 @@ search(): void {
   );
 }
 ----
+
+This won't compile right away.
+
+[source,shell]
+----
+Error: src/app/search/search.component.ts:18:31 - error TS2345:
+ Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+----
+
+Since `query` will always be assigned (even if it's empty), change its variable declaration to.
+
+[source,ts]
+----
+query!: string; // query: string = ''; will also work
+----
+
+This is called a https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions[definite assignment assertion]. It's a way to tell TypeScript "I know what I'm doing, the variable will be assigned."
 
 Now search results will be filtered by the query value you type in.
 
@@ -518,7 +587,7 @@ const routes: Routes = [
 ];
 ----
 
-Update `src/app/edit/edit.component.html` to display an editable form. You might notice I've added `id` attributes to most elements. This is to make things easier when writing integration tests with Protractor.
+Update `src/app/edit/edit.component.html` to display an editable form. You might notice I've added `id` attributes to most elements. This is to make it easier to locate elements when writing integration tests.
 
 [source,html]
 .src/app/edit/edit.component.html
@@ -567,12 +636,12 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./edit.component.css']
 })
 export class EditComponent implements OnInit, OnDestroy {
-  person: Person;
-  editName: string;
-  editPhone: string;
-  editAddress: Address;
+  person!: Person;
+  editName!: string;
+  editPhone!: string;
+  editAddress!: Address;
 
-  sub: Subscription;
+  sub!: Subscription;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -636,9 +705,9 @@ search(q: string): Observable<any> {
   }
   return this.getAll().pipe(
     map((data: any) => data
-        .map(item => !!localStorage['person' + item.id] ?
-          JSON.parse(localStorage['person' + item.id]) : item)
-        .filter(item => JSON.stringify(item).toLowerCase().includes(q))
+      .map((item: Person) => !!localStorage['person' + item.id] ?
+        JSON.parse(localStorage['person' + item.id]) : item)
+      .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q))
     ));
 }
 
@@ -647,7 +716,7 @@ get(id: number) {
     if (localStorage['person' + id]) {
       return JSON.parse(localStorage['person' + id]);
     }
-    return all.find(e => e.id === id);
+    return all.find((e: Person) => e.id === id);
   }));
 }
 
@@ -677,8 +746,7 @@ At this point, you should be able to search for a person and update their inform
 .Edit component
 image::../images/ng-demo/edit-form.png[Edit form, 800, scaledwidth="100%"]
 
-The &lt;form> in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above.
-The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
+The &lt;form> in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above. The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
 
 [source,typescript]
 .src/app/edit/edit.component.ts
@@ -692,7 +760,7 @@ gotoList() {
 }
 ----
 
-Since the `SearchComponent` doesn't execute a search automatically when you execute this URL, add the following logic to do so in its `ngOnInit` method.
+Since the `SearchComponent` doesn't execute a search automatically when you execute this URL, add the following logic to do so in its `ngOnInit()` method.
 
 [source,typescript]
 .src/app/search/search.component.ts
@@ -701,7 +769,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 ...
 
-sub: Subscription;
+sub!: Subscription;
 
 constructor(private searchService: SearchService, private route: ActivatedRoute) { }
 
@@ -720,7 +788,7 @@ You'll want to implement `OnDestroy` and define the `ngOnDestroy` method to clea
 [source,typescript]
 .src/app/search/search.component.ts
 ----
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 export class SearchComponent implements OnInit, OnDestroy {
 ...
@@ -734,7 +802,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
 After making all these changes, you should be able to search/edit/update a person's information. If it works - nice job!
 
-=== Form Validation
+=== Add Form Validation
 
 One thing you might notice is you can clear any input element in the form and save it. At the very least, the `name` field should be required. Otherwise, there's nothing to click on in the search results.
 
@@ -800,26 +868,15 @@ To learn more about forms and validation, see https://angular.io/guide/form-vali
 
 == Test your Angular app
 
-Now that you've built an application, it's important to test it to ensure it works. The best reason for writing tests is
-to automate your testing. Without tests, you'll likely be testing manually. This manual testing will take longer and longer as your application grows.
+Now that you've built an application, it's important to test it to ensure it works. The best reason for writing tests is to automate your testing. Without tests, you'll likely be testing manually. This manual testing will take longer and longer as your application grows.
 
-[TIP]
-====
-If you didn't complete the previous section, you can clone the `ng-demo` repository and checkout the `test-start` branch.
-
-----
-git clone -b test-start https://github.com/mraible/ng-demo.git
-cd ng-demo && npm i
-----
-====
-
-In this section, you'll learn to use http://jasmine.github.io/[Jasmine] for unit testing controllers and http://www.protractortest.org/[Protractor] for integration testing. Angular's testing documentation lists https://angular.io/guide/testing[good reasons] to test, but doesn't currently have many examples.
+In this section, you'll learn to use http://jasmine.github.io/[Jasmine] for unit testing controllers and https://www.cypress.io/[Cypress] for integration testing. Angular's testing documentation lists many https://angular.io/guide/testing[good reasons] to test.
 
 === Fix the Tests
 
-If you run `ng test`, you'll likely get failures for the components and service you created. These failures will be solved as you complete the section below.
+If you run `ng test`, you'll likely get failures for the components and service you created. These failures will be solved as you complete the section below. The `ng test` command will start a process that listens for changes so all you need to do is edit/save files and tests will be automatically run again.
 
-TIP: You can use `x` and `f` prefixes Jasmine's `describe` and `it` functions to _exclude_ only run only a particular test.
+TIP: You can use `x` and `f` prefixes in front of `describe` and `it` functions to _exclude_ or _only_ run a particular test.
 
 === Fix the `AppComponent` test
 
@@ -965,6 +1022,7 @@ export class MockActivatedRoute extends ActivatedRoute {
 
   constructor(parameters?: { [key: string]: any; }) {
     super();
+    // @ts-ignore
     this.params = of(parameters);
   }
 }
@@ -1042,7 +1100,7 @@ it('should search automatically when a term is on the URL', () => {
 });
 ----
 
-Update the test for `EditComponent`, verifying fetching a single record works. Notice how you can access the component directly with `fixture.debugElement.componentInstance`, or its rendered version with `fixture.debugElement.nativeElement`.
+Update the test for `EditComponent`, verifying fetching a single record works. Notice how you can access the component directly with `fixture.componentInstance`, or its rendered version with `fixture.nativeElement`.
 
 [source,typescript]
 .src/app/edit/edit.component.spec.ts
@@ -1080,7 +1138,7 @@ describe('EditComponent', () => {
   it('should fetch a single record', () => {
     const fixture = TestBed.createComponent(EditComponent);
 
-    const person = new Person({id: 1, name: 'Gary Harris'});
+    const person = new Person({id: 1, name: 'Michael Porter Jr.'});
     person.address = new Address({city: 'Denver'});
 
     // mock response
@@ -1093,159 +1151,167 @@ describe('EditComponent', () => {
     expect(mockSearchService.get).toHaveBeenCalledWith(1);
 
     // verify data was set on component when initialized
-    const editComponent = fixture.debugElement.componentInstance;
+    const editComponent = fixture.componentInstance;
     expect(editComponent.editAddress.city).toBe('Denver');
 
     // verify HTML renders as expected
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h3').innerHTML).toBe('Gary Harris');
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('h3').innerHTML).toBe('Michael Porter Jr.');
   });
 });
 ----
 
-You should see "Executed 11 of 11 [green]#SUCCESS# (0.118 secs / 0.096 secs)" in the shell window that's running `ng test`. If you don't, try cancelling the command and restarting.
+You should see "Executed 11 of 11 [green]#SUCCESS# (0.224 secs / 0.164 secs)" in the shell window that's running `ng test`. If you don't, try cancelling the command and restarting.
 
 === Integration test the search UI
 
-To test if the application works end-to-end, you can write tests with http://www.protractortest.org/[Protractor]. These are also known as integration tests, since they test the _integration_ between all layers of your application.
+To test if the application works end-to-end, you can write tests with http://www.cypress.io/[Cypress]. These are also known as integration tests, since they test the _integration_ between all layers of your application.
 
-To verify end-to-end tests work in the project before you begin, run the following command in a terminal window.
+If you're an experienced Angular developer, you might be wondering, "What happened to Protractor?" Protractor support was https://github.com/angular/protractor/issues/5502[removed in Angular 12] and other options such as Cypress, WebdriverIO, and TestCafe are being considered for future versions.
 
-----
-ng e2e
-----
+TIP: If you're experienced with Protractor, see https://docs.cypress.io/guides/migrating-to-cypress/protractor[Migrating from Protractor to Cypress].
 
-You'll likely see the following error:
+You can use the official https://www.npmjs.com/package/@cypress/schematic[Cypress Angular Schematic] to add Cypress to your Angular project.
 
 ----
-1) workspace-project App should display welcome message
-  - Failed: No element found using locator: By(css selector, app-root .content span)
+ng add @cypress/schematic
 ----
 
-This happens because you changed the HTML structure of `app.component.html`. To fix it, change the selector in `app.po.ts` to look for the `<h1>` element.
+This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Rename `cypress/integration/spec.ts` to `home.spec.ts` and change it to look for the title of your app.
 
 [source,ts]
-.e2e/src/app.po.ts
+.cypress/integration/home.spec.ts
 ----
-getTitleText(): Promise<string> {
-  return element(by.css('app-root h1')).getText() as Promise<string>;
+describe('Home', () => {
+  it('Visits the initial project page', () => {
+    cy.visit('/')
+    cy.contains('Welcome to ng-demo!')
+    cy.contains('Search')
+  })
+})
+----
+
+Then, run `ng e2e`. This will compile your app, start in on `http://localhost:4200`, and launch the Cypress app.
+
+[[cypress-app]]
+.Edit form with names and validation
+image::../images/ng-demo/cypress-app.png[Cypress App, 800, scaledwidth="100%"]
+
+If you click on the file name, it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more. You can learn more about Cypress's features in https://armno.in.th/2020/02/26/cypress-angular-integration-testing/[Setting up Cypress for an Angular Project].
+
+Personally, I prefer the Protractor experience where you could just run the command, it'd run all the tests, and the user doesn't need to interact. You can do this with Cypress too!
+
+The Cypress Angular Schematic added a few scripts to your `package.json`:
+
+[source,json]
+----
+"scripts": {
+  ...
+  "e2e": "ng e2e",
+  "cypress:open": "cypress open",
+  "cypress:run": "cypress run"
 }
 ----
 
-You'll also need to change the test in `app.e2e-spec.ts` to use the new welcome message.
-
-[source,ts]
-.e2e/src/app.e2e-spec.ts
-----
-it('should display welcome message', () => {
-  page.navigateTo();
-  expect(page.getTitleText()).toEqual('Welcome to ng-demo!');
-});
-----
-
-Now you should be able to run `ng e2e` and have everything pass.
+To use the no-interaction approach, you'll need to start your app:
 
 ----
-$ ng e2e
-[23:47:29] I/update - chromedriver: file exists /Users/mraible/ng-demo/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_85.0.4183.87.zip
-[23:47:29] I/update - chromedriver: unzipping chromedriver_85.0.4183.87.zip
-[23:47:29] I/update - chromedriver: setting permissions to 0755 for /Users/mraible/ng-demo/node_modules/protractor/node_modules/webdriver-manager/selenium/chromedriver_85.0.4183.87
-[23:47:29] I/update - chromedriver: chromedriver_85.0.4183.87 up to date
-
-chunk {main} main.js, main.js.map (main) 41.5 kB [initial] [rendered]
-chunk {polyfills} polyfills.js, polyfills.js.map (polyfills) 141 kB [initial] [rendered]
-chunk {runtime} runtime.js, runtime.js.map (runtime) 6.15 kB [entry] [rendered]
-chunk {styles} styles.js, styles.js.map (styles) 12.5 kB [initial] [rendered]
-chunk {vendor} vendor.js, vendor.js.map (vendor) 2.99 MB [initial] [rendered]
-Date: 2020-09-05T05:47:35.554Z - Hash: 1f37ff085dda89695218 - Time: 4956ms
-** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
-: Compiled successfully.
-[23:47:35] I/launcher - Running 1 instances of WebDriver
-[23:47:35] I/direct - Using ChromeDriver directly...
-Jasmine started
-
-  workspace-project App
-    ✓ should display welcome message
-
-Executed 1 of 1 spec SUCCESS in 0.315 sec.
-[23:47:38] I/launcher - 0 instance(s) of WebDriver still running
-[23:47:38] I/launcher - chrome #01 passed
-Execution time: 11 s.
+npm start
 ----
+
+Then, run the Cypress tests for it in another window:
+
+----
+npm run cypress:run
+----
+
+TIP: You might notice Cypress creates a video. You can disable this by adding `"video": false` to your `cypress.json` file.
+
+The `npm run cypress:run` command will run a headless browser, so you won't see anything happening on your screen.
+
+If you want to see the tests run, append `--browser chrome` to the command. Add this to your `package.json` if you want to make it the default. See Cypress's https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
+
+You can also install https://www.npmjs.com/package/concurrently[concurrently] so you can run multiple tasks with one command.
+
+[source,shell]
+----
+npm install -D concurrently
+----
+
+Then, add a `cy:run` script to your `package.json`:
+
+[source,json]
+----
+"scripts": {
+  ...
+  "cy:run": "concurrently \"ng serve\" \"cypress run\""
+}
+----
+
+Then, you can run `npm run cy:run` to start your app and continuously run end-to-end tests on it when you change files.
 
 === Testing the search feature
 
-Create end-to-end tests in `e2e/src/search.e2e-spec.ts` to verify the search feature works. Populate it with the following code:
+Create another end-to-end tests in `cypress/integration/search.spec.ts` to verify the search feature works. Populate it with the following code:
 
 [source,typescript]
-.e2e/src/search.e2e-spec.ts
+.cypress/integration/search.spec.ts
 ----
-import { browser, by, element } from 'protractor';
-
 describe('Search', () => {
 
-  beforeEach(async () => {
-    await browser.get('/search');
+  beforeEach(() => {
+    cy.visit('/')
   });
 
   it('should have an input and search button', () => {
-    expect(element(by.css('app-root app-search form input')).isPresent()).toEqual(true);
-    expect(element(by.css('app-root app-search form button')).isPresent()).toEqual(true);
+    cy.get('app-root app-search form input').should('exist');
+    cy.get('app-root app-search form button').should('exist');
   });
 
-  it('should allow searching', async () => {
-    const searchButton = element(by.css('button'));
-    const searchBox = element(by.css('input'));
-    await searchBox.sendKeys('A');
-    await searchButton.click();
-    const list = element.all(by.css('app-search table tbody tr'));
-    expect(list.count()).toBe(3);
+  it('should allow searching', () => {
+    cy.get('input').type('A');
+    cy.get('button').click();
+    const list = cy.get('app-search table tbody tr');
+    list.should('have.length', 3);
   });
 });
 ----
 
 === Testing the edit feature
 
-Create a `e2e/src/edit.e2e-spec.ts` test to verify the `EditComponent` renders a person's information and that their information can be updated.
+Create a `cypress/integration/edit.spec.ts` test to verify the `EditComponent` renders a person's information and that their information can be updated.
 
 [source,typescript]
-.e2e/src/edit.e2e-spec.ts
+.cypress/integration/edit.spec.ts
 ----
-import { browser, by, element } from 'protractor';
-
 describe('Edit', () => {
 
-  beforeEach(async () => {
-    await browser.get('/edit/1');
+  beforeEach(() => {
+    cy.visit('/edit/1')
   });
 
-  const name = element(by.id('name'));
-  const street = element(by.id('street'));
-  const city = element(by.id('city'));
-
-  it('should allow viewing a person', async () => {
-    expect(await element(by.css('h3')).getText()).toEqual('Nikola Jokić');
-    expect(await name.getAttribute('value')).toEqual('Nikola Jokić');
-    expect(await street.getAttribute('value')).toEqual('2000 16th Street');
-    expect(await city.getAttribute('value')).toEqual('Denver');
+  it('should allow viewing a person',  () => {
+    cy.get('h3').should('have.text', 'Nikola Jokić');
+    cy.get('#name').should('have.value', 'Nikola Jokić');
+    cy.get('#street').should('have.value', '2000 16th Street');
+    cy.get('#city').should('have.value', 'Denver');
   });
 
-  it('should allow updating a name', async () => {
-    const save = element(by.id('save'));
-    name.sendKeys(' Rocks!');
-    await save.click();
+  it('should allow updating a name', () => {
+    cy.get('#name').type(' Rocks!');
+    cy.get('#save').click();
     // verify one element matched this change
-    const list = element.all(by.css('app-search table tbody tr'));
-    expect(list.count()).toBe(1);
+    const list = cy.get('app-search table tbody tr');
+    list.should('have.length', 1);
   });
 });
 ----
 
-Run `ng e2e` to verify all your end-to-end tests pass. You should see a success message similar to the one below in your terminal window.
+With your app running, execute `npm run cypress:run` to verify all your end-to-end tests pass. You should see a success message similar to the one below in your terminal window.
 
-[[protractor-success]]
-.Protractor success
-image::../images/ng-demo/protractor-success.png[Protractor success, 800, scaledwidth="100%"]
+[[cypress-success]]
+.Cypress success
+image::../images/ng-demo/cypress-success.png[Cypress success, 800, scaledwidth="100%"]
 
 If you made it this far and have all your specs passing - congratulations! You're well on your way to writing quality code with Angular and verifying it works.
 
@@ -1255,10 +1321,10 @@ You'll see a print out of code coverage in your terminal window.
 
 ----
 =============================== Coverage summary ===============================
-Statements   : 80.56% ( 58/72 )
+Statements   : 80.82% ( 59/73 )
 Branches     : 71.43% ( 30/42 )
 Functions    : 82.76% ( 24/29 )
-Lines        : 78.79% ( 52/66 )
+Lines        : 79.1% ( 53/67 )
 ================================================================================
 ----
 
@@ -1272,7 +1338,7 @@ image::../images/ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%
 
 == Continuous Integration
 
-At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to setup continuous integration with https://github.com/features/actions[GitHub Actions], https://travis-ci.org/[Travis CI] and https://jenkins.io/[Jenkins].
+At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to setup continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
 
 CAUTION: In the commands below, I use `master` as the branch name. I use this because it's the default. I recommend you https://www.hanselman.com/blog/EasilyRenameYourGitDefaultBranchFromMasterToMain.aspx[change your default branch name to `main`].
 
@@ -1280,11 +1346,11 @@ CAUTION: In the commands below, I use `master` as the branch name. I use this be
 
 If you've checked your project into GitHub, you can use GitHub Actions.
 
-Create a `.github/workflows/main.yml` file. Add the following YAML to it. This will run both unit tests and integrations tests.
+Create a `.github/workflows/main.yml` file. Add the following YAML to it. This will run both unit tests and integrations tests with Cypress.
 
 [source,yaml]
 ----
-name: Angular
+name: Demo CI
 
 on: [push, pull_request]
 
@@ -1295,7 +1361,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node 12.x
+      - name: Use Node 14.x
         uses: actions/setup-node@v1
         with:
           node-version: '14.x'
@@ -1309,55 +1375,18 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        run: xvfb-run --server-args="-screen 0 1024x768x24" --auto-servernum npm run e2e
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run build
+          start: npm start
+          wait-on: http://localhost:4200
 ----
 
 Check it in on a branch, create a pull request for that branch, and you should see your tests running.
 
-https://github.com/mraible/ng-demo/pull/76/checks?check_run_id=1107490951[Here is a build] showing all unit and integration tests passing.
+// https://github.com/mraible/ng-demo/pull/76/checks?check_run_id=1107490951[Here is a build] showing all unit and integration tests passing.
 
-=== Travis CI
-
-If you've checked in your project to GitHub, you can use Travis CI.
-
-. Login to https://travis-ci.org/[Travis CI] and enable builds for the GitHub repo you published the project to.
-. Add the following `.travis.yml` in your root directory and `git commit/push` it. This will trigger the first build.
-
-[source,yaml]
-----
-dist: bionic
-os:
-  - linux
-services:
-  - docker
-  - xvfb
-language: node_js
-node_js:
-  - "14.x"
-addons:
-  apt:
-    packages:
-      - dpkg
-  chrome: stable
-cache:
-  directories:
-  - node_modules
-branches:
-  only:
-  - master
-install:
-  - npm ci
-script:
-  - npm test -- --watch=false
-  - npm run e2e
-notifications:
-  webhooks:
-    on_success: change
-    on_failure: always
-    on_start: false
-----
-
-https://travis-ci.org/github/mraible/ng-demo/builds/726701970[Here is a build] showing all unit and integration tests passing.
+// todo: test jenkins
 
 === Jenkins
 
@@ -1387,8 +1416,9 @@ node {
         sh "npm test -- --watch=false"
     }
 
-    stage('protractor tests') {
-        sh "npm run e2e"
+    stage('cypress tests') {
+        sh "npm start &"
+        sh "npm run cypress:run"
     }
 }
 ----
@@ -1438,21 +1468,6 @@ NOTE: In this code, you might notice that some https URLs are allowed in the con
 
 For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack].
 
-Add `--prod` to the `build` script since the static buildback uses this command.
-
-[source,json]
-.package.json
-----
-"scripts": {
-  "ng": "ng",
-  "start": "ng serve",
-  "build": "ng build --prod",
-  "test": "ng test",
-  "lint": "ng lint",
-  "e2e": "ng e2e"
-},
-----
-
 Commit your changes to Git, add the Node.js + static buildpack, and redeploy your Angular app.
 
 [source,shell]
@@ -1464,7 +1479,7 @@ heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git
 git push heroku master
 ----
 
-View the application in your browser with `heroku open`. Try your app's URL on <https://securityheaders.com> to be pleasantly suprised.
+View the application in your browser with `heroku open`. Try your app's URL on <https://securityheaders.com> to be pleasantly surprised.
 
 TIP: You can watch your app's logs using `heroku logs --tail`.
 
@@ -1472,13 +1487,15 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 
 To integrate Bootstrap 4 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[ng-bootstrap].
 
+// todo: check if Bootstrap 5 is supported before releasing
+
 ----
-ng add @ng-bootstrap/ng-bootstrap@7
+ng add @ng-bootstrap/ng-bootstrap
 ----
 
 This will Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
-Change HTML to use Bootstrap classes. For example, change the `<h1>` in `app.component.html` to be the following:
+Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
 [source,html]
 .src/app/app.component.html
@@ -1486,10 +1503,97 @@ Change HTML to use Bootstrap classes. For example, change the `<h1>` in `app.com
 <nav class="navbar navbar-light bg-secondary">
   <a class="navbar-brand text-light" href="#">Welcome to {{ title }}!</a>
 </nav>
+
+<div class="container-fluid">
+  <router-outlet></router-outlet>
+</div>
 ----
 
-// todo: show all changes necessary to templates
-// copy images from ng-demo into this project
+You'll also need to change its test to look for `nav` instead of `h1`.
+
+[source,typescript]
+.src/app/app.component.spec.ts
+----
+expect(compiled.querySelector('nav').textContent).toContain('Welcome to ng-demo!');
+----
+
+Update `search.component.html` to add a top margin to the H2, make the form inline, and add classes to input/button/table elements.
+
+[source,html]
+.src/app/search/search.component.html
+----
+<h2 class="mt-2">Search</h2>
+<form class="form-inline">
+  <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()"
+         placeholder="Search" class="form-control mr-sm-2">
+  <button type="button" (click)="search()" class="btn btn-primary">Search</button>
+</form>
+<table *ngIf="searchResults" class="table">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Phone</th>
+    <th>Address</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let person of searchResults; let i=index">
+    <td><a [routerLink]="['/edit', person.id]">{{person.name}}</a></td>
+    <td>{{person.phone}}</td>
+    <td>{{person.address.street}}<br/>
+      {{person.address.city}}, {{person.address.state}} {{person.address.zip}}
+    </td>
+  </tr>
+  </tbody>
+</table>
+----
+
+Make similar changes to `edit.component.html`:
+
+[source,html]
+.src/app/edit/edit.component.html
+----
+<div *ngIf="person" class="col-8">
+  <h3 class="mt-2">{{editName}}</h3>
+  <form (ngSubmit)="save()" #editForm="ngForm">
+    <div>
+      <label>Id:</label>
+      {{person.id}}
+    </div>
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input [(ngModel)]="editName" name="name" id="name" placeholder="name" required class="form-control" #name="ngModel"
+             [ngClass]="{'is-invalid': name.touched && name.invalid,  'is-valid': name.touched && name.valid}"/>
+      <div [hidden]="name.valid || name.pristine" style="display: block" class="invalid-feedback">
+        Name is required
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Phone:</label>
+      <input [(ngModel)]="editPhone" name="phone" id="phone" placeholder="Phone" class="form-control"/>
+    </div>
+    <fieldset class="form-group">
+      <legend class="col-form-legend">Address:</legend>
+      <address>
+        <input [(ngModel)]="editAddress.street" name="street" id="street" class="form-control mb-2">
+        <div class="row">
+          <div class="col-6">
+            <input [(ngModel)]="editAddress.city" name="city" id="city" class="form-control">
+          </div>
+          <div class="col-3">
+            <input [(ngModel)]="editAddress.state" name="state" id="state" size="2" class="form-control">
+          </div>
+          <div class="col-3">
+            <input [(ngModel)]="editAddress.zip" name="zip" id="zip" size="5" class="form-control">
+          </div>
+        </div>
+      </address>
+    </fieldset>
+    <button type="submit" id="save" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
+    <button (click)="cancel()" id="cancel" class="btn btn-light">Cancel</button>
+  </form>
+</div>
+----
 
 After modifying your templates, the edit screen will look as follows.
 
@@ -1502,7 +1606,7 @@ image::../images/ng-demo/bootstrap4.png[Bootstrap 4, 800, scaledwidth="100%"]
 To integrate Angular Material into your Angular CLI-generated app, install https://material.angular.io/[Angular Material].
 
 ----
-ng add @angular/material@10
+ng add @angular/material
 ----
 
 When prompted for the theme, pick the one you prefer, using the links to preview them. Accept the defaults for the other questions.
@@ -1534,55 +1638,221 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 })
 ----
 
-Change HTML to use Material components. For example, change `<h1>` in `app.component.html` to be `<mat-toolbar>`.
+Then, change your HTML templates to use Material components. For example, change `<h1>` in `app.component.html` to be `<mat-toolbar>`.
 
-// todo: show all changes necessary to templates
-// copy images from ng-demo into this project
+[source,html]
+.src/app/app.component.html
+----
+<mat-toolbar>Welcome to {{ title }}!</mat-toolbar>
+----
 
-After modifying your templates, the edit screen will look as follows.
+You'll also need to change its test to import Material modules and look for `mat-toolbar` instead of `h1`.
+
+[source,typescript]
+.src/app/app.component.spec.ts
+----
+import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
+
+describe('AppComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      imports: [RouterTestingModule, MatListModule, MatToolbarModule]
+    }).compileComponents();
+  });
+
+  ...
+  it('should render title', () => {
+     ...
+     expect(compiled.querySelector('mat-toolbar').textContent).toContain('Welcome to ng-demo!');
+  });
+}
+----
+
+Update `search.component.html` to add use Material components.
+
+[source,html]
+.src/app/search/search.component.html
+----
+<h2>Search</h2>
+<form>
+  <mat-form-field>
+    <input matInput type="search" name="query" placeholder="Search" [(ngModel)]="query" (keyup.enter)="search()">
+  </mat-form-field>
+  <button mat-mini-fab (click)="search()"><mat-icon>search</mat-icon></button>
+</form>
+<mat-list *ngIf="searchResults?.length" flex>
+  <mat-list-item *ngFor="let person of searchResults; let i=index">
+    <div class="mat-list-item-text">
+      <div mat-line><a [routerLink]="['/edit', person.id]">{{person.name}}</a></div>
+      <div mat-line>{{person.phone}}</div>
+      <div mat-line>{{person.address.street}}<br/>
+        {{person.address.city}}, {{person.address.state}} {{person.address.zip}}</div>
+    </div>
+  </mat-list-item>
+</mat-list>
+----
+
+Update this components' test to be aware of these components.
+
+[source,typescript]
+.src/app/search/search.component.spec.ts
+----
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+
+describe('SearchComponent', () => {
+  ...
+  beforeEach((() => {
+    ...
+
+    TestBed.configureTestingModule({
+      ...
+      imports: [FormsModule, RouterTestingModule, HttpClientTestingModule,
+        MatListModule, MatIconModule, MatInputModule, NoopAnimationsModule]
+    }).compileComponents();
+  }));
+
+  ...
+}
+----
+
+Replace the plain ol' HTML inputs in `edit.component.html` with Material components.
+
+[source,html]
+.src/app/edit/edit.component.html
+----
+<div *ngIf="person">
+  <h3>{{editName}}</h3>
+  <form (ngSubmit)="save()" #editForm="ngForm">
+    <div>
+      <label>Id:</label>
+      {{person.id}}
+    </div>
+    <p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="editName" name="name" id="name" placeholder="Name" required/>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="editPhone" name="phone" id="phone" placeholder="Phone"/>
+      </mat-form-field>
+    </p>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="Address" [(ngModel)]="editAddress.street" name="street" id="street">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="City" [(ngModel)]="editAddress.city" name="city" id="city">
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="State" #state [(ngModel)]="editAddress.state" name="state" id="state" maxlength="2">
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field>
+            <input matInput placeholder="Zip" #postalCode maxlength="5" [(ngModel)]="editAddress.zip" name="zip" id="zip">
+            <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint>
+          </mat-form-field>
+        </td>
+      </tr>
+    </table>
+
+    <button mat-raised-button type="submit" color="primary" id="save"
+            [disabled]="!editForm.form.valid">Save</button>
+    <button mat-button (click)="cancel(); false" id="cancel">Cancel</button>
+  </form>
+</div>
+----
+
+And, import modules used in its test.
+
+[source,typescript]
+.src/app/edit/edit.component.spec.ts
+----
+import { MatInputModule } from '@angular/material/input';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+describe('EditComponent', () => {
+  ...
+  beforeEach((() => {
+    ...
+
+    TestBed.configureTestingModule({
+      ...
+      imports: [FormsModule, HttpClientTestingModule, MatInputModule, NoopAnimationsModule]
+    }).compileComponents();
+  }));
+
+  ...
+}
+----
+
+After completing these changes, the edit screen will look as follows.
 
 [[angular-material]]
 .Angular Material
 image::../images/ng-demo/angular-material.png[Angular Material, 800, scaledwidth="100%"]
 
+Run `npm test` to confirm your unit tests pass.
+
+For Cypress tests, you'll need to modify the list reference in `search.spec.ts` and `edit.spec.ts` to look for Material components instead of table rows.
+
+[source,typescript]
+----
+const list = cy.get('app-search mat-list mat-list-item');
+----
+
 == Add Authentication with OpenID Connect
 
-To integrate http://developer.okta.com[Okta] for user authentication, you'll first need to https://developer.okta.com/signup/[register] and create an OpenID Connect application.
+In order to add authentication with OpenID Connect, you'll first need a free Okta developer account. Install the https://cli.okta.com[Okta CLI] and run `okta register` to sign up for a new account. If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press **Enter**.
 
-=== Create an OpenID Connect App in Okta
+Use `\http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `\http://localhost:4200`.
 
-OpenID Connect is built on top of the OAuth 2.0 protocol. It allows clients to verify the identity of the user and, as well as to obtain their basic user information.
+.What does the Okta CLI do?
+****
+The Okta CLI will create an OIDC Single-Page App in your Okta Org. It will add the redirect URIs you specified and grant access to the `Everyone` group. It will also add a trusted origin for `http://localhost:4200`. You will see output like the following when it's finished:
 
-Login to your Okta account, then follow the steps below.
+[source,shell]
+----
+Okta application configuration:
+Issuer:    https://dev-133337.okta.com/oauth2/default
+Client ID: 0oab8eb55Kb9jdMIr5d6
+----
 
-* Navigate to *Applications* > *Add Application*.
-* Select *Single-Page App (SPA)* and click *Next*.
-* Click *Create* and give your application a name (e.g., "Angular 10").
-* On the next screen, change all URIs to use port `4200` and add `http://localhost:4200/callback` as a *Login redirect URI*.
-* Select **Authorization Code** as a grant type and click *Done*.
-
-When you are finished, your settings should look similar to the screenshot below.
-
-.OIDC App Settings
-image::../images/ng-demo/oidc-settings.png[OIDC App Settings, 730, scaledwidth="100%"]
+NOTE: You can also use the Okta Admin Console to create your app. See https://developer.okta.com/docs/guides/sign-into-spa/angular/create-okta-application/[Create an Angular App] for more information.
+****
 
 === Add OIDC Authentication with OktaDev Schematics
 
-Use https://github.com/oktadeveloper/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
+Use https://github.com/oktadev/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
 
 ----
-ng add @oktadev/schematics@3
+ng add @oktadev/schematics --issuer YOUR_ISSUER --client-id YOUR_CLIENT_ID
 ----
 
-You'll be prompted for an issuer, which you can find in your Okta dashboard at **API** > **Authorization Servers**. For the client ID, use the Client ID from the app you just created.
+You'll be prompted for an issuer and client ID. You should have these from the OIDC app you just created.
 
 This process will perform the following steps for you.
 
-1. Install the https://github.com/okta/okta-oidc-js/tree/master/packages/okta-angular[Okta Angular SDK] using `npm install @okta/okta-angular`.
+1. Install the https://github.com/okta/okta-angular[Okta Angular SDK] using `npm install @okta/okta-angular`.
 2. Add `src/app/auth-routing.module.ts` with OIDC configuration and initialization logic.
-3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header to outbound requests.
+3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header with access token to outbound requests.
 4. Add authenticated logic to `src/app/app.component.ts`.
 5. Create a `HomeComponent` and configures it with authentication logic.
+6. Updates unit tests for `AppComponent` and `HomeComponent` to mock Okta.
 
 Remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
 
@@ -1614,7 +1884,7 @@ const routes: Routes = [
 ];
 ----
 
-After making these changes, you should be able to run `ng serve` and see a login button at http://localhost:4200.
+After making these changes, you should be able to run `ng serve` and see a login button at `http://localhost:4200/home`.
 
 [[okta-login-button]]
 .Okta login button
@@ -1626,7 +1896,7 @@ Click the *Login* button and sign-in with one of the people that's configured in
 .Okta login form
 image::../images/ng-demo/okta-login-form.png[Okta login form, 800, scaledwidth="100%"]
 
-=== Display Authenticated User's Name
+==== Display Authenticated User's Name
 
 To display the authenticated user's name, modify `home.component.ts` to add a `user` property and fetch the user in `ngOnInit()`.
 
@@ -1659,12 +1929,12 @@ Then modify `home.component.html` to display a welcome message to the user and p
 .src/app/home/home.component.html
 ----
 <div>
-    <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()" id="login">Login</button>
+    <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()" id="login">Login</button>
     <div *ngIf="isAuthenticated">
         <h2>Welcome, {{user?.name}}!</h2>
         <p><a routerLink="/search" routerLinkActive="active">Search</a></p>
     </div>
-    <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()" id="logout">Logout</button>
+    <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()" id="logout">Logout</button>
 </div>
 ----
 
@@ -1674,102 +1944,158 @@ Refresh your app and you should see your name with a link to *Search*.
 .View after login
 image::../images/ng-demo/okta-post-login.png[View after login, 800, scaledwidth="100%"]
 
-If you logout and manually navigate to http://localhost:4200/search, you'll be required to log in.
+If you log out and manually navigate to `http://localhost:4200/search`, you'll be required to log in.
 
 If everything works - congrats!
 
-==== Add authentication to tests
+==== Add Authentication to Cypress tests
 
-To make it so you can run your e2e tests with authentication, create a `e2e/src/login.po.ts` file.
+To make it so you can run your e2e tests with authentication, add a `signIn()` Cypress command in `cypress/support/commands.ts`.
 
-[source,ts]
+[source,typescript]
 ----
-import { browser, by, element, ExpectedConditions as ec } from 'protractor';
+Cypress.Commands.add('signIn', (username, password) => {
+  cy.visit('/');
+  cy.get('#login').click()
+  cy.get('input[name=username]').type(username);
+  cy.get('input[name=password]').type(password);
+  cy.get('input[type=submit]').click();
+})
+----
 
-export class LoginPage {
-  username = element(by.name('username'));
-  password = element(by.name('password'));
-  // button on IdP sign-in form
-  loginButton = element(by.css('input[type=submit]'));
-  signInButton = element(by.id('login'));
-  logoutButton = element(by.id('logout'));
-  welcomeMessage = element(by.css('h2'));
+Then, in `cypress/support/index.ts`, uncomment the import for `commands`.
 
-  async login(): Promise<void> {
-    await browser.get('/');
-    await browser.wait(ec.visibilityOf(this.signInButton));
-    await this.signInButton.click();
-    // You must set E2E_USERNAME, E2E_PASSWORD, and E2E_NAME as environment variables
-    await this.loginToIdP(process.env.E2E_USERNAME, process.env.E2E_PASSWORD);
-    const welcome = new RegExp('Welcome, ' + process.env.E2E_NAME);
-    await browser.wait(ec.visibilityOf(this.logoutButton));
-    await browser.sleep(2000); // wait for user to resolve
-    expect(this.welcomeMessage.getText()).toMatch(welcome);
-  }
+[source,typescript]
+----
+import './commands';
+----
 
-  async loginToIdP(username: string, password: string): Promise<void> {
-    // Entering non angular site, tell webdriver to switch to synchronous mode.
-    await browser.waitForAngularEnabled(false);
-    await browser.wait(ec.visibilityOf(this.username));
+Next, configure your credentials in `cypress.json` and turn off Chrome's security.
 
-    if (await this.username.isPresent()) {
-      await this.username.sendKeys(username);
-      await this.password.sendKeys(password);
-      await this.loginButton.click();
-      if (!(await this.username.isPresent())) {
-        await browser.waitForAngularEnabled(true);
-      }
-    } else {
-      // redirected back because already logged in
-      await browser.waitForAngularEnabled(true);
-    }
-  }
+[source,json]
+----
+"env": {
+  "E2E_USERNAME": "YOUR_OKTA_USERNAME",
+  "E2E_PASSWORD": "YOUR_OKTA_PASSWORD"
+},
+"chromeWebSecurity": false
+----
 
-  async logout(): Promise<void> {
-    await browser.get('/');
-    await browser.wait(ec.visibilityOf(this.logoutButton));
-    await this.logoutButton.click();
-    await browser.sleep(1000);
-  }
+Modify `search.spec.ts` to replace `beforeEach()` with `before()`:
+
+[source,typescript]
+.cypress/integration/search.spec.ts
+----
+before(() => {
+  cy.visit('/search')
+  cy.signIn(
+    Cypress.env('E2E_USERNAME'),
+    Cypress.env('E2E_PASSWORD')
+  )
+});
+----
+
+Make a similar change for `edit.spec.ts`:
+
+[source,typescript]
+.cypress/integration/edit.spec.ts
+----
+before(() => {
+  cy.visit('/edit/1')
+  cy.signIn(
+    Cypress.env('E2E_USERNAME'),
+    Cypress.env('E2E_PASSWORD')
+  )
+});
+----
+
+Refactor `home.spec.ts` to move its `cy.visit()` to a `before()` block too.
+
+[source,typescript]
+.cypress/integration/home.spec.ts
+----
+describe('Home', () => {
+  before(() => {
+    cy.visit('/')
+    cy.signIn(
+      Cypress.env('E2E_USERNAME'),
+      Cypress.env('E2E_PASSWORD')
+    )
+  })
+
+  it('Visits the initial project page', () => {
+    cy.contains('Welcome to ng-demo!')
+    cy.contains('Search')
+  })
+})
+----
+
+Then, start your app (with `ng serve`) and run its Cypress tests.
+
+[source,shell]
+----
+npm run cypress:run
+----
+
+=== Don't Store Credentials in Source Control
+
+In this example, I recommended you store your username and password in `cypress.json`. This is convenient, but a bad practice.
+
+You can solve it by using https://www.npmjs.com/package/cypress-dotenv[Cypress dotenv].
+
+Install it:
+
+[source,shell]
+----
+npm i -D dotenv cypress-dotenv
+----
+
+Add the plugin to `cypress/plugins/index.js`:
+
+[source,javascript]
+----
+const dotenvPlugin = require('cypress-dotenv');
+module.exports = (on, config) => {
+  config = dotenvPlugin(config)
+  return config
 }
 ----
 
-Then, modify `e2e/src/edit.e2e-spec.ts` and `search.e2e-spec.ts` to login and logout.
+Create a `.env` file in your project's root folder with your Okta credentials in it.
 
-[source,ts]
+[source,shell]
 ----
-import { LoginPage } from './login.po';
-
-describe('...', () => {
-  let loginPage: LoginPage;
-
-  beforeAll(async () => {
-    loginPage = new LoginPage();
-    await loginPage.login();
-  });
-
-  afterAll(async () => {
-    await loginPage.logout();
-  });
-  ...
-}
+CYPRESS_E2E_USERNAME=<your username>
+CYPRESS_E2E_PASSWORD=<your password>
 ----
 
-If you'd like to run the e2e tests, you'll need to set your credentials and full name as environment variables.
+Add `*.env` to your `.gitignore` file to prevent this file from being checked in.
 
+Then, remove the `env` key from `cypress.json`.
+
+Now, `npm run cypress:run` should work the same as before.
+
+=== Cypress Web Security
+
+You might've noticed I turned off Chrome's web security in `cypress.json`.
+
+[source,json]
 ----
-export E2E_USERNAME=<your username>
-export E2E_PASSWORD=<your password>
-export E2E_NAME="<your full name>"
-ng e2e
+"chromeWebSecurity": false
 ----
 
-TIP: If you want to embed your own login form in your app, you can https://developer.okta.com/code/angular/okta_angular_sign-in_widget/[use Okta's Sign-In Widget].
+This configuration allows Chrome to navigate between domains and sign in to Okta. Unfortunately, this ties the e2e tests to Chrome as this setting doesn't exist for other browsers.
+
+A better solution is to hit Okta's APIs directly for authentication. https://www.jhipster.tech[JHipster] uses this technique for its Cypress tests. However, it also benefits from doing the OAuth flow on the server-side (with Spring Boot). This makes it easy to capture Okta's authorization endpoint with all its parameters. I tried using a similar technique in this example, but found I received a 404 when trying to hit `/search` with `cy.request()` to get the redirected URI.
+
+See Cypress's https://docs.cypress.io/guides/guides/web-security[Web Security documentation] for more information.
 
 == Summary
 
 I hope you've enjoyed this introduction to Angular. You learned how to create a basic application without worrying about the backend.
 
-I created a GitHub repo with all of the code from this chapter. You can find it on GitHub in the https://github.com/mraible/ng-demo[mraible/ng-demo repository].
+I created a GitHub repo with all the code from this chapter. You can find it on GitHub in the https://github.com/mraible/ng-demo[mraible/ng-demo repository].
+
+// todo: Figure out how to share source code - maybe as a .zip on InfoQ until this repo is public?
 
 In the next section, I'll show you how to use a modern backend to provide you data, security, and production-ready features.
