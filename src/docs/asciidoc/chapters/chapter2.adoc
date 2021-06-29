@@ -178,8 +178,8 @@ export class HomeComponent implements OnInit {
 .src/app/home/home.component.html
 ----
 <div>
-  <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()">Login</button>
-  <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()">Logout</button>
+  <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
+  <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
 </div>
 ----
 

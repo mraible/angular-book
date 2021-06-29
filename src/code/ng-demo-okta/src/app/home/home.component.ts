@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
     this.isAuthenticated = await this.oktaAuth.isAuthenticated();
     // Subscribe to authentication state changes
     this.oktaAuth.$authenticationState.subscribe(
-      (isAuthenticated: boolean)  => this.isAuthenticated = isAuthenticated
+      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
     );
     if (this.isAuthenticated) {
       this.user = await this.oktaAuth.getUser();
