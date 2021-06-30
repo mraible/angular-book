@@ -3,6 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.5.2"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("se.patrikerdes.use-latest-versions") version "0.2.17"
+    id("com.github.ben-manes.versions") version "0.38.0"
+    id("com.github.node-gradle.node") version "3.1.0"
+    id("com.google.cloud.tools.jib") version "3.1.1"
     kotlin("jvm") version "1.5.20"
     kotlin("plugin.spring") version "1.5.20"
     kotlin("plugin.jpa") version "1.5.20"
