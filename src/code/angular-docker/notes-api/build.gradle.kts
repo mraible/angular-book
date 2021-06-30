@@ -57,7 +57,6 @@ tasks.withType<Test> {
 val buildWeb = tasks.register<NpmTask>("buildNpm") {
     dependsOn(tasks.npmInstall)
     setNpmCommand("run", "build")
-    setArgs(listOf("--", "--prod"))
     inputs.dir("${spa}/src")
     inputs.dir(fileTree("${spa}/node_modules").exclude("${spa}/.cache"))
     outputs.dir("${spa}/dist")
