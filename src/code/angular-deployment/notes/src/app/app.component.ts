@@ -8,7 +8,7 @@ import { OktaAuthService } from '@okta/okta-angular';
 })
 export class AppComponent implements OnInit {
   title = 'Notes';
-  isAuthenticated: boolean;
+  isAuthenticated: boolean = false;
   isCollapsed = true;
 
   constructor(public oktaAuth: OktaAuthService) {

@@ -3,18 +3,18 @@ import { NoteFilter } from '../note-filter';
 import { NoteService } from '../note.service';
 import { Note } from '../note';
 import { SortableHeaderDirective, SortEvent} from './sortable.directive';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-note',
   templateUrl: 'note-list.component.html'
 })
 export class NoteListComponent implements OnInit {
-  total$: Observable<number>;
-  @ViewChildren(SortableHeaderDirective) headers: QueryList<SortableHeaderDirective>;
+  total$!: Observable<any>;
+  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
 
   filter = new NoteFilter();
-  selectedNote: Note;
+  selectedNote!: Note;
   feedback: any = {};
 
   get noteList(): Note[] {

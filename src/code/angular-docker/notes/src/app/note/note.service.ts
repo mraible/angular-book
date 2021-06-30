@@ -1,7 +1,7 @@
 import { Note } from './note';
 import { NoteFilter } from './note-filter';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, EMPTY } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -72,7 +72,7 @@ export class NoteService {
       params = new HttpParams().set('ID', entity.id.toString());
       return this.http.delete<Note>(url, {headers, params});
     }
-    return null;
+    return EMPTY;
   }
 }
 

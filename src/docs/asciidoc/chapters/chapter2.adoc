@@ -72,7 +72,7 @@ You can also use https://sdkman.io[SDKMAN!] to install Java 11.
 sdk install java 11.0.11.hs-adpt
 ----
 
-You can refer to the table of contents below for the steps in this tutorial.
+// You can refer to the table of contents below for the steps in this tutorial.
 
 == Create an Angular App
 
@@ -538,6 +538,11 @@ Angular CRUD allows you to generate CRUD (create, read, update, and delete) scre
 
 In your Angular `notes` app, install `angular-crud` using npm:
 
+// todo: this release still needs to happen
+// see https://github.com/manfredsteyer/angular-crud/pull/29
+// in the meantime, clone the repo, run `npm pack`,
+// then `npm install /path/to/angular-crud/*.tgz`
+
 [source,shell]
 ----
 npm i -D angular-crud@2
@@ -683,7 +688,7 @@ Add a new note, and you'll see a message like this in your backend console.
 
 [source,shell]
 ----
-Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: matt.raible@okta.com
+Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: mraible@gmail.com
 ----
 
 ////
@@ -1020,8 +1025,10 @@ Add Bootstrap and NG Bootstrap:
 
 [source,shell]
 ----
-npm i bootstrap@4 @ng-bootstrap/ng-bootstrap@9
+npm i bootstrap @ng-bootstrap/ng-bootstrap --force
 ----
+// todo: add versions and remove force once ng-bootstrap supports Angular 12.
+// https://github.com/ng-bootstrap/ng-bootstrap/issues/4093
 
 TIP: You can leave off the version numbers if you like. However, this tutorial is only guaranteed to work with the versions specified.
 
@@ -1135,13 +1142,6 @@ Before you make things awesome, I'd like to show you how to convert from using C
 
 NOTE: If you're not into Sass, you can <<#make-angular-beautiful,skip this section>>. Everything will still work without it.
 
-First, run the following command in the `notes` directory to convert the Angular project to use Sass.
-
-[source,shell]
-----
-ng config schematics.@schematics/angular:component.styleext scss
-----
-
 If you run the following `find` command:
 
 [source,shell]
@@ -1241,14 +1241,14 @@ You can see from the screenshots above that `angular-crud` generates screens wit
         <a class="nav-link" href="#">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://twitter.com/oktadev">@oktadev</a>
+        <a class="nav-link" href="https://twitter.com/mraible">@mraible</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://github.com/oktadeveloper/okta-angular-bootstrap-example">GitHub</a>
+        <a class="nav-link" href="https://github.com/mraible">GitHub</a>
       </li>
       <li class="nav-item pl-lg-3">
-        <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()" class="btn btn-outline-primary">Login</button>
-        <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()" class="btn btn-outline-secondary">Logout</button>
+        <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()" class="btn btn-outline-primary">Login</button>
+        <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()" class="btn btn-outline-secondary">Logout</button>
       </li>
     </ul>
   </div>
@@ -1303,7 +1303,7 @@ Then add `isCollapsed` in `app.component.ts` and change the `title` to be capita
 ----
 export class AppComponent implements OnInit {
   title = 'Notes';
-  isAuthenticated: boolean;
+  isAuthenticated: boolean = false;
   isCollapsed = true;
 
   ...
@@ -1519,7 +1519,7 @@ export interface SortEvent {
 })
 export class SortableHeaderDirective {
 
-  @Input() sortable: string;
+  @Input() sortable!: string;
   @Input() direction: SortDirection = '';
   @Output() sort = new EventEmitter<SortEvent>();
 
@@ -1556,7 +1556,7 @@ import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { SortableHeaderDirective, SortEvent} from './sortable.directive';
 
 export class NoteListComponent implements OnInit {
-  @ViewChildren(SortableHeaderDirective) headers: QueryList<SortableHeaderDirective>;
+  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
 
   ...
 
@@ -1584,8 +1584,8 @@ Update the `note-filter.ts` to have `column` and `direction` properties.
 ----
 export class NoteFilter {
   title = '';
-  column: string;
-  direction: string;
+  column!: string;
+  direction!: string;
 }
 ----
 
@@ -1787,13 +1787,15 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 In `note-list.component.ts`, add a `total$` observable and set it from the `search()` method. Then add an `onPageChange()` method and an `onChange()` method, and modify `onSort()` to set the page to 0.
 
+// note: I had to change from Observable<number> to Observable<any> to get it to compile. Seems strange.
+
 [source,ts]
 .src/app/note/note-list/note-list.component.ts
 ----
 import { Observable } from 'rxjs';
 
 export class NoteListComponent implements OnInit {
-  total$: Observable<number>;
+  total$!: Observable<any>;
 
   ...
 
@@ -1875,9 +1877,18 @@ image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pag
 
 == Angular with Bootstrap + Spring Boot is Powerful
 
-Phew! That was a lot of code. I hope this section has helped you see how powerful Angular and Spring Boot with Bootstrap can be! You can find all of the https://github.com/oktadev/okta-angular-bootstrap-example[source code for this example on GitHub].
+Phew! That was a lot of code. I hope this section has helped you see how powerful Angular and Spring Boot with Bootstrap can be!
 
+// proposal: Download the `source.zip` for this book from InfoQ. The `angular-bootstrap` directory has this chapter's completed example.
+
+////
+You can find all of the https://github.com/oktadev/okta-angular-bootstrap-example[source code for this example on GitHub].
+////
+
+////
 NOTE: I fixed the Angular tests so they work with Bootstrap in https://github.com/oktadeveloper/okta-angular-bootstrap-example/pull/1/commits/9458b76e98cda130763cfd10ab2bfa050db78869[this commit].
+////
+
 
 I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
 
@@ -1893,7 +1904,7 @@ I also wanted to let you know you can get a lot of this functionality for free w
       authenticationType oauth2
       buildTool gradle
       searchEngine elasticsearch
-      testFrameworks [protractor]
+      testFrameworks [cypress]
     }
     entities *
   }
@@ -1925,9 +1936,10 @@ Then, run `npm run e2e` in another terminal window to verify everything works. H
 .KHipster Notes
 image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
 
-Want to make it work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
+TIP: Want to make JHipster work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
 
-== Learn More About Angular and Spring Boot
+// == Learn More About Angular and Spring Boot
+== Summary
 
 I used the following resources to gather historical information about Angular and Bootstrap.
 
@@ -1935,3 +1947,5 @@ I used the following resources to gather historical information about Angular an
 * https://alistapart.com/article/building-twitter-bootstrap/[Building Twitter Bootstrap]
 * https://v4-alpha.getbootstrap.com/about/history/[Bootstrap > About > History]
 * https://medium.com/dailyjs/angular-1-0-turns-five-years-old-4d7108a5e412[Angular 1.0 Turns Five Years Old]
+
+In the next section, I'll show you how to deploy your Angular app to production. Buckle up!

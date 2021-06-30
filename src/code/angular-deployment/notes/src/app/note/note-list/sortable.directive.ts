@@ -18,7 +18,7 @@ export interface SortEvent {
 })
 export class SortableHeaderDirective {
 
-  @Input() sortable: string;
+  @Input() sortable!: string;
   @Input() direction: SortDirection = '';
   @Output() sort = new EventEmitter<SortEvent>();
 

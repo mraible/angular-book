@@ -2090,12 +2090,18 @@ A better solution is to hit Okta's APIs directly for authentication. https://www
 
 See Cypress's https://docs.cypress.io/guides/guides/web-security[Web Security documentation] for more information.
 
+// question: should we add the Electron example?
+// https://github.com/mraible/ng-demo/tree/electron#bonus-electron
+
 == Summary
 
 I hope you've enjoyed this introduction to Angular. You learned how to create a basic application without worrying about the backend.
 
+////
 I created a GitHub repo with all the code from this chapter. You can find it on GitHub in the https://github.com/mraible/ng-demo[mraible/ng-demo repository].
+////
 
 // todo: Figure out how to share source code - maybe as a .zip on InfoQ until this repo is public?
+// proposal: Download the `source.zip` for this book from InfoQ. The `ng-demo` directory has this chapter's completed example. There's also directories for Angular Material, Bootstrap, and Okta.
 
 In the next section, I'll show you how to use a modern backend to provide you data, security, and production-ready features.

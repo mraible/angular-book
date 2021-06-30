@@ -8,7 +8,7 @@ import { AuthService } from './shared/auth.service';
 })
 export class AppComponent implements OnInit {
   title = 'Notes';
-  isAuthenticated: boolean;
+  isAuthenticated: boolean = false;
   isCollapsed = true;
 
   constructor(public auth: AuthService) {

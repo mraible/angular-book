@@ -4,7 +4,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.util.matcher.RequestMatcher
 
 @EnableWebSecurity
@@ -12,10 +11,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         //@formatter:off
         http
-            .authorizeRequests()
-                .antMatchers("/**/*.{js,html,css}").permitAll()
-                .antMatchers("/", "/user").permitAll()
-                .anyRequest().authenticated()
+            .authorizeRequests().anyRequest().authenticated()
                 .and()
             .oauth2Login()
                 .and()
@@ -31,11 +27,6 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
         http.headers()
                 .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/")
-                .and()
-                .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-                .and()
-                .featurePolicy("accelerometer 'none'; camera 'none'; microphone 'none'")
-
         //@formatter:on
     }
 }

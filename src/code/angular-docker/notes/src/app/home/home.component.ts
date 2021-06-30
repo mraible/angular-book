@@ -7,7 +7,7 @@ import { AuthService } from '../shared/auth.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean = false;
 
   constructor(public auth: AuthService) {
   }

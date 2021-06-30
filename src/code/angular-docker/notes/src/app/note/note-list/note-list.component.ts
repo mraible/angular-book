@@ -10,11 +10,11 @@ import { Observable } from 'rxjs';
   templateUrl: 'note-list.component.html'
 })
 export class NoteListComponent implements OnInit {
-  total$: Observable<number>;
-  @ViewChildren(SortableHeaderDirective) headers: QueryList<SortableHeaderDirective>;
+  total$!: Observable<any>;
+  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
 
   filter = new NoteFilter();
-  selectedNote: Note;
+  selectedNote!: Note;
   feedback: any = {};
 
   get noteList(): Note[] {
