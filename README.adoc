@@ -8,7 +8,7 @@ http://asciidoctor.org/docs/asciidoctor-gradle-plugin/[Asciidoctor Gradle plugin
 == Installing
 
 ----
-npm run setup
+npm start
 ----
 
 == Building
@@ -43,7 +43,7 @@ TIP: You will only need to run this command when dependencies change in `package
 Now you can run the following command:
 
 ----
-npm run watch
+npm start
 ----
 
 This will start two daemons:
