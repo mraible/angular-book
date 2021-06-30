@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        app: [ angular-spring-boot, angular-bootstrap, angular-deployment, angular-docker ]
+        app: [spring-boot, bootstrap, deployment, docker]
     name: Build and Test
     runs-on: ubuntu-latest
     defaults:
@@ -26,11 +26,11 @@ jobs:
           google-chrome --version
       - name: Install Angular dependencies
         run: |
-          cd ${{ matrix.app }}/notes
+          cd angular-${{ matrix.app }}/notes
           npm ci
       - name: Run Angular tests
         run: xvfb-run npm test -- --watch=false
       - name: Run Spring Boot tests
         run: |
-            cd ${{ matrix.app }}/notes-api
+            cd angular-${{ matrix.app }}/notes-api
             ./gradlew test
