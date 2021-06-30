@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     id("org.springframework.boot") version "2.5.2"
@@ -19,8 +20,8 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 val spa = "${projectDir}/../notes";
 
 node {
-    version = "14.17.1"
-    nodeModulesDir = file(spa)
+    version.set("14.17.1")
+    nodeProjectDir.set(file(spa))
 }
 
 repositories {
@@ -54,9 +55,9 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-val buildWeb = tasks.register<NpmTask>("buildNpm") {
+val buildWeb = tasks.register<NpxTask>("buildNpm") {
     dependsOn(tasks.npmInstall)
-    setNpmCommand("run", "build")
+    command.set("build")
     inputs.dir("${spa}/src")
     inputs.dir(fileTree("${spa}/node_modules").exclude("${spa}/.cache"))
     outputs.dir("${spa}/dist")

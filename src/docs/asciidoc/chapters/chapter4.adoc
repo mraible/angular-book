@@ -887,12 +887,12 @@ Because there won't be any cross-domain requests, you can remove the `simpleCors
 
 Now that your Spring Boot app is ready to serve up your Angular app, you need to modify your Gradle configuration to build your Angular app and package it in the JAR.
 
-Start by importing `NpmTask` and adding the Node Gradle plugin.
+Start by importing `NpxTask` and adding the Node Gradle plugin.
 
 [source,kotlin]
 .notes/build.gradle.kts
 ----
-import com.moowork.gradle.node.npm.NpmTask
+import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     ...
@@ -908,8 +908,8 @@ Then, define the location of your Angular app and configuration for the Node plu
 val spa = "${projectDir}/../notes";
 
 node {
-    version = "14.17.1"
-    nodeModulesDir = file(spa)
+    version.set("14.17.1")
+    nodeProjectDir.set(file(spa))
 }
 ----
 
@@ -919,7 +919,7 @@ Add a `buildWeb` task:
 ----
 val buildWeb = tasks.register<NpmTask>("buildNpm") {
     dependsOn(tasks.npmInstall)
-    setNpmCommand("run", "build")
+    command.set("build")
     inputs.dir("${spa}/src")
     inputs.dir(fileTree("${spa}/node_modules").exclude("${spa}/.cache"))
     outputs.dir("${spa}/dist")
