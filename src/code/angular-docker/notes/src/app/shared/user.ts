@@ -1,4 +1,4 @@
 export class User {
-  sub: number;
-  fullName: string;
+  sub!: number;
+  fullName!: string;
 }

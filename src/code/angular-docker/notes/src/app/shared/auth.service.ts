@@ -18,12 +18,10 @@ export class AuthService {
   }
 
   getUser(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe(
+    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <1>
       map((response: User) => {
-        if (response !== null) {
-          this.$authenticationState.next(true);
-          return response;
-        }
+        this.$authenticationState.next(true);
+        return response;
       })
     );
   }
@@ -36,11 +34,11 @@ export class AuthService {
     })
   }
 
-  login(): void {
+  login(): void { // <2>
     location.href = `${location.origin}${this.location.prepareExternalUrl('oauth2/authorization/okta')}`;
   }
 
-  logout(): void {
+  logout(): void { // <3>
     const redirectUri = `${location.origin}${this.location.prepareExternalUrl('/')}`;
 
     this.http.post(`${environment.apiUrl}/api/logout`, {}).subscribe((response: any) => {

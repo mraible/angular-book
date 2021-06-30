@@ -522,18 +522,16 @@ export class AuthService {
   }
 
   getUser(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe(
+    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <1>
       map((response: User) => {
-        if (response !== null) {
-          this.$authenticationState.next(true);
-          return response;
-        }
+        this.$authenticationState.next(true);
+        return response;
       })
     );
   }
 
   isAuthenticated(): Promise<boolean> {
-    return this.getUser().toPromise().then((user: User) => { // <1>
+    return this.getUser().toPromise().then((user: User) => {
       return user !== undefined;
     }).catch(() => {
       return false;
@@ -541,8 +539,7 @@ export class AuthService {
   }
 
   login(): void { // <2>
-    location.href =
-      `${location.origin}${this.location.prepareExternalUrl('oauth2/authorization/okta')}`;
+    location.href = `${location.origin}${this.location.prepareExternalUrl('oauth2/authorization/okta')}`;
   }
 
   logout(): void { // <3>
@@ -555,7 +552,7 @@ export class AuthService {
   }
 }
 ----
-<.> Talk to the `/users` endpoint to determine authenticated status. A username will be returned if the user is logged in.
+<.> Talk to the `/user` endpoint to determine authenticated status. A username will be returned if the user is logged in.
 <.> When the user clicks a login button, redirect them to a Spring Security endpoint to do the OAuth dance.
 <.> Logout using the `/api/logout` endpoint, which returns the Okta Logout API URL and a valid ID token.
 ====
@@ -566,8 +563,8 @@ Create a `user.ts` file in the same directory, to hold your `User` model.
 .notes/src/app/shared/user.ts
 ----
 export class User {
-  sub: number;
-  fullName: string;
+  sub!: number;
+  fullName!: string;
 }
 ----
 
@@ -595,7 +592,7 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
     this.auth.$authenticationState.subscribe(
-      (isAuthenticated: boolean)  => this.isAuthenticated = isAuthenticated
+      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
     );
   }
 }
@@ -829,7 +826,7 @@ fun user(@AuthenticationPrincipal user: OidcUser?): OidcUser? {
 }
 ----
 
-Previously, Angular handled logout. Add a `LogoutController` that will handle expiring the session as well as sending information back to Angular so it can logout from Okta.
+Previously, Angular handled logout. Add a `LogoutController` that will handle expiring the session as well as sending information back to Angular so it can sign out from Okta.
 
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/LogoutController.kt
