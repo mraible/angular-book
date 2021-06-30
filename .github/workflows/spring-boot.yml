@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         app: [spring-boot, bootstrap, deployment, docker]
     name: Build and Test
