@@ -32,5 +32,5 @@ jobs:
         run: xvfb-run npm test -- --watch=false
       - name: Run Spring Boot tests
         run: |
-            cd angular-${{ matrix.app }}/notes-api
-            ./gradlew test
+          cd angular-${{ matrix.app }}/notes-api
+          ./gradlew test
