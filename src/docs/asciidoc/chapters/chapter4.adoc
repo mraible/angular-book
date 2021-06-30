@@ -1467,9 +1467,11 @@ bootiful-angular   https://bootiful-angular.default.34.70.42.153.nip.io   bootif
 
 You'll need to add this URL (+ `/login/oauth2/code/okta`) as a **Login redirect URI** and a **Logout redirect URI** in Okta in order to log in.
 
+////
 [[knative-login-logout-uris]]
 .Knative Login and Logout URIs
 image::../images/angular-docker/knative-login-logout-uris.png[Knative Login and Logout URIs, 700, scaledwidth="100%"]
+////
 
 Then, you'll be able to log into your app running on Knative! Add a note or two to prove it all works.
 
