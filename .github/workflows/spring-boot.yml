@@ -1,0 +1,36 @@
+name: Angular + Spring Boot CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        app: [ angular-spring-boot, angular-bootstrap, angular-deployment, angular-docker ]
+    name: Build and Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/code
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node 14.x
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: '14.x'
+      - name: Install latest Chrome
+        run: |
+          sudo apt update
+          sudo apt --only-upgrade install google-chrome-stable
+          google-chrome --version
+      - name: Install Angular dependencies
+        run: |
+          cd ${{ matrix.app }}/notes
+          npm ci
+      - name: Run Angular unit tests
+        run: xvfb-run npm test -- --watch=false
+      - name: Test Spring Boot
+        run: |
+            cd ${{ matrix.app }}/notes-api
+            ./gradlew integrationTest
