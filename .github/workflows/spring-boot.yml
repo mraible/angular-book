@@ -29,4 +29,5 @@ jobs:
       - name: Run Angular tests
         run: xvfb-run npm test -- --watch=false
       - name: Run Spring Boot tests
-        run: cd ../notes-api && ./gradlew test
+        working-directory: ../notes-api
+        run: ./gradlew test
