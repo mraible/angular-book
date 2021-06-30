@@ -13,19 +13,6 @@ image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Doc
 
 Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app—you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
 
-////
-====
-I'd like to thank many folks for their help with this post. **Benoit Sautel** for help with Gradle + Kotlin, **Ray Tsang** for help with Jib, **James Ward** for help with Knative, **Josh Long** for his assistance with Docker + Cloud Foundry, and **Joe Kutner** for his buildpacks support. Y'all rock!
-
-[.avatar-row]
-https://twitter.com/bsautel[image:../images/angular-docker/bsautel.jpg[alt=Benoit Sautel,role="BlogPost-avatar img-100px"]]
-https://twitter.com/saturnism[image:../images/angular-docker/saturnism.jpg[alt=Ray Tsang,role="BlogPost-avatar img-100px"]]
-https://twitter.com/_JamesWard[image:../images/angular-docker/_JamesWard.jpg[alt=James Ward,role="BlogPost-avatar img-100px"]]
-https://twitter.com/starbuxman[image:../images/angular-docker/starbuxman.jpg[alt=Josh Long,role="BlogPost-avatar img-100px"]]
-https://twitter.com/codefinger[image:../images/angular-docker/codefinger.jpg[alt=Joe Kutner,role="BlogPost-avatar img-100px"]]
-====
-////
-
 == Create an Angular + Spring Boot App
 
 If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
@@ -1527,6 +1514,7 @@ You should be able to navigate to `http://localhost:8080`, log in, and add notes
 [[spring-boot-2.3-notes]]
 .Spring Boot 2.3 app running
 image::../images/angular-docker/spring-boot-2.3-notes.png[Spring Boot 2.3 app running, 800, scaledwidth="100%"]
+// todo: update image to the latest version of Spring Boot
 
 Pretty neat, don't you think!?
 

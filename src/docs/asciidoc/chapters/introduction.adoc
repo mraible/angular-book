@@ -1,3 +1,11 @@
 = Introduction
 
-Angular is awesome. Why?
+Angular is written in TypeScript, compiles to JavaScript, and just using it makes you a hipster! Like Struts in the early 2000s and Rails in the mid-2000s, Angular and other JavaScript frameworks have changed the way developers write web applications. Today, data is exposed via REST APIs and UIs are written in JavaScript (or TypeScript). As a Java developer, I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several different components:
+
+* Components: Classes that retrieve data from services and expose it to templates.
+* Services: Classes that make HTTP calls to a JSON API.
+* Templates: HTML pages that display data. Use Angular directives to iterate over collections and show/hide elements.
+* Pipes: Data-manipulation tools that can transform data (e.g. uppercase, lowercase, ordering, and searching).
+* Directives: HTML processors that allow components to be written. Similar to JSP tags.
+
+// todo: polish

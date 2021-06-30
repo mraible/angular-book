@@ -4,7 +4,7 @@
 :email: matt@raibledesigns.com
 :revnumber: 1.0.0
 :revdate: {docdate}
-:revyear: 2022
+:revyear: 2021
 :subject: Angular
 :keywords: Angular, TypeScript, Bootstrap, Spring Boot
 :doctype: book

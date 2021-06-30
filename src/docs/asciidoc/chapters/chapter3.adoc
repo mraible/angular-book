@@ -11,7 +11,7 @@ Developers ask me from time-to-time, "What's the best way to do Angular deployme
 
 There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
 
-[[angular-deployment]]
+[[angular-deployment-with-spring-boot]]
 .Angular Deployment with a Side of Spring Boot
 image::../images/angular-deployment/angular-deployment.png[Angular Deployment with a Side of Spring Boot, 800, scaledwidth="100%"]
 
@@ -1216,4 +1216,4 @@ Building modern apps with Angular and Spring Boot is a common practice these day
 image::../images/angular-docker/keyword-planner-angular-results.png[Keyword Planner results, 375, scaledwidth="100%"]
 
 This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS.////
-
+////
