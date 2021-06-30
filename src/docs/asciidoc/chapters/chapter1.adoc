@@ -1,3 +1,4 @@
+[[chapter-1]]
 = Build an Angular App
 
 I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of :
