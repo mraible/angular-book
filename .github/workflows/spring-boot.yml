@@ -28,9 +28,9 @@ jobs:
         run: |
           cd ${{ matrix.app }}/notes
           npm ci
-      - name: Run Angular unit tests
+      - name: Run Angular tests
         run: xvfb-run npm test -- --watch=false
-      - name: Test Spring Boot
+      - name: Run Spring Boot tests
         run: |
             cd ${{ matrix.app }}/notes-api
-            ./gradlew integrationTest
+            ./gradlew test
