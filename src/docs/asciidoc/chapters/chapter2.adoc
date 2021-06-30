@@ -25,18 +25,21 @@ image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800,
 
 == What's New In Angular?
 
-Angular 12 is the version of Angular used in this book. It adds strict typing by default and deprecates Protractor and IE11 support. You can update to the latest release of Angular using the following command:
+Angular 12 is the version of Angular used in this book. It adds strict typing by default and deprecates Protractor and IE11 support. It also leverages Ivy throughout and deprecates the View Engine, which was Angular’s default renderer before Ivy.
+
+Ivy is a new compiler and renderer, introduced in Angular 9. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
+
+Simply put: upgrading to the latest version of Angular will make your web apps faster!
+
+[TIP]
+====
+If you have an existing app, you can update to the latest release of Angular using `ng update`:
 
 [source,shell]
 ----
 ng update @angular/cli @angular/core
 ----
-
-It also leverages Ivy throughout and deprecates the View Engine, which was Angular’s default renderer before Ivy.
-
-Ivy is a new compiler and renderer, introduced in Angular 9. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
-
-Simply put: upgrading to the latest version of Angular will make your web apps faster!
+====
 
 == What's New in Spring Boot?
 
@@ -159,7 +162,7 @@ import { OktaAuthService } from '@okta/okta-angular';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean = false;
 
   constructor(public oktaAuth: OktaAuthService) {
   }
@@ -203,11 +206,11 @@ export class AuthInterceptor implements HttpInterceptor {
     return from(this.handleAccess(request, next));
   }
 
-  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
-    // Only add an access token to whitelisted origins
+  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+    // Only add an access token to allowed origins
     const allowedOrigins = ['http://localhost'];
     if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
-      const accessToken = await this.oktaAuth.getAccessToken();
+      const accessToken = this.oktaAuth.getAccessToken();
       request = request.clone({
         setHeaders: {
           Authorization: 'Bearer ' + accessToken
@@ -633,9 +636,9 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 [source,html]
 ----
 <div>
-  <button *ngIf="!isAuthenticated" (click)="oktaAuth.loginRedirect()">Login</button>
+  <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
   <p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
-  <button *ngIf="isAuthenticated" (click)="oktaAuth.logout()">Logout</button>
+  <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
 </div>
 ----
 
@@ -683,6 +686,14 @@ Add a new note, and you'll see a message like this in your backend console.
 Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: matt.raible@okta.com
 ----
 
+////
+This also happens, not sure why:
+
+Failed to evaluate Jackson deserialization for type [[simple type, class org.springframework.data.rest.webmvc.PersistentEntityResource]]: java.lang.NullPointerException
+
+It doesn't seem to cause any issues with data.
+////
+
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
 
 [source,ts]
@@ -719,7 +730,7 @@ import { Note } from '../note';
 export class NoteListComponent implements OnInit {
 
   filter = new NoteFilter();
-  selectedNote: Note;
+  selectedNote!: Note;
   feedback: any = {};
 
   get noteList(): Note[] {
@@ -782,8 +793,8 @@ import { of } from 'rxjs';
 })
 export class NoteEditComponent implements OnInit {
 
-  id: string;
-  note: Note;
+  id!: string;
+  note!: Note;
   feedback: any = {};
 
   constructor(
@@ -845,13 +856,18 @@ package com.okta.developer.notes
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer
+import org.springframework.web.servlet.config.annotation.CorsRegistry
 
 @Configuration
 class RestConfiguration : RepositoryRestConfigurer {
-   override fun configureRepositoryRestConfiguration(config: RepositoryRestConfiguration?) {
-       config?.exposeIdsFor(Note::class.java)
-       config?.setBasePath("/api")
-   }
+
+    override fun configureRepositoryRestConfiguration(
+        config: RepositoryRestConfiguration?,
+        cors: CorsRegistry?
+    ) {
+        config?.exposeIdsFor(Note::class.java)
+        config?.setBasePath("/api")
+    }
 }
 ----
 
@@ -942,15 +958,17 @@ In this particular example, the CSP won't be used since Angular is a separate ap
 
 TIP: Once you've deployed your Spring Boot app to a public URL, you can test your CSP headers are working with https://securityheaders.com/[securityheaders.com].
 
-== Learn More About Angular, Spring Boot, and Kotlin
+// == Learn More About Angular, Spring Boot, and Kotlin
+== Summary
 
 In this chapter, I showed you how to create an Angular app, a Spring Boot app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
 
 This section did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in the next section.
 
 // todo: Figure out how to share source code - maybe as a .zip on InfoQ until this repo is public?
+// proposal: Download the `source.zip` for this book from InfoQ. The `angular-spring-boot` directory has this chapter's completed example.
 
-You can find the source code for this chapter at https://github.com/oktadev/okta-spring-boot-2-angular-12-example[oktadev/okta-spring-boot-2-angular-12-example].
+// You can find the source code for this chapter at https://github.com/oktadev/okta-spring-boot-2-angular-12-example[oktadev/okta-spring-boot-2-angular-12-example].
 
 == Build Beautiful Angular Apps with Bootstrap
 
@@ -986,19 +1004,15 @@ You might think that Angular Material is more popular than Bootstrap these days.
 
 Today I'd like to show you how to integrate Bootstrap into an Angular application. I'll start with the note-taking example from the last section. I'll show you how to integrate Bootstrap, convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
 
-Clone the previous application into an `okta-angular-bootstrap-example` directory.
+If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it.
 
-[source,shell]
-----
-git clone https://github.com/oktadev/okta-spring-boot-2-angular-12-example.git \
- okta-angular-bootstrap-example
-----
+If you'd rather start from this point, download the `source.zip` for this book from InfoQ. The `angular-spring-boot` directory has the previous sections's completed example. Copy it to `angular-bootstrap` in your favorite code location.
 
 In a terminal, navigate into this new directory and its `notes` folder. Then install the dependencies for the Angular app.
 
 [source,shell]
 ----
-cd okta-angular-bootstrap-example/notes
+cd angular-bootstrap/notes
 npm i
 ----
 
@@ -1076,54 +1090,26 @@ Now we're getting somewhere!
 .Slightly styled
 image::../images/angular-bootstrap/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
 
-To make the login button work, you need to configure both apps' security configurations.
-
-// todo: this should be done from the last chapter, so no need to repeat
-== Secure Angular and Spring Boot with OpenID Connect
-
-Using your Okta developer account, log in to your dashboard, and register your Spring Boot app:
-
-1. Navigate to **Applications** > **Add Application**
-2. Select **Web** and click **Next**
-3. Give the application a name and add `http://localhost:8080/login/oauth2/code/okta` as a login redirect URI
-4. Click **Done**
-
-Create an `okta.env` file in the `notes-api` directory and copy your settings into it.
+To make the login button work, you need to configure both apps' security configurations. Thankfully, that's easy with the Okta CLI!
 
 [source,shell]
 ----
-export OKTA_OAUTH2_ISSUER=https://{yourOktaDomain}/oauth2/default
-export OKTA_OAUTH2_CLIENT_ID={yourClientId}
-export OKTA_OAUTH2_CLIENT_SECRET={yourClientSecret}
+# in the notes directory
+okta apps create # select SPA > http://localhost:4200/callback
+
+# in the notes-api directory
+okta apps create # select Web > Spring Boot Starter > defaults
 ----
 
-Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and starting your app.
+Restart both apps:
 
 [source,shell]
 ----
-cd notes-api
-source okta.env
+# in the notes directory
+npm start
+
+# in the notes-api directory
 ./gradlew bootRun
-----
-
-Then, create a new OIDC app for Angular:
-
-1. Navigate to **Applications** > **Add Application**
-2. Select **Single-Page App** and click **Next**
-3. Give the application a name and set the login redirect URI to `http://localhost:4200/callback`
-4. Click **Done**
-
-Modify `auth-routing.module.ts` to use your Okta domain and client ID.
-
-[source,typescript]
-.notes/src/app/auth-routing.module.ts
-----
-const oktaConfig = {
-  issuer: 'https://{yourOktaDomain}/oauth2/default',
-  redirectUri: window.location.origin + '/callback',
-  clientId: '{yourClientId}',
-  pkce: true
-};
 ----
 
 Now you should be able to log in with your Okta credentials and create notes to your heart's content!
@@ -1134,12 +1120,14 @@ image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="
 
 You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
 
-Commit your progress to Git from the `okta-angular-bootstrap-example` directory.
+////
+Commit your progress to Git from the `angular-bootstrap` directory.
 
 [source,shell]
 ----
 git commit -am "Add Bootstrap and configure OIDC"
 ----
+////
 
 == Use Sass to Customize Bootstrap
 

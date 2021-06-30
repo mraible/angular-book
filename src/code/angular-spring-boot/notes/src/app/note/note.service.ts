@@ -1,7 +1,7 @@
 import { Note } from './note';
 import { NoteFilter } from './note-filter';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 const headers = new HttpHeaders().set('Accept', 'application/json');
@@ -59,7 +59,7 @@ export class NoteService {
       params = new HttpParams().set('ID', entity.id.toString());
       return this.http.delete<Note>(url, {headers, params});
     }
-    return null;
+    return EMPTY;
   }
 }
 

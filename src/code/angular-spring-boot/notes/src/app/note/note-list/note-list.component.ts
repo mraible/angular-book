@@ -10,7 +10,7 @@ import { Note } from '../note';
 export class NoteListComponent implements OnInit {
 
   filter = new NoteFilter();
-  selectedNote: Note;
+  selectedNote!: Note;
   feedback: any = {};
 
   get noteList(): Note[] {
