@@ -9,9 +9,6 @@ jobs:
         app: [spring-boot, bootstrap, deployment, docker]
     name: Build and Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src/code
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -25,12 +22,11 @@ jobs:
           sudo apt --only-upgrade install google-chrome-stable
           google-chrome --version
       - name: Install Angular dependencies
-        run: |
-          cd angular-${{ matrix.app }}/notes
-          npm ci
+        working-directory: ./src/code/angular-${{ matrix.app }}/notes
+        run: npm ci
       - name: Run Angular tests
+        working-directory: ./src/code/angular-${{ matrix.app }}/notes
         run: xvfb-run npm test -- --watch=false
       - name: Run Spring Boot tests
-        run: |
-          cd angular-${{ matrix.app }}/notes-api
-          ./gradlew test
+        working-directory: ./src/code/angular-${{ matrix.app }}/notes-api
+        run: ./gradlew test
