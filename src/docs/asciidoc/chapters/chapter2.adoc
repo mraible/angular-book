@@ -908,6 +908,101 @@ Another option is to modify the Angular side of things. Since the ID is passed i
 
 In the final example for this chapter, I opted to return IDs from my Spring Boot API.
 
+== Fix Tests by Mocking Spring Security's Configuration
+
+If you open a new terminal window and run `./gradlew test` in the `notes-api` directory, tests will fail. This happens because Spring Security cannot connect to an identity provider on startup. You can run `source okta.env` before running `./gradlew test` to solve the problem. However, this is not a good long-term solution, especially for continuous integration.
+
+To solve this problem, mock the OIDC configuration by creating a `notes-api/src/test/.../notes/MockSecurityConfiguration.kt` class.
+
+[source,kotlin]
+.notes-api/src/test/kotlin/com/okta/developer/notes/MockSecurityConfiguration.kt
+----
+package com.okta.developer.notes
+
+import org.mockito.Mockito.mock
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
+import org.springframework.security.oauth2.client.registration.ClientRegistration
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
+import org.springframework.security.oauth2.core.AuthorizationGrantType
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod
+import org.springframework.security.oauth2.jwt.JwtDecoder
+
+@TestConfiguration
+class MockSecurityConfiguration {
+    private val clientRegistration: ClientRegistration
+
+    @Bean
+    fun clientRegistrationRepository(): ClientRegistrationRepository {
+        return InMemoryClientRegistrationRepository(clientRegistration)
+    }
+
+    private fun clientRegistration(): ClientRegistration.Builder {
+        val metadata: MutableMap<String, Any> = HashMap()
+        metadata["end_session_endpoint"] = "https://angular.org/logout"
+        return ClientRegistration.withRegistrationId("oidc")
+            .redirectUri("{baseUrl}/{action}/oauth2/code/{registrationId}")
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .scope("read:user")
+            .authorizationUri("https://angular.org/login/oauth/authorize")
+            .tokenUri("https://angular.org/login/oauth/access_token")
+            .jwkSetUri("https://angular.org/oauth/jwk")
+            .userInfoUri("https://api.angular.org/user")
+            .providerConfigurationMetadata(metadata)
+            .userNameAttributeName("id")
+            .clientName("Client Name")
+            .clientId("client-id")
+            .clientSecret("client-secret")
+    }
+
+    @Bean
+    fun jwtDecoder(): JwtDecoder {
+        return mock(JwtDecoder::class.java)
+    }
+
+    @Bean
+    fun authorizedClientService(clientRegistrationRepository: ClientRegistrationRepository?): OAuth2AuthorizedClientService {
+        return InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository)
+    }
+
+    @Bean
+    fun authorizedClientRepository(authorizedClientService: OAuth2AuthorizedClientService?): OAuth2AuthorizedClientRepository {
+        return AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService)
+    }
+
+    init {
+        clientRegistration = clientRegistration().build()
+    }
+}
+----
+
+Then, modify `DemoApplicationTests.kt` to use this class.
+
+[source,kotlin]
+.notes-api/src/test/kotlin/com/okta/developer/notes/DemoApplicationTests.kt
+----
+package com.okta.developer.notes
+
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
+
+@SpringBootTest(classes = [DemoApplication::class, MockSecurityConfiguration::class])
+class DemoApplicationTests {
+
+	@Test
+	fun contextLoads() {}
+
+}
+----
+
+Now, running `./gradlew test` should pass as expected.
+
 == Lock Down Spring Boot with Recommended Security Practices
 
 In link:/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
