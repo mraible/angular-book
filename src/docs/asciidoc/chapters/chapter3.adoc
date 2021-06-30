@@ -1,60 +1,31 @@
-[[chapter-3]]
-= Chapter 3
+= Angular Deployment
 
-== Angular Deployment
-
+////
 - Deploy Angular to Heroku with Secure Headers
 - Use `ng deploy` with Firebase, Netlify, and AWS
+////
 
+One of the more popular combinations of frontend and backend frameworks is Angular + Spring Boot. It's possible to combine the two—from keeping them as separate apps to combining them into a single artifact. But, what about deployment?
 
-One of the more popular combinations of frontend and backend frameworks is Angular + Spring Boot. I've written several tutorials about how to combine the two—from keeping them as separate apps to combining them into a single artifact. But, what about deployment?
-
-Developers ask me from time-to-time, "What's the best way to do Angular  deployment?" In this tutorial, I'll show you several options. I'll start by showing you how to deploy a Spring Boot app to Heroku. Then, I'll show how to deploy a separate Angular app to Heroku.
+Developers ask me from time-to-time, "What's the best way to do Angular deployment?" In this section, I'll show you several options. I'll start by showing you how to deploy a Spring Boot app to Heroku. Then, I'll show how to deploy a separate Angular app to Heroku.
 
 There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
 
-////
-[[angular-deployment]]
+[[angular-deployment-with-spring-boot]]
 .Angular Deployment with a Side of Spring Boot
 image::../images/angular-deployment/angular-deployment.png[Angular Deployment with a Side of Spring Boot, 800, scaledwidth="100%"]
-////
-
 
 == Create an Angular + Spring Boot App
 
-Since this tutorial is more about deployment than app creation, you can start with an existing Angular + Spring Boot app that I created previously. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
-////
-If you'd like to see how I built it, you can read the following tutorials:
+If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
-* link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
-* link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap]
-////
-
+If you'd rather start from this point, download the `source.zip` for this book from InfoQ. The `angular-bootstrap` directory has the previous sections's completed example. Copy it to `angular-deployment` in your favorite code location.
 
 One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
 
 [[notes-list-with-sorting-recap]]
 .Notes list with sorting
 image::../images/angular-deployment/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
-
-Clone the application into an `okta-angular-deployment-example` directory.
-
-[source,shell]
-----
-git clone https://github.com/oktadeveloper/okta-angular-bootstrap-example.git \
- okta-angular-deployment-example
-----
-
-**Prerequisites:**
-
-* https://adoptopenjdk.net/[Java 11]+
-* https://nodejs.org/[Node 12]+
-* https://docs.docker.com/get-docker/[Docker]
-
-////
-* An https://developer.okta.com/signup/[Okta Developer Account]
-////
-
 
 === Secure Your Angular + Spring Boot App with OIDC
 
@@ -78,7 +49,7 @@ Click **Provision** and wait 20-30 seconds while your Okta account is created an
 .Okta Add-On
 image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
 
-Create an `okta.env` file in the `okta-angular-deployment-example/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
+Create an `okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
 
 [source,shell]
 ----
@@ -123,9 +94,8 @@ Next, configure Angular for OIDC authentication by modifying its `auth-routing.m
 ----
 const oktaConfig = {
   issuer: '$OKTA_OAUTH2_ISSUER',
-  redirectUri: window.location.origin + '/callback',
-  clientId: '$OKTA_OAUTH2_CLIENT_ID_SPA',
-  pkce: true
+  redirectUri: '/callback',
+  clientId: '$OKTA_OAUTH2_CLIENT_ID_SPA'
 };
 
 const routes: Routes = [
@@ -157,13 +127,6 @@ Click the **Login** button in the top right corner. You should be logged in stra
 .First note
 image::../images/angular-deployment/first-note.png[First note, 800, scaledwidth="100%"]
 
-Commit your progress to Git from the top-level `okta-angular-deployment-example` directory.
-
-[source,shell]
-----
-git commit -am "Add Okta OIDC Configuration"
-----
-
 == Prepare Angular + Spring Boot for Production
 
 There are a couple of things you should do to make your app ready for production.
@@ -183,18 +146,20 @@ There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradl
 [source,kotlin]
 ----
 plugins {
-    id("se.patrikerdes.use-latest-versions") version "0.2.13"
-    id("com.github.ben-manes.versions") version "0.28.0"
+    id("se.patrikerdes.use-latest-versions") version "0.2.17"
+    id("com.github.ben-manes.versions") version "0.38.0"
     ...
 }
 ----
 
+////
 For compatibility with Spring Boot 2.3, you'll need to update the Gradle Wrapper to use Gradle 6.3+.
 
 [source,shell]
 ----
 ./gradlew wrapper --gradle-version=6.5 --distribution-type=bin
 ----
+////
 
 Then run the following command in the `notes-api` directory to update your dependencies to the latest released versions.
 
@@ -215,7 +180,6 @@ npm i -g npm-check-updates
 ncu -u
 ----
 
-
 ////
 At the time of this writing, this will upgrade Angular to version 9.1.9 and TypeScript to version 3.9.3. Angular 9 supports TypeScript versions >=3.6.4 and <3.9.0, so you'll need to change `package.json` to specify TypeScript 3.8.3.
 
@@ -224,7 +188,6 @@ At the time of this writing, this will upgrade Angular to version 9.1.9 and Type
 "typescript": "~3.8.3"
 ----
 ////
-
 
 Then run the following commands in the `notes` directory:
 
@@ -236,13 +199,6 @@ ng serve
 ----
 
 Confirm you can still log in at `http://localhost:4200`.
-
-Commit all your changes to source control.
-
-[source,shell]
-----
-git commit -am "Update dependencies to latest versions"
-----
 
 === Configure Production URLs
 
@@ -290,9 +246,9 @@ Define the `allowed.origins` property in `notes-api/src/main/resources/applicati
 allowed.origins=http://localhost:4200
 ----
 
-Angular has an https://angular.io/guide/build[environment concept] built-in. When you run `ng build --prod` to create a production build, it replaces `environment.ts` with `environment.prod.ts`.
+Angular has an https://angular.io/guide/build[environment concept] built-in. When you run `ng build` to create a production build, it replaces `environment.ts` with `environment.prod.ts`.
 
-Open `environment.ts` and add an `apiUrl` variable for development.
+Open `environment.ts` and add an `apiUrl` variable for development. This file will be used when running `ng serve`.
 
 [source,typescript]
 .notes/src/environments/environment.ts
@@ -399,13 +355,13 @@ Create a `notes-api/src/main/docker/postgresql.yml` so you can test your `prod` 
 
 [source,yaml]
 ----
-version: '2'
+version: '3.8'
 services:
   notes-postgresql:
-    image: postgres:12.1
+    image: postgres:13.3
     environment:
       - POSTGRES_USER=notes
-      - POSTGRES_PASSWORD=
+      - POSTGRES_PASSWORD=@-xYcoZn2
     ports:
       - 5432:5432
 ----
@@ -420,7 +376,7 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=update
 spring.datasource.url=jdbc:postgresql://localhost:5432/notes
 spring.datasource.username=notes
-spring.datasource.password=
+spring.datasource.password=@-xYcoZn2
 ----
 
 The word `user` is a keyword in PostgreSQL, so you'll need to change `user` to `username` in the `Note` entity.
@@ -436,6 +392,7 @@ data class Note(@Id @GeneratedValue var id: Long? = null,
 
 This will cause compilation errors and you'll need to rename method names and variables to fix them.
 
+// todo: verify this looks OK in Print, PDF, and EPUB
 .Click to see the diff
 [%collapsible]
 ====
@@ -449,8 +406,8 @@ index 387e332..506d761 100644
      @Throws(Exception::class)
      override fun run(args: ApplicationArguments) {
          for (x in 0..1000) {
--            repository.save(Note(title = "Note ${x}", user = "matt.raible@okta.com"))
-+            repository.save(Note(title = "Note ${x}", username = "matt.raible@okta.com"))
+-            repository.save(Note(title = "Note ${x}", user = "mraible@gmail.com"))
++            repository.save(Note(title = "Note ${x}", username = "mraible@gmail.com"))
          }
          repository.findAll().forEach { println(it) }
      }
@@ -528,13 +485,12 @@ In another terminal, run your Spring Boot app.
 source okta.env
 ./gradlew bootRun -Pprod
 ----
-
+////
+todo: why doesn't bootRun work anymore?
+Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Sequence "HIBERNATE_SEQUENCE" not found; SQL statement:
+call next value for hibernate_sequence [90036-200]
+////
 If it starts OK, confirm your Angular app can talk to it and get ready to deploy to production!
-
-[source,shell]
-----
-git commit -am "Configure environments for production"
-----
 
 == Deploy Spring Boot to Heroku
 
@@ -561,7 +517,7 @@ You should already have a Heroku app that you added Okta to. Let's use it for ho
 [source,shell]
 ----
 $ heroku apps
-=== matt.raible@okta.com Apps
+=== mraible@gmail.com Apps
 bootiful-angular
 ----
 
@@ -617,7 +573,7 @@ Now you're ready to deploy! Take a deep breath and witness how Heroku can deploy
 
 [source,shell]
 ----
-git push heroku master
+git push heroku main
 ----
 
 When I ran this command, I received this output:
@@ -631,10 +587,10 @@ remote: -----> Monorepo app detected
 remote:       Copied notes-api to root of app successfully
 remote: -----> Gradle app detected
 remote: -----> Spring Boot detected
-remote: -----> Installing JDK 1.8... done
+remote: -----> Installing JDK 11... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-6.0.1-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.1-bin.zip
 remote:        ..........................................................................................
 remote:        > Task :compileKotlin
 remote:        > Task :compileJava NO-SOURCE
@@ -681,14 +637,6 @@ class HomeController {
 }
 ----
 
-Commit this change and deploy it to Heroku.
-
-[source,shell]
-----
-git commit -am "Add HomeController"
-git push heroku master
-----
-
 Now when you access the app, it should say hello.
 
 [[heroku-hello]]
@@ -697,7 +645,7 @@ image::../images/angular-deployment/heroku-hello.png[Hello, SUPER ADMIN, 800, sc
 
 == Deploy Angular to Heroku
 
-An Angular app is composed of JavaScript, CSS, and HTML when built for production. It's extremely portable because it's just a set of static files. If you run `ng build --prod`, the production-ready files will be created in `dist/<app-name>`. In this section, you'll learn how you can use your `package.json` scripts to hook into Heroku's lifecycle and how to deploy them with a simple `git push`.
+An Angular app is composed of JavaScript, CSS, and HTML when built for production. It's extremely portable because it's just a set of static files. If you run `ng build`, the production-ready files will be created in `dist/<app-name>`. In this section, you'll learn how you can use your `package.json` scripts to hook into Heroku's lifecycle and how to deploy them with a simple `git push`.
 
 You'll need to create another app on Heroku for the Angular frontend.
 
@@ -727,7 +675,7 @@ Add a `heroku-postbuild` script to your `package.json`:
 
 [source,json]
 ----
-"heroku-postbuild": "ng build --prod && npm install -g http-server-spa"
+"heroku-postbuild": "ng build && npm install -g http-server-spa"
 ----
 
 Commit your changes, add a new Git remote for this app, and deploy!
@@ -736,7 +684,7 @@ Commit your changes, add a new Git remote for this app, and deploy!
 ----
 git commit -am "Prepare for Heroku"
 git remote add angular https://git.heroku.com/$APP_NAME.git
-git push angular master
+git push angular main
 ----
 
 When it finishes deploying, you can open your Angular app with:
@@ -748,7 +696,7 @@ heroku open --remote angular
 
 NOTE: If you experience any issues, you can run `heroku logs --remote angular` to see your app's log files.
 
-You won't be able to log in to your app until you modify its Login redirect URI on Okta. Log in to your Okta dashboard (tip: you can do this from the first Heroku app you created, under the **Resources** tab). Go to **Applications** > **SPA** > **General** > **Edit**. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Login redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Logout redirect URIs.
+You won't be able to log in to your app until you modify its Login redirect URI on Okta. Log in to your Okta dashboard (tip: you can do this from the first Heroku app you created, under the **Resources** tab). Go to the **Applications** section, find your app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Login redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Logout redirect URIs.
 
 You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
 
@@ -797,7 +745,7 @@ Create a `notes/static.json` file with the configuration for secure headers and 
 }
 ----
 
-For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack]. This buildpack is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously. Add `--prod` to the `build` script since the static buildback uses this command.
+For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack]. This buildpack is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously.
 
 [source,json]
 .notes/package.json
@@ -805,10 +753,9 @@ For `static.json` to be read, you have to use the https://github.com/heroku/hero
 "scripts": {
   "ng": "ng",
   "start": "ng serve",
-  "build": "ng build --prod",
-  "test": "ng test",
-  "lint": "ng lint",
-  "e2e": "ng e2e"
+  "build": "ng build",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test"
 },
 ----
 
@@ -1090,15 +1037,16 @@ The Netlify schematic writes your access token to `angular.json`, which is a sec
 I was notified of this issue by https://gitguardian.com/[GitGuardian], which we use to monitor our repos. If you check-in this change, make sure to delete the access token on Netlify.
 ====
 
+// todo: AWS is the most complicated, should we exclude it?
 === Angular Deployment to AWS S3
 
 Amazon Simple Storage Service (Amazon S3) is an object storage service that is a popular option for hosting static sites.
 
-Check out your `master` branch and create a new `aws` one.
+Check out your `main` branch and create a new `aws` one.
 
 [source,shell]
 ----
-git checkout master
+git checkout main
 git checkout -b aws
 ----
 
@@ -1243,38 +1191,22 @@ git commit -am "Add AWS S3 deployment"
 
 WARNING: If you committed the changes in your `angular.json` file, you should delete your access key in **My Account** > **Security Credentials**. When I made this mistake, Amazon emailed me right away and made me delete my access key and change my password.
 
-== Learn More About Angular and Spring Boot
+// == Learn More About Angular and Spring Boot
+== Summary
 
-In this tutorial, you learned how to upgrade Angular and Spring Boot to their latest versions and make them production-ready. You used the https://devcenter.heroku.com/articles/okta[Okta add-on for Heroku] to add OAuth 2.0 + OIDC to both apps, then deployed them to Heroku. After you got them working on Heroku with PostgreSQL, you learned how to deploy the Angular app to Firebase, Netlify, and AWS.
+In this section, you learned how to upgrade Angular and Spring Boot to their latest versions and make them production-ready. You used the https://devcenter.heroku.com/articles/okta[Okta add-on for Heroku] to add OAuth 2.0 + OIDC to both apps, then deployed them to Heroku. After you got them working on Heroku with PostgreSQL, you learned how to deploy the Angular app to Firebase, Netlify, and AWS.
 
-You learned how to make your Angular app more secure with security headers, force HTTPS, and make each cloud provider SPA-aware. You can find the source code for the completed example in the https://github.com/oktadeveloper/okta-angular-deployment-example[@oktadeveloper/okta-angular-deployment-example] repository.
+You learned how to make your Angular app more secure with security headers, force HTTPS, and make each cloud provider SPA-aware.
 
-
-////
-This blog post is the third in a series. The first two posts are below.
-
-1. link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
-2. link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap
-////
-]
-
-I'll be publishing a link:/blog/2020/06/17/angular-docker-spring-boot[4th and final blog post that shows you how to containerize and deploy your Angular + Spring Boot apps with Docker]. This tutorial will also show how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll show you how to deploy to Heroku, Knative on Google Cloud, and Cloud Foundry!
-
+// proposal: Download the `source.zip` for this book from InfoQ. The `angular-deployment` directory has this chapter's completed example.
 
 ////
-If you liked this tutorial, we have several others on Angular and Spring Boot.
-
-- link:/blog/2020/01/21/angular-material-login[Build a Beautiful App + Login with Angular Material]
-- link:/blog/2020/06/17/angular-docker-spring-boot[Angular + Docker with a Big Hug from Spring Boot]
-- link:/blog/2020/02/12/angular-ivy[What Is Angular Ivy and Why Is It Awesome?]
-- link:/blog/2019/10/30/java-oauth2[OAuth 2.0 Java Guide: Secure Your App in 5 Minutes]
-- link:/blog/2019/05/15/spring-boot-login-options[A Quick Guide to Spring Boot Login Options]
-- link:/blog/2019/09/17/build-a-spring-boot-kotlin-app[Build an Application with Spring Boot and Kotlin]
-
-If you have any questions, please leave a comment below. Follow us on https://twitter.com/oktadev[Twitter], https://www.linkedin.com/company/oktadev[LinkedIn], or https://www.facebook.com/oktadevelopers/[Facebook] to be notified when we publish new tutorials. We have a popular https://youtube.com/c/oktadev[YouTube channel] too!
+You can find the source code for the completed example in the https://github.com/oktadeveloper/okta-angular-deployment-example[@oktadeveloper/okta-angular-deployment-example] repository.
 ////
 
+In the next section, I'll show you how to containerize and deploy your Angular + Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll show you how to deploy to Heroku and Knative on Google Cloud!
 
+////
 == Angular Docker
 
 Building modern apps with Angular and Spring Boot is a common practice these days. In fact, if I use Google's Keyword Planner to look up popular search terms, it's one of the most popular combinations. The results in the list below are average monthly searches and not limited by location.
@@ -1283,12 +1215,5 @@ Building modern apps with Angular and Spring Boot is a common practice these day
 .Keyword Planner results
 image::../images/angular-docker/keyword-planner-angular-results.png[Keyword Planner results, 375, scaledwidth="100%"]
 
-This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS.
+This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS.////
 ////
-You can find links to previous tutorials below.
-
-1. link:/blog/2020/01/06/crud-angular-9-spring-boot-2[Build a CRUD App with Angular 9 and Spring Boot 2.2]
-2. link:/blog/2020/03/02/angular-bootstrap[Build Beautiful Angular Apps with Bootstrap]
-3. link:/blog/2020/05/29/angular-deployment[Angular Deployment with a Side of Spring Boot]
-////
-
