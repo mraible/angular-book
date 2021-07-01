@@ -13,7 +13,7 @@ Long story short, they're a match made in heaven!
 .Bootiful Angular
 image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%"]
 
-== What's New In Angular?
+== What's New in Angular?
 
 Angular 12 is the version of Angular used in this book. It adds strict typing by default and deprecates Protractor and IE11 support. It also leverages Ivy throughout and deprecates the View Engine, which was Angular’s default renderer before Ivy.
 
