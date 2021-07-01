@@ -1,1220 +1,966 @@
 [[chapter-3]]
-= Angular Deployment
+= Beautiful Angular Apps with Bootstrap
 
-////
-- Deploy Angular to Heroku with Secure Headers
-- Use `ng deploy` with Firebase, Netlify, and AWS
-////
+I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design content to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
 
-One of the more popular combinations of frontend and backend frameworks is Angular + Spring Boot. It's possible to combine the two—from keeping them as separate apps to combining them into a single artifact. But, what about deployment?
+However, no CSS frameworks took the world by storm like Bootstrap. Back then, it was called Twitter Bootstrap. Mark Otto and Jacob Thornton invented it in mid-2010 while they worked at Twitter. As they wrote in "Building Twitter Bootstrap" in Issue 324 of A List Apart:
 
-Developers ask me from time-to-time, "What's the best way to do Angular deployment?" In this section, I'll show you several options. I'll start by showing you how to deploy a Spring Boot app to Heroku. Then, I'll show how to deploy a separate Angular app to Heroku.
+> Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
-There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
+They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it.
 
-[[angular-deployment-with-spring-boot]]
-.Angular Deployment with a Side of Spring Boot
-image::../images/angular-deployment/angular-deployment.png[Angular Deployment with a Side of Spring Boot, 800, scaledwidth="100%"]
+Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
 
-== Create an Angular + Spring Boot App
+Together, these frameworks have had quite a run. It's hard to believe that they've lasted so long, especially considering both projects have had major rewrites!
 
-If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+// == Isn't Angular Dead?
 
-If you'd rather start from this point, download the `source.zip` for this book from InfoQ. The `angular-bootstrap` directory has the previous sections's completed example. Copy it to `angular-deployment` in your favorite code location.
+I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "legacy." Others call them "revenue-generating."
 
-One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
+Whatever you want to call it, Angular is far from dead.
 
-[[notes-list-with-sorting-recap]]
-.Notes list with sorting
-image::../images/angular-deployment/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
+== Angular Loves Bootstrap
 
-=== Secure Your Angular + Spring Boot App with OIDC
+You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
 
-To begin, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log in to it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
+++++
+<div style="max-width: 500px; margin: 0 auto 1.25rem">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">If you&#39;re developing <a href="https://twitter.com/angular?ref_src=twsrc%5Etfw">@angular</a> apps, what&#39;s your preferred CSS framework? <a href="https://twitter.com/hashtag/Angular?src=hash&amp;ref_src=twsrc%5Etfw">#Angular</a> <a href="https://twitter.com/hashtag/CSS?src=hash&amp;ref_src=twsrc%5Etfw">#CSS</a></p>&mdash; Matt Raible (@mraible) <a href="https://twitter.com/mraible/status/1196894737870938113?ref_src=twsrc%5Etfw">November 19, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+++++
 
-[[heroku-create-app]]
-.Create Heroku app
-image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%"]
+== Integrate Bootstrap with Angular
 
-After creating your app, click on the **Resources** tab and add the **Okta** add-on.
+Today I'd like to show you how to integrate Bootstrap into an Angular application. I'll start with the note-taking example from the last section. I'll show you how to integrate Bootstrap, convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
 
-[[okta-add-on]]
-.Okta Add-On
-image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 475, scaledwidth="100%"]
+If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it.
 
-CAUTION: If you haven't entered a credit card for your Heroku account, you will receive an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even for free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Simply add a credit card to continue.
+If you'd rather start from this point, download the `source.zip` for this book from InfoQ. The `angular-spring-boot` directory has the previous sections's completed example. Copy it to `angular-bootstrap` in your favorite code location.
 
-Click **Provision** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now go to your app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
-
-[[heroku-config-vars]]
-.Okta Add-On
-image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
-
-Create an `okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
+In a terminal, navigate into this new directory and its `notes` folder. Then install the dependencies for the Angular app.
 
 [source,shell]
 ----
-export OKTA_OAUTH2_ISSUER=$OKTA_OAUTH2_ISSUER
-export OKTA_OAUTH2_CLIENT_ID=$OKTA_OAUTH2_CLIENT_ID_WEB
-export OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET_WEB
+cd angular-bootstrap/notes
+npm i
 ----
 
-[NOTE]
-====
-If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install-win10[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
-====
-
-Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and running `./gradlew bootRun`.
+Add Bootstrap and NG Bootstrap:
 
 [source,shell]
 ----
-source okta.env
+npm i bootstrap @ng-bootstrap/ng-bootstrap --force
+----
+// todo: add versions and remove force once ng-bootstrap supports Angular 12.
+// https://github.com/ng-bootstrap/ng-bootstrap/issues/4093
+
+TIP: You can leave off the version numbers if you like. However, this tutorial is only guaranteed to work with the versions specified.
+
+Import `NgbModule` in `app.module.ts`:
+
+[source,ts]
+.src/app/app.module.ts
+----
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+@NgModule({
+  ...
+  imports: [
+    ...
+    NgbModule
+  ],
+  ...
+})
+export class AppModule { }
+----
+
+If you run `ng serve -o`, you'll get a blank screen. Look in your browser's developer console, and you'll see why.
+
+[source,shell]
+----
+Uncaught Error: It looks like your application or one of its dependencies is using i18n.
+Angular 9 introduced a global `$localize()` function that needs to be loaded.
+Please run `ng add @angular/localize` from the Angular CLI.
+----
+
+Cancel the process and run `ng add @angular/localize` to fix this error. Now, if you restart your app, you'll see it's pretty simple. And kinda ugly.
+
+[[notes-bare-bones]]
+.Bare-bones styling
+image::../images/angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%"]
+
+Let's fix that!
+
+Modify `styles.css` to add a reference to Bootstrap's CSS file:
+
+[source,css]
+.src/styles.css
+----
+@import "~bootstrap/dist/css/bootstrap.css";
+----
+
+And change `app.component.html` to use Bootstrap classes.
+
+{% raw %}
+[source,html]
+.src/app/app.component.html
+----
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand text-light" href="#">{{ title }} app is running!</a>
+</nav>
+
+<div class="container-fluid pt-3">
+  <router-outlet></router-outlet>
+</div>
+----
+{% endraw %}
+
+Now we're getting somewhere!
+
+[[notes-slightly-styled]]
+.Slightly styled
+image::../images/angular-bootstrap/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
+
+To make the login button work, you need to configure both apps' security configurations. Thankfully, that's easy with the Okta CLI!
+
+[source,shell]
+----
+# in the notes directory
+okta apps create # select SPA > http://localhost:4200/callback
+
+# in the notes-api directory
+okta apps create # select Web > Spring Boot Starter > defaults
+----
+
+Restart both apps:
+
+[source,shell]
+----
+# in the notes directory
+npm start
+
+# in the notes-api directory
 ./gradlew bootRun
 ----
 
-[TIP]
-.Environment Variables in IntelliJ IDEA
-====
-If you're using IntelliJ IDEA, you can copy the contents of `okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration and click on the **Browse** icon on the right-side of **Environment variables**.
+Now you should be able to log in with your Okta credentials and create notes to your heart's content!
 
-[[idea-edit-configuration]]
-.Edit DemoApplication Configuration
-image::../images/angular-deployment/idea-edit-configuration.png[Edit DemoApplication Configuration, 800, scaledwidth="100%"]
-
-Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Okta from IDEA!
-
-[[idea-env-variables]]
-.IntelliJ Environment Variables
-image::../images/angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="100%"]
-====
-
-Next, configure Angular for OIDC authentication by modifying its `auth-routing.module.ts` to use the generated issuer, client ID, and update the callback URL.
-
-[source,typescript]
-.notes/src/app/auth-routing.module.ts
-----
-const oktaConfig = {
-  issuer: '$OKTA_OAUTH2_ISSUER',
-  redirectUri: '/callback',
-  clientId: '$OKTA_OAUTH2_CLIENT_ID_SPA'
-};
-
-const routes: Routes = [
-  ...
-  {
-    path: '/callback',
-    component: OktaCallbackComponent
-  }
-];
-----
-
-Install your Angular app's dependencies and start it.
-
-[source,shell]
-----
-npm i
-ng serve
-----
-
-Open `http://localhost:4200` in your browser.
-
-[[angular-home]]
-.Angular Home
-image::../images/angular-deployment/angular-home.png[Angular Home, 800, scaledwidth="100%"]
-
-Click the **Login** button in the top right corner. You should be logged in straight-away, since you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
-
-[[first-note-recap]]
+[[first-note]]
 .First note
-image::../images/angular-deployment/first-note.png[First note, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%"]
 
-== Prepare Angular + Spring Boot for Production
+You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
 
-There are a couple of things you should do to make your app ready for production.
+=== Use Sass to Customize Bootstrap
 
-1. Make sure you're using the latest releases
-2. Configure production URLs
-3. Use PostgreSQL for the production database
+Before you make things awesome, I'd like to show you how to convert from using CSS with Angular to using Sass. Why? Because https://sass-lang.com/[Sass] is completely compatible with CSS, and it makes CSS more like programming. It also allows you to customize Bootstrap by overriding its variables.
 
-You're going to want to continue to develop locally—so you'll want a production mode as well as a development mode.
+NOTE: If you're not into Sass, you can <<#make-angular-beautiful,skip this section>>. Everything will still work without it.
 
-=== Update Spring Boot and Angular Dependencies
-
-I'm the type of developer that likes to use the latest releases of open source libraries. I do this to take advantage of new features, performance optimizations, and security fixes.
-
-There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradle Use Latest Versions Plugin] that provides a task to update dependencies to the latest version. Configure it by adding the following to the `plugins` block at the top of `notes-api/build.gradle.kts`.
-
-[source,kotlin]
-----
-plugins {
-    id("se.patrikerdes.use-latest-versions") version "0.2.17"
-    id("com.github.ben-manes.versions") version "0.38.0"
-    ...
-}
-----
-
-////
-For compatibility with Spring Boot 2.3, you'll need to update the Gradle Wrapper to use Gradle 6.3+.
+If you run the following `find` command:
 
 [source,shell]
 ----
-./gradlew wrapper --gradle-version=6.5 --distribution-type=bin
+find . -name "*.css" -not -path "./node_modules/*"
 ----
-////
 
-Then run the following command in the `notes-api` directory to update your dependencies to the latest released versions.
+You'll see three files have a `.css` extension.
 
 [source,shell]
 ----
-./gradlew useLatestVersions
+./src/app/home/home.component.css
+./src/app/app.component.css
+./src/styles.css
 ----
 
-You can verify everything still works by running `./gradlew bootRun` and navigating to `http://localhost:8080/api/notes`. You should be redirected to Okta to log in, then back to your app.
-
-TIP: If your app fails to start, you need to run `source okta.env` first.
-
-For the Angular client, you can use https://www.npmjs.com/package/npm-check-updates[npm-check-updates] to upgrade npm dependencies.
+You can manually rename these to have a `.scss` extension, or do it programmatically.
 
 [source,shell]
 ----
-npm i -g npm-check-updates
-ncu -u
+find . -name "*.css" -not -path "./node_modules/*" | rename -v "s/css/scss/g"
 ----
 
-////
-At the time of this writing, this will upgrade Angular to version 9.1.9 and TypeScript to version 3.9.3. Angular 9 supports TypeScript versions >=3.6.4 and <3.9.0, so you'll need to change `package.json` to specify TypeScript 3.8.3.
+NOTE: I had to `brew install rename` on my Mac for this command to work.
+
+Then, replace all references to `.css` files.
+
+[source,shell]
+----
+find ./src/app -type f -exec sed -i '' -e  's/.css/.scss/g' {} \;
+----
+
+Modify `angular.json` to reference `src/styles.scss` (in the `build` and `test` sections).
 
 [source,json]
 ----
-"typescript": "~3.8.3"
-----
-////
-
-Then run the following commands in the `notes` directory:
-
-[source,shell]
-----
-npm i
-npm audit fix
-ng serve
+"styles": [
+  "src/styles.scss"
+],
 ----
 
-Confirm you can still log in at `http://localhost:4200`.
+And change `styles.scss` to import Bootstrap's Sass.
 
-=== Configure Production URLs
+[source,css]
+.src/styles.scss
+----
+@import "~bootstrap/scss/bootstrap.scss";
+----
 
-There are a few places where `localhost` is hard-coded:
+To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v4-dev/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
 
-1. `notes-api/src/main/kotlin/.../DemoApplication.kt` has `\http://localhost:4200`
-2. `notes/src/app/shared/okta/auth-interceptor.ts` has `\http://localhost`
-3. `notes/src/app/note/note.service.ts` has `\http://localhost:8080`
+[source,sass]
+----
+$primary: orange;
+$secondary: blue;
+$light: lighten($primary, 20%);
+$dark: darken($secondary, 10%);
+----
 
-You need to change Spring Boot's code so other origins can make CORS requests too. Angular's code needs updating so access tokens will be sent to production URLs while API requests are sent to the correct endpoint.
+Then import this file at the top of `src/styles.scss`:
 
-Open the root directory in your favorite IDE and configure it so it loads `notes-api` as a Gradle project. Open `DemoApplication.kt` and change the `simpleCorsFilter` bean so it configures the allowed origins from your Spring environment.
+[source,sass]
+----
+@import "variables";
+@import "~bootstrap/scss/bootstrap.scss";
+----
+
+You'll see the colors change after these updates.
+
+[[bootstrap-sass]]
+.Customized Bootstrap variables
+image::../images/angular-bootstrap/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%"]
+
+Comment out (or remove) the variables in `_variables.scss` to revert to Bootstrap's default colors.
+
+anchor:make-angular-beautiful[]
+
+== Make Your Angular App Beautiful with Bootstrap
+
+You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/4.4/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
+
+[source,html]
+.src/app/app.component.html
+----
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">
+    <img src="/assets/images/angular.svg" width="30" height="30" class="d-inline-block align-top" alt="Angular">
+    {{ title }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://twitter.com/mraible">@mraible</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/mraible">GitHub</a>
+      </li>
+      <li class="nav-item pl-lg-3">
+        <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()" class="btn btn-outline-primary">Login</button>
+        <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()" class="btn btn-outline-secondary">Logout</button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-fluid pt-3">
+  <a *ngIf="!isAuthenticated">Please log in to manage your notes.</a>
+  <router-outlet></router-outlet>
+</div>
+----
+
+Remove the login and logout buttons from `home.component.html`.
+
+[source,html]
+.src/app/home/home.component.html
+----
+<p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
+----
+
+Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
+
+[[notes-with-navbar]]
+.Notes app with navbar
+image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%"]
+
+=== Fix Bootstrap's Responsive Menu
+
+If you reduce the width of your browser window, you'll see the menu collapses to take up less real estate.
+
+[[navbar-squished]]
+.Navbar squished
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%"]
+
+However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
+
+[source,html]
+.src/app/app/app.component.html
+----
+<button (click)="isCollapsed = !isCollapsed" class="navbar-toggler" ...>
+  ...
+</button>
+
+<div [ngbCollapse]="isCollapsed" class="collapse navbar-collapse" ...>
+  ...
+</div>
+----
+
+Then add `isCollapsed` in `app.component.ts` and change the `title` to be capitalized.
+
+[source,ts]
+.src/app/app/app.component.ts
+----
+export class AppComponent implements OnInit {
+  title = 'Notes';
+  isAuthenticated: boolean = false;
+  isCollapsed = true;
+
+  ...
+
+}
+----
+
+Now, you'll be able to toggle the menu!
+
+[[notes-menu]]
+.Squished navbar with menu
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
+
+=== Update the Note List Angular Template
+
+// todo: Reword for Angular CRUD 2.0 release
+
+Modify the `note-list.component.html` so the breadcrumb doesn't float right and all the content is in the same card.
+
+{% raw %}
+[source,html]
+.src/app/note/note-list/note-list.component.html
+----
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+  <li class="breadcrumb-item active">Notes</li>
+</ol>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Notes List</h2>
+    <div class="card-text">
+      <form #f="ngForm" class="form-inline">
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input [(ngModel)]="filter.title" id="title" name="title" class="form-control ml-2 mr-2">
+        </div>
+
+        <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+        <a [routerLink]="['../notes', 'new' ]" class="btn btn-default">New</a>
+      </form>
+    </div>
+    <div *ngIf="noteList.length > 0">
+      <div *ngIf="feedback.message" class="alert alert-{{feedback.type}} m-2">{{ feedback.message }}</div>
+      <div class="table-responsive">
+        <table class="table table-centered table-hover mb-0" id="datatable">
+          <thead>
+          <tr>
+            <th class="border-top-0" scope="col">Id</th>
+            <th class="border-top-0" scope="col">Title</th>
+            <th class="border-top-0" scope="col">Text</th>
+            <th class="border-top-0" scope="col" style="width:120px"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">
+            <td>{{item.id}}</td>
+            <td>{{item.title}}</td>
+            <td>{{item.text}}</td>
+            <td style="white-space: nowrap">
+              <a [routerLink]="['../notes', item.id ]" class="btn btn-secondary">Edit</a>&nbsp;
+              <button (click)="delete(item)" class="btn btn-danger">Delete</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+----
+{% endraw %}
+
+That looks better!
+
+[[styled-notes-list]]
+.Styled Notes List
+image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
+
+=== Add Validation and Bootstrap to the Note Edit Template
+
+If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/4.4/components/forms/[stylish forms] using its `form-group` and `form-control` classes. `note-edit.component.html` already uses these classes; you just need to rearrange some things to use the proper `card-*` classes.
+
+// todo: Reword for Angular CRUD 2.0 release
+
+[source,html]
+.src/app/note/note-edit/note-edit.component.html
+----
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+  <li class="breadcrumb-item active">Notes</li>
+</ol>
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Notes Detail</h2>
+    <div class="card-text">
+      <div *ngIf="feedback.message" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
+      <form *ngIf="note" #editForm="ngForm" (ngSubmit)="save()">
+        <div class="form-group">
+          <label>Id</label>
+          {{note.id || 'n/a'}}
+        </div>
+
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input [(ngModel)]="note.title" id="title" name="title" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="text">Text</label>
+          <input [(ngModel)]="note.text" id="text" name="text" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
+        <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>
+----
+
+That's an improvement!
+
+[[styled-notes-form]]
+.Styled Notes Form
+image::../images/angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%"]
+
+To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
+
+[source,html]
+----
+<div class="form-group">
+  <label for="title">Title</label>
+  <input [(ngModel)]="note.title" id="title" name="title" class="form-control" required
+         #name="ngModel" [ngClass]="{'is-invalid': name.touched && name.invalid,  'is-valid': name.touched && name.valid}">
+  <div [hidden]="name.valid" style="display: block" class="invalid-feedback">
+    Title is required
+  </div>
+</div>
+----
+
+Now when you add a new note, it'll let you know that it requires a title.
+
+[[notes-edit-required-title]]
+.Title is required
+image::../images/angular-bootstrap/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%"]
+
+If you give it focus and leave, it'll add a red border around the field.
+
+[[notes-edit-red-outline]]
+.Dirty title validation decoration
+image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%"]
+
+== Add a Data Table with Searching, Sorting, and Pagination
+
+At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples#complete[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
+
+=== Add Search by Title with Spring Data JPA
+
+Adding search functionality requires the fewest code modifications. Change the `UserController#notes()` method in your Spring Boot app to accept a title parameter and return notes with the parameter's value in their title.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
 ----
-import org.springframework.beans.factory.annotation.Value
-
-@SpringBootApplication
-class DemoApplication {
-
-    @Value("#{ @environment['allowed.origins'] ?: {} }")
-    private lateinit var allowedOrigins: List<String>
-
-    @Bean
-    fun simpleCorsFilter(): FilterRegistrationBean<CorsFilter> {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.allowCredentials = true
-        config.allowedOrigins = allowedOrigins
-        config.allowedMethods = listOf("*");
-        config.allowedHeaders = listOf("*")
-        source.registerCorsConfiguration("/**", config)
-        val bean = FilterRegistrationBean(CorsFilter(source))
-        bean.order = Ordered.HIGHEST_PRECEDENCE
-        return bean
+@GetMapping("/user/notes")
+fun notes(principal: Principal, title: String?): List<Note> {
+    println("Fetching notes for user: ${principal.name}")
+    return if (title.isNullOrEmpty()) {
+        repository.findAllByUser(principal.name)
+    } else {
+        println("Searching for title: ${title}")
+        repository.findAllByUserAndTitleContainingIgnoringCase(principal.name, title)
     }
 }
 ----
 
-Define the `allowed.origins` property in `notes-api/src/main/resources/application.properties`.
+Add the new repository method to the `NotesRepository` in `DemoApplication.kt`.
 
-[source,properties]
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoController.kt
 ----
-allowed.origins=http://localhost:4200
-----
-
-Angular has an https://angular.io/guide/build[environment concept] built-in. When you run `ng build` to create a production build, it replaces `environment.ts` with `environment.prod.ts`.
-
-Open `environment.ts` and add an `apiUrl` variable for development. This file will be used when running `ng serve`.
-
-[source,typescript]
-.notes/src/environments/environment.ts
-----
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8080'
-};
+@RepositoryRestResource
+interface NotesRepository : JpaRepository<Note, Long> {
+    fun findAllByUser(name: String): List<Note>
+    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String): List<Note>
+}
 ----
 
-Edit `environment.prod.ts` to point to your production Heroku URL. Be sure to replace `bootiful-angular` with your app's name.
+Restart your server and add a few notes, and you should be able to search for them by title in your Angular app. I love how Spring Data JPA makes this so easy!
 
-[source,typescript]
-.notes/src/environments/environment.prod.ts
+=== Add Sort Functionality with Angular and Bootstrap
+
+To begin, create a `sortable.directive.ts`.
+
+[source,ts]
+.src/app/note/note-list/sortable.directive.ts
 ----
-export const environment = {
-  production: false,
-  apiUrl: 'https://bootiful-angular.herokuapp.com'
-};
-----
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 
-Update `auth-interceptor.ts` to use `environment.apiUrl`.
+export type SortDirection = 'asc' | 'desc' | '';
+const rotate: { [key: string]: SortDirection } = {asc: 'desc', desc: '', '': 'asc'};
 
-[source,typescript]
-.notes/src/app/shared/okta/auth.interceptor.ts
-----
-import { environment } from '../../../environments/environment';
+export interface SortEvent {
+  column: string;
+  direction: SortDirection;
+}
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+@Directive({
+  selector: 'th[sortable]',
+  host: {
+    '[class.asc]': 'direction === "asc"',
+    '[class.desc]': 'direction === "desc"',
+    '(click)': 'rotate()'
+  }
+})
+export class SortableHeaderDirective {
 
-  ...
+  @Input() sortable!: string;
+  @Input() direction: SortDirection = '';
+  @Output() sort = new EventEmitter<SortEvent>();
 
-  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
-    const allowedOrigins = [environment.apiUrl];
-    ...
+  rotate() {
+    this.direction = rotate[this.direction];
+    this.sort.emit({column: this.sortable, direction: this.direction});
   }
 }
 ----
 
-Update `notes.service.ts` as well.
+Add it as a declaration in `note.module.ts`.
 
-[source,typescript]
-.notes/src/app/note/note.service.ts
+[source,ts]
+.src/app/note/node.module.ts
 ----
-import { environment } from '../../environments/environment';
-...
+import { SortableHeaderDirective } from './note-list/sortable.directive';
 
-export class NoteService {
+@NgModule({
   ...
-  api = `${environment.apiUrl}/api/notes`;
+  declarations: [
+    ...
+    SortableHeaderDirective
+  ],
+  ...
+}
+----
+
+Add a `headers` variable to `note-list.component.ts` and an `onSort()` method.
+
+[source,ts]
+.src/app/note/node.module.ts
+----
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { SortableHeaderDirective, SortEvent} from './sortable.directive';
+
+export class NoteListComponent implements OnInit {
+  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
+
   ...
 
-  find(filter: NoteFilter): Observable<Note[]> {
-    ...
+  onSort({column, direction}: SortEvent) {
+    // reset other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
 
-    const userNotes = `${environment.apiUrl}/user/notes`;
-    ...
+    this.filter.column = column;
+    this.filter.direction = direction;
+    this.search();
   }
+
+  ...
 }
 ----
 
-=== Use PostgreSQL for the Production Database
+Update the `note-filter.ts` to have `column` and `direction` properties.
 
-H2 is a SQL database that works nicely for development. In production, you're going to want something a little more robust. Personally, I like PostgreSQL so I'll use it in this example.
-
-Similar to Angular's environments, Spring and Maven have profiles that allow you to enable different behavior for different environments.
-
-Open `notes-api/build.gradle.kts` and change the H2 dependency so PostgreSQL is used when `-Pprod` is passed in.
-
-[source,kotlin]
+[source,ts]
+.src/app/note/note-filter.ts
 ----
-if (project.hasProperty("prod")) {
-    runtimeOnly("org.postgresql:postgresql")
-} else {
-    runtimeOnly("com.h2database:h2")
+export class NoteFilter {
+  title = '';
+  column!: string;
+  direction!: string;
 }
 ----
 
-At the bottom of the file, add the following code to make the `prod` profile the default when `-Pprod` is included in Gradle commands.
+Modify the `find()` method in `NoteService` to pass a `sort` parameter when appropriate.
 
-[source,kotlin]
+[source,ts]
+.src/app/note/note.service.ts
 ----
-val profile = if (project.hasProperty("prod")) "prod" else "dev"
+import { map } from 'rxjs/operators';
 
-tasks.bootRun {
-    args("--spring.profiles.active=${profile}")
-}
-
-tasks.processResources {
-    rename("application-${profile}.properties", "application.properties")
-}
-----
-
-Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it will persist to disk, which retains data through restarts.
-
-[source,properties]
-----
-allowed.origins=http://localhost:4200
-spring.datasource.url=jdbc:h2:file:./build/h2db/notes;DB_CLOSE_DELAY=-1
-----
-
-Create a `notes-api/src/main/docker/postgresql.yml` so you can test your `prod` profile settings.
-
-[source,yaml]
-----
-version: '3.8'
-services:
-  notes-postgresql:
-    image: postgres:13.3
-    environment:
-      - POSTGRES_USER=notes
-      - POSTGRES_PASSWORD=@-xYcoZn2
-    ports:
-      - 5432:5432
-----
-
-Create an `application-prod.properties` file in the same directory as `application-dev.properties`. You'll override these properties with environment variables when you deploy to Heroku.
-
-[source,properties]
-.notes-api/src/main/resources/application-prod.properties
-----
-allowed.origins=http://localhost:4200
-spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=jdbc:postgresql://localhost:5432/notes
-spring.datasource.username=notes
-spring.datasource.password=@-xYcoZn2
-----
-
-The word `user` is a keyword in PostgreSQL, so you'll need to change `user` to `username` in the `Note` entity.
-
-[source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-----
-data class Note(@Id @GeneratedValue var id: Long? = null,
-                var title: String? = null,
-                var text: String? = null,
-                @JsonIgnore var username: String? = null)
-----
-
-This will cause compilation errors and you'll need to rename method names and variables to fix them.
-
-// todo: verify this looks OK in Print, PDF, and EPUB
-.Click to see the diff
-[%collapsible]
-====
-[source,diff]
-----
-diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-index 387e332..506d761 100644
---- a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-+++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-@@ -10,7 +10,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
-     @Throws(Exception::class)
-     override fun run(args: ApplicationArguments) {
-         for (x in 0..1000) {
--            repository.save(Note(title = "Note ${x}", user = "mraible@gmail.com"))
-+            repository.save(Note(title = "Note ${x}", username = "mraible@gmail.com"))
-         }
-         repository.findAll().forEach { println(it) }
-     }
-diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-index 6f1292c..22a5130 100644
---- a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-+++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-@@ -26,12 +26,12 @@ fun main(args: Array<String>) {
- data class Note(@Id @GeneratedValue var id: Long? = null,
-                 var title: String? = null,
-                 var text: String? = null,
--                @JsonIgnore var user: String? = null)
-+                @JsonIgnore var username: String? = null)
-
- @RepositoryRestResource
- interface NotesRepository : JpaRepository<Note, Long> {
--    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
--    fun findAllByUserAndTitleContainingIgnoreCase(name: String, title: String, pageable: Pageable): Page<Note>
-+    fun findAllByUsername(name: String, pageable: Pageable): Page<Note>
-+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, title: String, pageable: Pageable): Page<Note>
- }
-
- @Component
-@@ -42,6 +42,6 @@ class AddUserToNote {
-     fun handleCreate(note: Note) {
-         val username: String = SecurityContextHolder.getContext().getAuthentication().name
-         println("Creating note: $note with user: $username")
--        note.user = username
-+        note.username = username
-     }
- }
-diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
-index 0f71858..670fedd 100644
---- a/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
-+++ b/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
-@@ -15,10 +15,10 @@ class UserController(val repository: NotesRepository) {
-     fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
-         println("Fetching notes for user: ${principal.name}")
-         return if (title.isNullOrEmpty()) {
--            repository.findAllByUser(principal.name, pageable)
-+            repository.findAllByUsername(principal.name, pageable)
-         } else {
-             println("Searching for title: ${title}")
--            repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title, pageable)
-+            repository.findAllByUsernameAndTitleContainingIgnoreCase(principal.name, title, pageable)
-         }
-     }
-----
-====
-
-You won't want to pre-populate your production database with a bunch of notes, so add a `@Profile` annotation to the top of `DataInitializer` so it only runs for the `dev` profile.
-
-[source,kotlin]
-----
-import org.springframework.context.annotation.Profile
 ...
 
-@Profile("dev")
-class DataInitializer(val repository: NotesRepository) : ApplicationRunner {...}
+find(filter: NoteFilter): Observable<Note[]> {
+  const params: any = {
+    title: filter.title,
+    sort: `${filter.column},${filter.direction}`,
+  };
+  if (!filter.direction) { delete params.sort; }
+
+  const userNotes = 'http://localhost:8080/user/notes';
+  return this.http.get(userNotes, {params, headers}).pipe(
+    map((response: any) => {
+      return response.content;
+    })
+  );
+}
 ----
 
-To test your profiles, start PostgreSQL using Docker Compose.
+Update `note-list.component.html` so it uses the `sortable` directive and calls `onSort()` when a user clicks it.
 
-[source,shell]
+[source,html]
+.src/app/note/note-list/note-list.component.html
 ----
-docker-compose -f src/main/docker/postgresql.yml up
-----
-
-CAUTION: If you have PostreSQL installed and running locally, you'll need to stop the process for Docker Compose to work.
-
-In another terminal, run your Spring Boot app.
-
-[source,shell]
-----
-source okta.env
-./gradlew bootRun -Pprod
-----
-////
-todo: why doesn't bootRun work anymore?
-Caused by: org.h2.jdbc.JdbcSQLSyntaxErrorException: Sequence "HIBERNATE_SEQUENCE" not found; SQL statement:
-call next value for hibernate_sequence [90036-200]
-////
-If it starts OK, confirm your Angular app can talk to it and get ready to deploy to production!
-
-== Deploy Spring Boot to Heroku
-
-One of the easiest ways to interact with Heroku is with the Heroku CLI. https://devcenter.heroku.com/articles/heroku-cli[Install it] before proceeding with the instructions below.
-
-[source,shell]
-----
-brew tap heroku/brew && brew install heroku
+<thead>
+  <tr>
+    <th class="border-top-0" scope="col">#</th>
+    <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
+    <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+    <th class="border-top-0" scope="col" style="width:120px"></th>
+  </tr>
+</thead>
 ----
 
-Open a terminal and log in to your Heroku account.
+Add CSS in `styles.scss` to show a sort indicator when a user sorts a column.
 
-[source,shell]
+[source,css]
+.src/styles.scss
 ----
-heroku login
-----
+th[sortable] {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
 
-Heroku expects you to have one Git repo per application. However, in this particular example, there are multiple apps in the same repo. This is called a "monorepo", where many projects are stored in the same repository.
+th[sortable].desc:before, th[sortable].asc:before {
+  content: '';
+  display: block;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAmxJREFUeAHtmksrRVEUx72fH8CIGQNJkpGUUmakDEiZSJRIZsRQmCkTJRmZmJgQE0kpX0D5DJKJgff7v+ru2u3O3vvc67TOvsdatdrnnP1Y///v7HvvubdbUiIhBISAEBACQkAICAEhIAQ4CXSh2DnyDfmCPEG2Iv9F9MPlM/LHyAecdyMzHYNwR3fdNK/OH9HXl1UCozD24TCvILxizEDWIEzA0FcM8woCgRrJCoS5PIwrANQSMAJX1LEI9bqpQo4JYNFFKRSvIgsxHDVnqZgIkPnNBM0rIGtYk9YOOsqgbgepRCfdbmFtqhFkVEDVPjJp0+Z6e6hRHhqBKgg6ZDCvYBygVmUoEGoh5JTRvIJwhJo1aUOoh4CLPMyvxxi7EWOMgnCGsXXI1GIXlZUYX7ucU+kbR8NW8lh3O7cue0Pk32MKndfUxQFAwxdirk3fHappAnc0oqDPzDfGTBrCfHP04dM4oTV8cxr0SVzH9FF07xD3ib6xCDE+M+aUcVygtWzzbtGX2rPBrEUYfecfQkaFzYi6HjVnGBdtL7epqAlc1+jRdAap74RrnPc4BCijttY2tRcdN0g17w7HqZrXhdJTYAuS3hd8z+vKgK3V1zWPae0mZDMykadBn1hTQBLnZNwVrJpSe/NwEeDsEwCctEOsJTsgxLvCqUl2ACftEGvJDgjxrnBqkh3ASTvEWrIDQrwrnJpkB3DSDrGW7IAQ7wqnJtkBnLRztejXXVu4+mxz/nQ9jR1w5VB86ejLTFcnnDwhzV+F6T+CHZlx6THSjn76eyyBIOPHyDakhBAQAkJACAgBISAEhIAQYCLwC8JxpAmsEGt6AAAAAElFTkSuQmCC') no-repeat;
+  background-size: 22px;
+  width: 22px;
+  height: 22px;
+  float: left;
+  margin-left: -22px;
+}
 
-Luckily, there's a https://elements.heroku.com/buildpacks/lstoll/heroku-buildpack-monorepo[heroku-buildpack-monorepo] that allows you to deploy multiple apps from the same repo.
-
-You should already have a Heroku app that you added Okta to. Let's use it for hosting Spring Boot. Run `heroku apps` and you'll see the one you created.
-
-[source,shell]
-----
-$ heroku apps
-=== mraible@gmail.com Apps
-bootiful-angular
-----
-
-You can run `heroku config -a $APP_NAME` to see your Okta variables. In my case, I'll be using `bootiful-angular` for `$APP_NAME`.
-
-Associate your existing Git repo with the app on Heroku.
-
-[source,shell]
-----
-heroku git:remote -a $APP_NAME
-----
-
-Set the `APP_BASE` config variable to point to the `notes-api` directory. While you're there, add the monorepo and Gradle buildpacks.
-
-[source,shell]
-----
-heroku config:set APP_BASE=notes-api
-heroku buildpacks:add https://github.com/lstoll/heroku-buildpack-monorepo
-heroku buildpacks:add heroku/gradle
+th[sortable].desc:before {
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+}
 ----
 
-Attach a PostgreSQL database to your app.
+=== Add Sorting and Paging in Spring Boot with Spring Data JPA
 
-[source,shell]
-----
-heroku addons:create heroku-postgresql
-----
-
-As part of this process, Heroku will create a `DATASOURCE_URL` configuration variable. It will also automatically detect Spring Boot and set variables for `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, AND `SPRING_DATASOURCE_PASSWORD`. These values will override what you have in `application-prod.properties`.
-
-By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku[Heroku's Gradle support] runs `./gradlew build -x test`. Since you want it to run `./gradlew bootJar -Pprod`, you'll need to override it by setting a `GRADLE_TASK` config var.
-
-[source,shell]
-----
-heroku config:set GRADLE_TASK="bootJar -Pprod"
-----
-
-The `$OKTA_*` environment variables don't have the same names as the Okta Spring Boot starter expects. This is because the Okta Heroku Add-On creates two apps: SPA and web. The web app's config variables end in `_WEB`. You'll have to make some changes so those variables are used for the Okta Spring Boot starter. One way to do so is to create a `Procfile` in the `notes-api` directory.
-
-[source,shell]
-----
-web: java -Dserver.port=$PORT -Dokta.oauth2.client-id=${OKTA_OAUTH2_CLIENT_ID_WEB} -Dokta.oauth2.client-secret=${OKTA_OAUTH2_CLIENT_SECRET_WEB} -jar build/lib/*.jar
-----
-
-I think it's easier to rename the variable, so that's what I recommend. Run the following command and remove `_WEB` from the two variables that have it.
-
-[source,shell]
-----
-heroku config:edit
-----
-
-Now you're ready to deploy! Take a deep breath and witness how Heroku can deploy your Spring Boot + Kotlin app with a simple `git push`.
-
-[source,shell]
-----
-git push heroku main
-----
-
-When I ran this command, I received this output:
-
-[source,shell]
-----
-remote: Compressing source files... done.
-remote: Building source:
-remote:
-remote: -----> Monorepo app detected
-remote:       Copied notes-api to root of app successfully
-remote: -----> Gradle app detected
-remote: -----> Spring Boot detected
-remote: -----> Installing JDK 11... done
-remote: -----> Building Gradle app...
-remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.1-bin.zip
-remote:        ..........................................................................................
-remote:        > Task :compileKotlin
-remote:        > Task :compileJava NO-SOURCE
-remote:        > Task :processResources
-remote:        > Task :classes
-remote:        > Task :bootJar
-remote:
-remote:        BUILD SUCCESSFUL in 1m 28s
-remote:        3 actionable tasks: 3 executed
-remote: -----> Discovering process types
-remote:        Procfile declares types     -> (none)
-remote:        Default types for buildpack -> web
-remote:
-remote: -----> Compressing...
-remote:        Done: 91.4M
-remote: -----> Launching...
-remote:        Released v1
-remote:        https://bootiful-angular.herokuapp.com/ deployed to Heroku
-remote:
-remote: Verifying deploy... done.
-To https://git.heroku.com/bootiful-angular.git
-   a1b10c4..6e298cf  master -> master
-Execution time: 2 min. 7 s.
-----
-
-Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code.
+On the server, you can use https://docs.spring.io/spring-data/rest/docs/current/reference/html/#paging-and-sorting[Spring Data's support for paging and sorting]. Add a `Pageable` argument to `UserController#notes()` and return a `Page` instead of a `List`.
 
 [source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
 ----
 package com.okta.developer.notes
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
-class HomeController {
-
-    @GetMapping("/")
-    fun hello(@AuthenticationPrincipal user: OidcUser): String {
-        return "Hello, ${user.fullName}"
-    }
-}
-----
-
-Now when you access the app, it should say hello.
-
-[[heroku-hello]]
-.Hello, SUPER ADMIN
-image::../images/angular-deployment/heroku-hello.png[Hello, SUPER ADMIN, 800, scaledwidth="100%"]
-
-== Deploy Angular to Heroku
-
-An Angular app is composed of JavaScript, CSS, and HTML when built for production. It's extremely portable because it's just a set of static files. If you run `ng build`, the production-ready files will be created in `dist/<app-name>`. In this section, you'll learn how you can use your `package.json` scripts to hook into Heroku's lifecycle and how to deploy them with a simple `git push`.
-
-You'll need to create another app on Heroku for the Angular frontend.
-
-[source,shell]
-----
-heroku create
-----
-
-Set the `APP_BASE` config variable and add the necessary buildpacks to the app that was just created.
-
-[source,shell]
-----
-APP_NAME=<app-name-from-heroku-create>
-heroku config:set APP_BASE=notes -a $APP_NAME
-heroku buildpacks:add https://github.com/lstoll/heroku-buildpack-monorepo -a $APP_NAME
-heroku buildpacks:add heroku/nodejs -a $APP_NAME
-----
-
-Change `notes/package.json` to have a different `start` script.
-
-[source,json]
-----
-"start": "http-server-spa dist/notes index.html $PORT",
-----
-
-Add a `heroku-postbuild` script to your `package.json`:
-
-[source,json]
-----
-"heroku-postbuild": "ng build && npm install -g http-server-spa"
-----
-
-Commit your changes, add a new Git remote for this app, and deploy!
-
-[source,shell]
-----
-git commit -am "Prepare for Heroku"
-git remote add angular https://git.heroku.com/$APP_NAME.git
-git push angular main
-----
-
-When it finishes deploying, you can open your Angular app with:
-
-[source,shell]
-----
-heroku open --remote angular
-----
-
-NOTE: If you experience any issues, you can run `heroku logs --remote angular` to see your app's log files.
-
-You won't be able to log in to your app until you modify its Login redirect URI on Okta. Log in to your Okta dashboard (tip: you can do this from the first Heroku app you created, under the **Resources** tab). Go to the **Applications** section, find your app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Login redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Logout redirect URIs.
-
-You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
-
-[source,shell]
-----
-heroku config:set ALLOWED_ORIGINS=https://$APP_NAME.herokuapp.com --remote heroku
-----
-
-Now you should be able to add a note. Pat yourself on the back for a job well done!
-
-One issue you'll experience is that you're going to lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
-
-[source,shell]
-----
-heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote heroku
-----
-
-== Make Your Angular App More Secure on Heroku
-
-You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get a blank page and an error from the Okta Angular SDK in your browser's console.
-
-The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
-
-Create a `notes/static.json` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
-
-[source,json]
-.notes/static.json
-----
-{
-  "headers": {
-    "/**": {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com",
-      "Referrer-Policy": "no-referrer, strict-origin-when-cross-origin",
-      "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
-      "X-Content-Type-Options": "nosniff",
-      "X-Frame-Options": "DENY",
-      "X-XSS-Protection": "1; mode=block",
-      "Feature-Policy": "accelerometer 'none'; camera 'none'; microphone 'none'"
-    }
-  },
-  "https_only": true,
-  "root": "dist/notes/",
-  "routes": {
-    "/**": "index.html"
-  }
-}
-----
-
-For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack]. This buildpack is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously.
-
-[source,json]
-.notes/package.json
-----
-"scripts": {
-  "ng": "ng",
-  "start": "ng serve",
-  "build": "ng build",
-  "watch": "ng build --watch --configuration development",
-  "test": "ng test"
-},
-----
-
-Commit your changes to Git, add the static buildpack, and redeploy your Angular app.
-
-[source,shell]
-----
-git add .
-git commit -am "Configure secure headers and static buildpack"
-heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git --remote angular
-git push angular master
-----
-
-Now you'll have a security report you can be proud of!
-
-[[heroku-headers]]
-.Security Report Summary with an A
-image::../images/angular-deployment/heroku-headers.png[Security Report Summary with an A, 800, scaledwidth="100%"]
-
-== Angular Deployment with `ng deploy`
-
-In Angular CLI v8.3.0, an `ng deploy` command was introduced that allows you to automate deploying to many different cloud providers. I thought it'd be fun to try a few of these out and see if it's possible to optimize the headers to get the same **A** rating that you were able to get with Heroku.
-
-Below are the https://angular.io/guide/deployment[current providers and packages] supported by this command.
-
-|===
-|Hosting provider |npm package
-
-|Azure
-|https://npmjs.org/package/@azure/ng-deploy[`@azure/ng-deploy`]
-
-|AWS S3
-|https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy[`@jefiozie/ngx-aws-deploy`]
-
-|Firebase
-|https://npmjs.org/package/@angular/fire[`@angular/fire`]
-
-|GitHub pages
-|https://npmjs.org/package/angular-cli-ghpages[`angular-cli-ghpages`]
-
-|Netlify
-|https://www.npmjs.com/package/@netlify-builder/deploy[`@netlify-builder/deploy`]
-
-|Now
-|https://npmjs.org/package/@zeit/ng-deploy[`@zeit/ng-deploy`]
-
-|NPM
-|https://npmjs.org/package/ngx-deploy-npm[`ngx-deploy-npm`]
-
-|===
-
-In the following section, I'll show you how to deploy to a few that piqued my interest (Firebase, Netlify, and AWS S3).
-
-=== Angular Deployment to Firebase
-
-Create a `firebase` branch so you can make changes without affecting the work you've done for Heroku deployments.
-
-[source,shell]
-----
-git checkout -b firebase
-----
-
-Open a browser and go to https://firebase.google.com/[firebase.google.com]. Log in to your account, go to the console, and create a new project.
-
-Run `ng add @angular/fire` in the `notes` directory and your new project should show up in the list. Select it to continue.
-
-[source,shell]
-----
-? Please select a project: ng-notes-1337 (ng-notes-1337)
-CREATE firebase.json (300 bytes)
-CREATE .firebaserc (133 bytes)
-UPDATE angular.json (3755 bytes)
-----
-
-Now you can run `ng deploy` and everything should work.
-
-You'll need to add the project's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command.
-
-[source,shell]
-----
-heroku config:edit --remote heroku
-----
-
-Add the new URL after your existing Heroku one, separating them with a comma. For example:
-
-[source,shell]
-----
-ALLOWED_ORIGINS='https://stark-lake-39546.herokuapp.com,https://ng-notes-1337.web.app'
-----
-
-You'll also need to modify your Okta SPA app to add your Firebase URL as a Login redirect URI and Logout redirect URI. For mine, I added:
-
-* Login redirect URI: `\https://ng-notes-1337.web.app/callback`
-* Logout redirect URI: `\https://ng-notes-1337.web.app`
-
-Open your Firebase URL in your browser, log in, and you should be able to see the note you added on Heroku.
-
-=== Strong Security Headers on Firebase
-
-If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Luckily, you can https://firebase.google.com/docs/hosting/full-config#headers[configure headers] in your `firebase.json` file. Edit this file and add a `headers` key like the following:
-
-[source,json]
-----
-"headers": [ {
-  "source": "/**",
-  "headers": [
-    {
-      "key": "Content-Security-Policy",
-      "value": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com"
-    },
-    {
-      "key": "Referrer-Policy",
-      "value": "no-referrer, strict-origin-when-cross-origin"
-    },
-    {
-      "key": "X-Content-Type-Options",
-      "value": "nosniff"
-    },
-    {
-      "key": "X-Frame-Options",
-      "value": "DENY"
-    },
-    {
-      "key": "X-XSS-Protection",
-      "value": "1; mode=block"
-    },
-    {
-      "key": "Feature-Policy",
-      "value": "accelerometer 'none'; camera 'none'; microphone 'none'"
-    }
-  ]
-} ]
-----
-
-NOTE: You don't need to include a `Strict-Transport-Security` header because Firebase includes it by default.
-
-Run `ng deploy` and you should get an **A** now!
-
-[[firebase-headers]]
-.Firebase app score from securityheaders.com
-image::../images/angular-deployment/firebase-headers.png[Firebase app score from securityheaders.com, 800, scaledwidth="100%"]
-
-Commit your changes to your `firebase` branch.
-
-[source,shell]
-----
-git add .
-git commit -am "Add Firebase deployment"
-----
-
-=== Angular Deployment to Netlify
-
-Netlify is a hosting provider for static sites that I've enjoyed using in the past. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality. I wrote about Netlify in link:/blog/2020/02/18/gatsby-react-netlify[Build a Secure Blog with Gatsby, React, and Netlify].
-
-Check out your `master` branch and create a new `netlify` one.
-
-[source,shell]
-----
-git checkout master
-git checkout -b netlify
-----
-
-Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "Hello, World" in the HTML file, then dragged the directory into my browser window.
-
-[[netlify-create-site]]
-.Netlify create site
-image::../images/angular-deployment/netlify-create-site.png[Netlify create site, 650, scaledwidth="100%"]
-
-Click on **Site Settings** to copy your **API ID** to a text editor. You'll also need a personal access token. To create one, click on your avatar in the top right > **User settings** > **Applications** and click **New access token**. Copy the generated token to your text editor.
-
-Run the command below to add Netlify deployment support.
-
-[source,shell]
-----
-ng add @netlify-builder/deploy
-----
-
-Copy and paste your API ID and personal access token when prompted, then run `ng deploy` to deploy your site.
-
-Update your Spring Boot app on Heroku to allow your Netlify app URL:
-
-[source,shell]
-----
-heroku config:edit --remote heroku
-----
-
-Make sure to append the URL to your existing ones, separating them with a comma.
-
-[source,shell]
-----
-ALLOWED_ORIGINS='https://stark-lake-39546.herokuapp.com,https://ng-notes-1337.web.app,https://relaxed-brown-0b81d8.netlify.app'
-----
-
-You'll also need to update your Okta app to whitelist the URL as a login and logout redirect.
-
-If you try to log in, you'll get a `Page Not Found` error stemming from Okta trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents.
-
-[source,shell]
-----
-/*    /index.html   200
-----
-
-TIP: You can learn more about https://docs.netlify.com/routing/redirects/rewrites-proxies/#history-pushstate-and-single-page-apps[configuring Netlify for SPAs in their documentation].
-
-Then, modify `angular.json` to include this file in its assets.
-
-[source,json]
-----
-"assets": [
-  "src/_redirects",
-  "src/favicon.ico",
-  "src/assets"
-],
-----
-
-Run `ng deploy` again and you should be able to log in successfully.
-
-=== Better Security Headers on Netlify
-
-If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
-
-Create a `src/_headers` file with the following contents.
-
-[source,text]
-----
-/*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com
-  Referrer-Policy: no-referrer, strict-origin-when-cross-origin
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  X-XSS-Protection: 1; mode=block
-  Feature-Policy: accelerometer 'none'; camera 'none'; microphone 'none'
-----
-
-NOTE: You don't need to include a `Strict-Transport-Security` header because Netlify includes one by default.
-
-Modify `angular.json` to include this file in its assets.
-
-[source,json]
-----
-"assets": [
-  "src/_headers",
-  "src/_redirects",
-  "src/favicon.ico",
-  "src/assets"
-],
-----
-
-Run `ng deploy` and you should get an **A** now!
-
-[[netlify-headers]]
-.Netlify score from securityheaders.com
-image::../images/angular-deployment/netlify-headers.png[Netlify score from securityheaders.com, 800, scaledwidth="100%"]
-
-Commit your changes to the `netlify` branch.
-
-[source,shell]
-----
-git add .
-git commit -am "Add Netlify deployment"
-----
-
-[WARNING]
-====
-The Netlify schematic writes your access token to `angular.json`, which is a security risk (if you push these changes to your source control system).
-
-[source,json]
-----
-"deploy": {
-  "builder": "@netlify-builder/deploy:deploy",
-  "options": {
-    "outputPath": "dist/notes",
-    "netlifyToken": "04b966f772XXX...",
-    "siteId": "1dda959c-XXXX..."
-  }
-}
-----
-
-I was notified of this issue by https://gitguardian.com/[GitGuardian], which we use to monitor our repos. If you check-in this change, make sure to delete the access token on Netlify.
-====
-
-// todo: AWS is the most complicated, should we exclude it?
-=== Angular Deployment to AWS S3
-
-Amazon Simple Storage Service (Amazon S3) is an object storage service that is a popular option for hosting static sites.
-
-Check out your `main` branch and create a new `aws` one.
-
-[source,shell]
-----
-git checkout main
-git checkout -b aws
-----
-
-Before running the command to add S3 deployment support, you'll need a few things:
-
-* An S3 Bucket
-* An AWS Region Name
-* A Secret Access Key
-* An Access Key ID
-
-You'll also need to https://portal.aws.amazon.com/billing/signup[create an AWS account]. After creating an account, go to the https://s3.console.aws.amazon.com/[Amazon S3 console]. Click **Create Bucket** and give it a name you'll remember. Use the default region selected for you and click **Create Bucket**.
-
-To create the secret access key, go to your https://console.aws.amazon.com/iam/home?nc2=h_m_sc#/security_credentials[security credentials page]. Expand the **Access keys** section, and then **Create New Access Key**. Click **Show Access Key** and copy the values into a text editor.
-
-TIP: If you have trouble creating a secret access key, see https://aws.amazon.com/blogs/security/how-to-find-update-access-keys-password-mfa-aws-management-console/[this blog post].
-
-Add the `@jefiozie/ngx-aws-deploy` package to deploy to S3:
-
-[source,shell]
-----
-ng add @jefiozie/ngx-aws-deploy
-----
-
-When prompted, enter your region, bucket name, access key, and access key ID. When prompted for the folder, leave it blank.
-
-CAUTION: This process writes these raw values to your `angular.json`. For a more secure setup, use environment variables: `NG_DEPLOY_AWS_ACCESS_KEY_ID`, `NG_DEPLOY_AWS_SECRET_ACCESS_KEY`, `NG_DEPLOY_AWS_BUCKET` and `NG_DEPLOY_AWS_REGION`.
-
-Run `ng deploy` to deploy your Angular app to your AWS S3 bucket.
-
-Next, you need to https://docs.aws.amazon.com/AmazonS3/latest/user-guide/static-website-hosting.html[configure S3 for static website hosting]. Go to your bucket > **Properties** > **Static website hosting**. Take note of the endpoint URL at the top of the card, you'll need this in a minute.
-
-Type `index.html` for the index and error document and click **Save**.
-
-[[aws-static-website]]
-.AWS static website
-image::../images/angular-deployment/aws-static-website.png[AWS static website, 500, scaledwidth="100%"]
-
-By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save**.
-
-The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
-
-[source,json]
-----
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{your-bucket-name}/*"
-            ]
+class UserController(val repository: NotesRepository) {
+
+    @GetMapping("/user/notes")
+    fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
+        println("Fetching notes for user: ${principal.name}")
+        return if (title.isNullOrEmpty()) {
+            repository.findAllByUser(principal.name, pageable)
+        } else {
+            println("Searching for title: ${title}")
+            repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title, pageable)
         }
-    ]
+    }
+
+    @GetMapping("/user")
+    fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
+        return user;
+    }
 }
 ----
 
-Click **Save** to continue.
+Modify `NotesRepository` to add a `Pageable` argument to its methods and return a `Page`.
 
-At this point, you could navigate to `\https://<bucket-name>.s3.amazonaws.com/index.html` in your browser, and the application will load. However, there's no HTTP to HTTPS redirect or resolution of `index.html` by default. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve these issues].
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+----
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
-Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Under the Web section, click the **Get Started** button. Click in the **Origin Domain Name** field and select your S3 bucket.
+...
 
-Set the **Viewer Protocol Policy** to `Redirect HTTP to HTTPS`, allow all HTTP methods, and enter `index.html` as the **Default Root Object**. Scroll to the bottom and click **Create Distribution**. When the Status column changes from `In Progress` to `Deployed`, navigate to the domain name in your browser.
+@RepositoryRestResource
+interface NotesRepository : JpaRepository<Note, Long> {
+    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
+    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
+}
+----
 
-NOTE: Once you've created your distribution, it can take 20 minutes for it to deploy.
+While you're updating the Spring Boot side of things, modify `DataInitializer` to create a thousand notes for your user. Make sure to replace `<your username>` with the email address you use to log in to Okta.
 
-After your distribution is deployed, update your Spring Boot app on Heroku to allow your CloudFront URL:
+[source,kotlin]
+----
+@Component
+class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
+
+    @Throws(Exception::class)
+    override fun run(args: ApplicationArguments) {
+        for (x in 0..1000) {
+            repository.save(Note(title = "Note ${x}", user = "<your username>"))
+        }
+        repository.findAll().forEach { println(it) }
+    }
+}
+----
+
+Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
+
+[[notes-list-with-sorting]]
+.Notes list with sorting
+image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
+
+=== Add Pagination with Angular and Bootstrap
+
+The last feature to add is pagination with NG Bootstrap's `<ngb-pagination>` component. Begin by adding `page` and `size` variables (with default values) to `note-filter.ts`.
+
+[source,ts]
+.src/app/note/note-filter.ts
+----
+export class NoteFilter {
+  title = '';
+  column: string;
+  direction: string;
+  page = 0;
+  size = 20;
+}
+----
+
+At the bottom of `note-list.component.html` (just after `</table>`), add the pagination component, along with a page-size selector.
+
+[source,html]
+.src/app/note/note-list/note-list.component.html
+----
+<div class="d-flex justify-content-between p-2">
+  <ngb-pagination [maxSize]="10"
+    [collectionSize]="total$ | async" [(page)]="filter.page" [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
+  </ngb-pagination>
+
+  <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="filter.size" (ngModelChange)="onChange(filter.size)">
+    <option [ngValue]="10">10 items per page</option>
+    <option [ngValue]="20">20 items per page</option>
+    <option [ngValue]="100">100 items per page</option>
+  </select>
+</div>
+----
+
+Add `NgbModule` as an import to `note.module.ts`.
+
+[source,ts]
+.src/app/note/note.module.ts
+----
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+@NgModule({
+  imports: [
+    ...
+    NgbModule
+  ],
+  ...
+}
+----
+
+In `note-list.component.ts`, add a `total$` observable and set it from the `search()` method. Then add an `onPageChange()` method and an `onChange()` method, and modify `onSort()` to set the page to 0.
+
+// note: I had to change from Observable<number> to Observable<any> to get it to compile. Seems strange.
+
+[source,ts]
+.src/app/note/note-list/note-list.component.ts
+----
+import { Observable } from 'rxjs';
+
+export class NoteListComponent implements OnInit {
+  total$!: Observable<any>;
+
+  ...
+
+  search(): void {
+    this.noteService.load(this.filter);
+    this.total$ = this.noteService.size$;
+  }
+
+  onChange(pageSize: number) {
+    this.filter.size = pageSize;
+    this.filter.page = 0;
+    this.search();
+  }
+
+  onPageChange(page: number) {
+    this.filter.page = page - 1;
+    this.search();
+    this.filter.page = page;
+  }
+
+  onSort({column, direction}: SortEvent) {
+    // reset other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
+
+    this.filter.column = column;
+    this.filter.direction = direction;
+    this.filter.page = 0;
+    this.search();
+  }
+}
+----
+
+Then update `notes.service.ts` to add a `size$` observable and parameters for the page size and page number.
+
+[source,ts]
+.src/app/note/note.service.ts
+----
+import { BehaviorSubject, Observable } from 'rxjs';
+
+...
+
+export class NoteService {
+  ...
+  size$ = new BehaviorSubject<number>(0);
+
+  ...
+
+  find(filter: NoteFilter): Observable<Note[]> {
+    const params: any = {
+      title: filter.title,
+      sort: `${filter.column},${filter.direction}`,
+      size: filter.size,
+      page: filter.page
+    };
+    if (!filter.direction) { delete params.sort; }
+
+    const userNotes = 'http://localhost:8080/user/notes';
+    return this.http.get(userNotes, {params, headers}).pipe(
+      map((response: any) => {
+        this.size$.next(response.totalElements);
+        return response.content;
+      })
+    );
+  }
+
+  ...
+}
+----
+
+Now your note list should have a working pagination feature at the bottom. Pretty slick, eh?
+
+[[notes-list-with-pagination]]
+.Notes with pagination
+image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%"]
+
+== Angular + Bootstrap + Spring Boot = JHipster
+
+Phew! That was a lot of code. I hope this section has helped you see how powerful Angular and Spring Boot with Bootstrap can be!
+
+// proposal: Download the `source.zip` for this book from InfoQ. The `angular-bootstrap` directory has this chapter's completed example.
+
+////
+You can find all of the https://github.com/oktadev/okta-angular-bootstrap-example[source code for this example on GitHub].
+////
+
+////
+NOTE: I fixed the Angular tests so they work with Bootstrap in https://github.com/oktadeveloper/okta-angular-bootstrap-example/pull/1/commits/9458b76e98cda130763cfd10ab2bfa050db78869[this commit].
+////
+
+
+I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
+
+1. Install JHipster and KHipster
+
+ npm install -g generator-jhipster generator-jhipster-kotlin
+
+2. Create an `easy-notes` directory and a `notes.jdl` file in it
+
+  application {
+    config {
+      baseName notes
+      authenticationType oauth2
+      buildTool gradle
+      searchEngine elasticsearch
+      testFrameworks [cypress]
+    }
+    entities *
+  }
+  entity Note {
+    title String required
+    text TextBlob
+  }
+  relationship ManyToOne {
+    Note{user(login)} to User
+  }
+  paginate Note with pagination
+
+3. In a terminal, navigate to the `easy-notes` directory and run `khipster import-jdl notes.jdl`
+
+That's it!
+
+Of course, you probably want to see it running. Run the following commands to start Keycloak (as a local OAuth 2.0 server) and Elasticsearch, and launch the app.
 
 [source,shell]
 ----
-heroku config:edit --remote heroku
+docker-compose -f src/main/docker/keycloak.yml up -d
+docker-compose -f src/main/docker/elasticsearch.yml up -d
+./gradlew
 ----
 
-Make sure to append the URL to your existing ones, separating them with a comma.
+Then, run `npm run e2e` in another terminal window to verify everything works. Here's a screenshot of the app's Notes form with validation.
 
-[source,shell]
-----
-ALLOWED_ORIGINS='https://stark-lake-39546.herokuapp.com,https://ng-notes-1337.web.app,https://relaxed-brown-0b81d8.netlify.app,https://d2kytj28ukuxfr.cloudfront.net'
-----
+[[khipster-notes]]
+.KHipster Notes
+image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
 
-Update your Okta SPA app to whitelist the URL as a redirect, too.
-
-If you try to log in, you'll get a 403 when redirecting back to the site. To fix this, edit your distribution > **Error pages**. Create two custom error responses for `404` and `403`. Return a path of `/index.html` and a `200: OK` response code.
-
-Now you should be able to authenticate to your Angular app on AWS successfully!
-
-=== Awesome Security Headers with AWS CloudFront + S3
-
-If you test your new CloudFront + S3 site on https://securityheaders.com/[securityheaders.com], you'll get an **F**. To solve this, you can use https://aws.amazon.com/blogs/networking-and-content-delivery/adding-http-security-headers-using-lambdaedge-and-amazon-cloudfront/[Lambda@Edge to add security headers].
-
-Go to the https://us-west-2.console.aws.amazon.com/lambda/home[Lambda Console] and select the `US-East-1 N` region from a drop-down list in the top right. Click **Create Function** to create a new function.
-
-Choose **Author from scratch** and name it `securityHeaders`. Under Permissions, select **Create a new role from AWS Policy templates**. Name the role `securityHeaders-role` and select **Basic Lambda@Edge permissions (for CloudFront trigger)**. Click **Create function**.
-
-In the Function code section, set `index.js` to have the following JavaScript.
-
-[source,js]
-----
-exports.handler = (event, context, callback) => {
-
-  // get response
-  const response = event.Records[0].cf.response;
-  const headers = response.headers;
-
-  // set headers
-  headers['content-security-policy'] = [{key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com"}];
-  headers['referrer-policy'] = [{key: 'Referrer-Policy', value: 'no-referrer, strict-origin-when-cross-origin'}];
-  headers['strict-transport-security'] = [{key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubdomains'}];
-  headers['x-content-type-options'] = [{key: 'X-Content-Type-Options', value: 'nosniff'}];
-  headers['x-frame-options'] = [{key: 'X-Frame-Options', value: 'DENY'}];
-  headers['x-xss-protection'] = [{key: 'X-XSS-Protection', value: '1; mode=block'}];
-  headers['feature-policy'] = [{key: 'Feature-Policy', value: "accelerometer 'none'; camera 'none'; microphone 'none'"}];
-
-  // return modified response
-  callback(null, response);
-};
-----
-
-Click **Save** and add a trigger. Select **CloudFront** and **Deploy to Lambda@Edge**. For the distribution, use the ID of your CloudFront distribution. Set the event to be **Origin response**. Select the "I acknowledge..." checkbox and click **Deploy**.
-
-Go back to your CloudFront Console and wait for the deploy to complete.
-
-Try your CloudFront domain again on https://securityheaders.com[securityheaders.com]. You should get an **A** this time.
-
-[[aws-headers]]
-.AWS score from securityheaders.com
-image::../images/angular-deployment/aws-headers.png[AWS score from securityheaders.com, 800, scaledwidth="100%"]
-
-_Phew! AWS certainly doesn't make things easy._
-
-Commit your changes to the `aws` branch.
-
-[source,shell]
-----
-git commit -am "Add AWS S3 deployment"
-----
-
-WARNING: If you committed the changes in your `angular.json` file, you should delete your access key in **My Account** > **Security Credentials**. When I made this mistake, Amazon emailed me right away and made me delete my access key and change my password.
+TIP: Want to make JHipster work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
 
 // == Learn More About Angular and Spring Boot
 == Summary
 
-In this section, you learned how to upgrade Angular and Spring Boot to their latest versions and make them production-ready. You used the https://devcenter.heroku.com/articles/okta[Okta add-on for Heroku] to add OAuth 2.0 + OIDC to both apps, then deployed them to Heroku. After you got them working on Heroku with PostgreSQL, you learned how to deploy the Angular app to Firebase, Netlify, and AWS.
+I used the following resources to gather historical information about Angular and Bootstrap.
 
-You learned how to make your Angular app more secure with security headers, force HTTPS, and make each cloud provider SPA-aware.
+* https://raibledesigns.com/rd/entry/refreshing_appfuse_s_ui_with[Refreshing AppFuse's UI with Twitter Bootstrap]
+* https://alistapart.com/article/building-twitter-bootstrap/[Building Twitter Bootstrap]
+* https://v4-alpha.getbootstrap.com/about/history/[Bootstrap > About > History]
+* https://medium.com/dailyjs/angular-1-0-turns-five-years-old-4d7108a5e412[Angular 1.0 Turns Five Years Old]
 
-// proposal: Download the `source.zip` for this book from InfoQ. The `angular-deployment` directory has this chapter's completed example.
-
-////
-You can find the source code for the completed example in the https://github.com/oktadeveloper/okta-angular-deployment-example[@oktadeveloper/okta-angular-deployment-example] repository.
-////
-
-In the next section, I'll show you how to containerize and deploy your Angular + Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll show you how to deploy to Heroku and Knative on Google Cloud!
-
-////
-== Angular Docker
-
-Building modern apps with Angular and Spring Boot is a common practice these days. In fact, if I use Google's Keyword Planner to look up popular search terms, it's one of the most popular combinations. The results in the list below are average monthly searches and not limited by location.
-
-[[keyword-planner-angular-results]]
-.Keyword Planner results
-image::../images/angular-docker/keyword-planner-angular-results.png[Keyword Planner results, 375, scaledwidth="100%"]
-
-This tutorial is the fourth and final in a series on Angular and Spring Boot in 2020. In the first one, I showed how to create a secure notes app with Angular and Spring Boot + Kotlin. The second showed how to add Bootstrap for CSS and create a sortable, searchable, and pageable data table. The third showed how to deploy apps separately to Heroku. It also outlined how it's possible to use `ng deploy` to deploy to Firebase, Netlify, and AWS.////
-////
+In the next section, I'll show you how to deploy your Angular app to production. Buckle up!

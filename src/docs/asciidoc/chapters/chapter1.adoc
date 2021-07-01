@@ -60,10 +60,9 @@ $ ng version
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-
-Angular CLI: 12.0.0-rc.1
-Node: 14.16.1
-Package Manager: npm 7.11.2
+Angular CLI: 12.1.0
+Node: 14.17.0
+Package Manager: npm 6.14.13
 OS: darwin x64
 
 Angular: undefined
@@ -71,10 +70,10 @@ Angular: undefined
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1200.0-rc.1 (cli-only)
-@angular-devkit/core         12.0.0-rc.1 (cli-only)
-@angular-devkit/schematics   12.0.0-rc.1 (cli-only)
-@schematics/angular          12.0.0-rc.1 (cli-only)
+@angular-devkit/architect    0.1201.0 (cli-only)
+@angular-devkit/core         12.1.0 (cli-only)
+@angular-devkit/schematics   12.1.0 (cli-only)
+@schematics/angular          12.1.0 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
@@ -87,28 +86,27 @@ If you run this command from the `ng-demo` directory, you'll see even more infor
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-
-Angular CLI: 12.0.0-rc.1
-Node: 14.16.1
-Package Manager: npm 7.11.2
+Angular CLI: 12.1.0
+Node: 14.17.0
+Package Manager: npm 6.14.13
 OS: darwin x64
 
-Angular: 12.0.0-rc.1
+Angular: 12.1.0
 ... animations, cli, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1200.0-rc.1
-@angular-devkit/build-angular   12.0.0-rc.1
-@angular-devkit/core            12.0.0-rc.1
-@angular-devkit/schematics      12.0.0-rc.1
-@schematics/angular             12.0.0-rc.1
+@angular-devkit/architect       0.1200.0
+@angular-devkit/build-angular   12.1.0
+@angular-devkit/core            12.0.0
+@angular-devkit/schematics      12.0.0
+@schematics/angular             12.0.0
 rxjs                            6.6.7
-typescript                      4.2.4
+typescript                      4.3.4
 ----
 
-== Run the application
+=== Run the application
 
 The project is configured with a simple web server for development. To start it, run:
 
@@ -130,11 +128,9 @@ $ ng test
 Chrome 90.0.4430.93 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.2 secs / 0.144 secs)
 ----
 
-== Add a search feature
+=== Add a search feature
 
 To add a search feature, open the project in an IDE or your favorite text editor.
-
-=== The Basics
 
 In a terminal window, cd into your project's directory and run the following command to create a search component.
 
@@ -557,7 +553,7 @@ Now search results will be filtered by the query value you type in.
 
 This section showed you how to fetch and display search results. The next section builds on this and shows how to edit and save a record.
 
-== Add an edit feature
+=== Add an edit feature
 
 Modify `search.component.html` to wrap the person's name with a link.
 
@@ -867,7 +863,7 @@ image::../images/ng-demo/edit-form-names.png[Edit form with names and validation
 
 To learn more about forms and validation, see https://angular.io/guide/form-validation[Angular Forms Validation documentation].
 
-== Test your Angular app
+== Unit and End-to-End Testing
 
 Now that you've built an application, it's important to test it to ensure it works. The best reason for writing tests is to automate your testing. Without tests, you'll likely be testing manually. This manual testing will take longer and longer as your application grows.
 
@@ -1385,10 +1381,7 @@ jobs:
 
 Check it in on a branch, create a pull request for that branch, and you should see your tests running.
 
-// https://github.com/mraible/ng-demo/pull/76/checks?check_run_id=1107490951[Here is a build] showing all unit and integration tests passing.
-
-// todo: test jenkins
-
+// todo: QA Jenkins instructions
 === Jenkins
 
 If you've checked your project into source control, you can use Jenkins to automate testing.
@@ -1489,7 +1482,6 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 To integrate Bootstrap 4 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[ng-bootstrap].
 
 // todo: check if Bootstrap 5 is supported before releasing
-
 ----
 ng add @ng-bootstrap/ng-bootstrap
 ----
@@ -1816,7 +1808,7 @@ For Cypress tests, you'll need to modify the list reference in `search.spec.ts` 
 const list = cy.get('app-search mat-list mat-list-item');
 ----
 
-== Add Authentication with OpenID Connect
+== Add Auth with OpenID Connect
 
 In order to add authentication with OpenID Connect, you'll first need a free Okta developer account. Install the https://cli.okta.com[Okta CLI] and run `okta register` to sign up for a new account. If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press **Enter**.
 
