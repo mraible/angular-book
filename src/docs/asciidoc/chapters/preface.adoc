@@ -34,6 +34,8 @@ A block of code is set out as follows. It may be colored, depending on the forma
 </form>
 ----
 
+[big red yellow-background]*TODO: <Deepu:Nitpick>: Wouldn't it make sense to show an Angular sample here?*
+
 [source,kotlin]
 .src/main/kotlin/demo/HomeController.kt
 ----

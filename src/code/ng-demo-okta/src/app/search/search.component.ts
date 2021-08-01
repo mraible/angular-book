@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class SearchComponent implements OnInit, OnDestroy {
   query!: string;
-  searchResults: Array<Person> = [];
+  searchResults: Person[] = [];
   sub!: Subscription;
 
   constructor(private searchService: SearchService, private route: ActivatedRoute) { }
@@ -32,7 +32,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   search(): void {
     this.searchService.search(this.query).subscribe(
-      (data: any) => { this.searchResults = data; },
+      (data: Person[]) => { this.searchResults = data; },
       error => console.log(error)
     );
   }
