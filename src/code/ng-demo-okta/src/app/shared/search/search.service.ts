@@ -11,7 +11,7 @@ export class SearchService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<Person[]> {
-    return this.http.get('assets/data/people.json');
+    return this.http.get<Person[]>('assets/data/people.json');
   }
 
   search(q: string): Observable<Person[]> {
