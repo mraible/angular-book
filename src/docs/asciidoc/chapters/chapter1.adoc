@@ -1,16 +1,7 @@
 [[chapter-1]]
 = Build an Angular App
 
-I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of :
-
-[big red yellow-background]*TODO: <Deepu:Nitpick>: Not exactly technical, but in the flow this bullet points appear right after introduction and feels repetitive*
-
-* Modules: A mechanism to organize related code into functional sets.
-* Components: Classes that retrieve data from services and expose it to templates.
-* Services: Classes that make HTTP calls to APIs.
-* Templates: HTML pages that display data. Use Angular directives to iterate over collections and show/hide elements.
-* Pipes: Data-manipulation tools that can transform data (e.g. uppercase, lowercase, ordering, and searching).
-* Directives: HTML processors that allow manipulate data before it's displayed.
+I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of modules, components, services, templates, and directives.
 
 == A Brief History of Angular
 
