@@ -1633,16 +1633,17 @@ You'll also need to change its test to import Material modules and look for `mat
 [source,typescript]
 .src/app/app.component.spec.ts
 ----
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [RouterTestingModule, MatListModule, MatToolbarModule]
     }).compileComponents();
-  });
+  }));
 
   ...
   it('should render title', () => {
