@@ -243,7 +243,7 @@ If you want to add CSS for this component, open `src/app/search/search.component
 }
 ----
 
-[big red yellow-background]*TODO: <Deepu:Nitpick>: Do you think it would be beneficial to explain or link to :host selector?*
+IMPORTANT: The `:host` allows you to target the container of the component. It's the only way to target the host element. You can't reach the host element from inside the component with other selectors because it's not part of the component's own template.
 
 This section has shown you how to generate a new component and add it to a basic Angular application with Angular CLI. The next section shows you how to create and use a JSON file and `localStorage` to create a fake API.
 
@@ -589,26 +589,26 @@ Update `src/app/edit/edit.component.html` to display an editable form. You might
 .src/app/edit/edit.component.html
 ----
 <div *ngIf="person">
-  <h3>{{editName}}</h3>
+  <h3>{{person.name}}</h3>
   <div>
     <label>Id:</label>
     {{person.id}}
   </div>
   <div>
     <label>Name:</label>
-    <input [(ngModel)]="editName" name="name" id="name" placeholder="name"/>
+    <input [(ngModel)]="person.name" name="name" id="name" placeholder="name"/>
   </div>
   <div>
     <label>Phone:</label>
-    <input [(ngModel)]="editPhone" name="phone" id="phone" placeholder="Phone"/>
+    <input [(ngModel)]="person.phone" name="phone" id="phone" placeholder="Phone"/>
   </div>
   <fieldset>
     <legend>Address:</legend>
     <address>
-      <input [(ngModel)]="editAddress.street" id="street"><br/>
-      <input [(ngModel)]="editAddress.city" id="city">,
-      <input [(ngModel)]="editAddress.state" id="state" size="2">
-      <input [(ngModel)]="editAddress.zip" id="zip" size="5">
+      <input [(ngModel)]="person.address.street" id="street"><br/>
+      <input [(ngModel)]="person.address.city" id="city">,
+      <input [(ngModel)]="person.address.state" id="state" size="2">
+      <input [(ngModel)]="person.address.zip" id="zip" size="5">
     </address>
   </fieldset>
   <button (click)="save()" id="save">Save</button>
@@ -618,13 +618,11 @@ Update `src/app/edit/edit.component.html` to display an editable form. You might
 
 Modify `EditComponent` to import model and service classes and to use the `SearchService` to get data.
 
-[big red yellow-background]*TODO: <Deepu:Comment>: I dont see a need to have new fields for editing as the person object can directly be used to show and hold the edited data here as its being mutated anyway in save method and these new fields are just being intermediates. But its upto you, its just an observation*
-
 [source,typescript]
 .src/app/edit/edit.component.ts
 ----
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Address, Person, SearchService } from '../shared';
+import { Person, SearchService } from '../shared';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -635,10 +633,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class EditComponent implements OnInit, OnDestroy {
   person!: Person;
-  editName!: string;
-  editPhone!: string;
-  editAddress!: Address;
-
   sub!: Subscription;
 
   constructor(private route: ActivatedRoute,
@@ -646,14 +640,11 @@ export class EditComponent implements OnInit, OnDestroy {
               private service: SearchService) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.sub = this.route.params.subscribe(params => {
       const id = + params.id; // (+) converts string 'id' to a number
       this.service.get(id).subscribe(person => {
         if (person) {
-          this.editName = person.name;
-          this.editPhone = person.phone;
-          this.editAddress = person.address;
           this.person = person;
         } else {
           this.gotoList();
@@ -668,23 +659,20 @@ export class EditComponent implements OnInit, OnDestroy {
     }
   }
 
-  cancel() {
-    this.router.navigate(['/search']);
+  async cancel() {
+    await this.router.navigate(['/search']);
   }
 
-  save() {
-    this.person.name = this.editName;
-    this.person.phone = this.editPhone;
-    this.person.address = this.editAddress;
+  async save() {
     this.service.save(this.person);
-    this.gotoList();
+    await this.gotoList();
   }
 
-  gotoList() {
+  async gotoList() {
     if (this.person) {
-      this.router.navigate(['/search', {term: this.person.name} ]);
+      await this.router.navigate(['/search', {term: this.person.name} ]);
     } else {
-      this.router.navigate(['/search']);
+      await this.router.navigate(['/search']);
     }
   }
 }
