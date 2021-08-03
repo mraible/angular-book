@@ -21,7 +21,7 @@ export class SearchService {
       q = q.toLowerCase();
     }
     return this.getAll().pipe(
-      map((data: any) => data
+      map((data: Person[]) => data
         .map((item: Person) => !!localStorage['person' + item.id] ?
           JSON.parse(localStorage['person' + item.id]) : item)
         .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q))

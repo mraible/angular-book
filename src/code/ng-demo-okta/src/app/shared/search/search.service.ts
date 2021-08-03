@@ -29,7 +29,7 @@ export class SearchService {
   }
 
   get(id: number): Observable<Person> {
-    return this.getAll().pipe(map((all: any) => {
+    return this.getAll().pipe(map((all: Person[]) => {
       if (localStorage['person' + id]) {
         return JSON.parse(localStorage['person' + id]);
       }

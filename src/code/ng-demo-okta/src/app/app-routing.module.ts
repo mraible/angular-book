@@ -5,8 +5,8 @@ import { EditComponent } from './edit/edit.component';
 import { OktaAuthGuard } from '@okta/okta-angular';
 
 const routes: Routes = [
-  {path: 'search', component: SearchComponent, canActivate: [OktaAuthGuard]},
-  {path: 'edit/:id', component: EditComponent, canActivate: [OktaAuthGuard]},
+  { path: 'search', component: SearchComponent, canActivate: [OktaAuthGuard] },
+  { path: 'edit/:id', component: EditComponent, canActivate: [OktaAuthGuard] },
 ];
 
 @NgModule({
