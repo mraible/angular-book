@@ -34,11 +34,11 @@ NOTE: I should warn you about my teaching style. I'll show how to do things and 
 
 **Prerequisites:**
 
-[big red yellow-background]*TODO: <Deepu:Comment>: I'm surprised you recommend IntelliJ over VSCode, personally for Angular only stuff I would prefer VScode as with IntelliJ you would need ultimate edition for proper support and VScode is way faster and has better TS support :P*
-
 * A favorite text editor or IDE. I recommend https://www.jetbrains.com/idea/[IntelliJ IDEA].
 * http://nodejs.org/[Node.js] and npm installed.
 * https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@12`.
+
+NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, checkout https://code.visualstudio.com/[Visual Studio Code].
 
 == Create a new Angular project
 
