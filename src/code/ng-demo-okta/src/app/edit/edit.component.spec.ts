@@ -45,7 +45,7 @@ describe('EditComponent', () => {
 
     // verify data was set on component when initialized
     const editComponent = fixture.componentInstance;
-    expect(editComponent.editAddress.city).toBe('Denver');
+    expect(editComponent.person.address.city).toBe('Denver');
 
     // verify HTML renders as expected
     const compiled = fixture.nativeElement;

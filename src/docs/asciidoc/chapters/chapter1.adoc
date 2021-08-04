@@ -1,14 +1,7 @@
 [[chapter-1]]
 = Build an Angular App
 
-I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of :
-
-* Modules: A mechanism to organize related code into functional sets.
-* Components: Classes that retrieve data from services and expose it to templates.
-* Services: Classes that make HTTP calls to APIs.
-* Templates: HTML pages that display data. Use Angular directives to iterate over collections and show/hide elements.
-* Pipes: Data-manipulation tools that can transform data (e.g. uppercase, lowercase, ordering, and searching).
-* Directives: HTML processors that allow manipulate data before it's displayed.
+I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several distinct types of modules, components, services, templates, and directives.
 
 == A Brief History of Angular
 
@@ -36,9 +29,11 @@ NOTE: I should warn you about my teaching style. I'll show how to do things and 
 * http://nodejs.org/[Node.js] and npm installed.
 * https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@12`.
 
+NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, checkout https://code.visualstudio.com/[Visual Studio Code].
+
 == Create a new Angular project
 
-Create a new project using the `ng new` command:
+Create a new project using the `ng new` command from Angular CLI:
 
 ----
 ng new ng-demo
@@ -139,6 +134,8 @@ In a terminal window, cd into your project's directory and run the following com
 ng g component search
 ----
 
+TIP: `ng g` is an alias for `ng generate`.
+
 Open `src/app/search/search.component.html` and replace its default HTML with the following:
 
 [source,html]
@@ -219,7 +216,7 @@ import { FormsModule } from '@angular/forms';
 export class AppModule { }
 ----
 
-Now you should be able to see the search form.
+Run `ng serve` again and now you should be able to see the search form when you visit `http://localhost:4200/search`.
 
 [[search-component]]
 .Search component
@@ -245,6 +242,8 @@ If you want to add CSS for this component, open `src/app/search/search.component
   padding: 0 20px;
 }
 ----
+
+IMPORTANT: The `:host` allows you to target the container of the component. It's the only way to target the host element. You can't reach the host element from inside the component with other selectors because it's not part of the component's own template.
 
 This section has shown you how to generate a new component and add it to a basic Angular application with Angular CLI. The next section shows you how to create and use a JSON file and `localStorage` to create a fake API.
 
@@ -319,8 +318,8 @@ export class SearchService {
 
   constructor(private http: HttpClient) { }
 
-  getAll() {
-    return this.http.get('assets/data/people.json');
+  getAll(): Observable<Person[]> {
+    return this.http.get<Person[]>('assets/data/people.json');
   }
 }
 
@@ -331,10 +330,10 @@ export class Address {
   zip: string;
 
   constructor(obj?: any) {
-    this.street = obj && obj.street || null;
-    this.city = obj && obj.city || null;
-    this.state = obj && obj.state || null;
-    this.zip = obj && obj.zip || null;
+    this.street = obj?.street || null;
+    this.city = obj?.city || null;
+    this.state = obj?.state || null;
+    this.zip = obj?.zip || null;
   }
 }
 
@@ -345,10 +344,10 @@ export class Person {
   address: Address;
 
   constructor(obj?: any) {
-    this.id = obj && Number(obj.id) || null;
-    this.name = obj && obj.name || null;
-    this.phone = obj && obj.phone || null;
-    this.address = obj && obj.address || null;
+    this.id = obj?.id || null;
+    this.name = obj?.name || null;
+    this.phone = obj?.phone || null;
+    this.address = obj?.address || null;
   }
 }
 ----
@@ -378,7 +377,7 @@ You can now add a proper type to the `searchResults` variable. While you're ther
 ----
 export class SearchComponent implements OnInit {
   query: string | undefined;
-  searchResults: Array<Person> = [];
+  searchResults: Person[] = [];
 
   constructor(private searchService: SearchService) { }
 ----
@@ -390,7 +389,7 @@ Then update the `search()` method to call the service's `getAll()` method.
 ----
 search(): void {
   this.searchService.getAll().subscribe(
-    (data: any) => { this.searchResults = data; },
+    (data: Person[]) => { this.searchResults = data; },
     error => console.log(error)
   );
 }
@@ -445,7 +444,7 @@ Now clicking the search button should work. To make the results look better, rem
 </table>
 ----
 
-.What's up with `*ngIf` and `.?`
+.What's up with `*ngIf` and `?.`
 ****
 You might be asking yourself why there's an asterisk in front of `ngIf`. From https://angular.io/docs/ts/latest/guide/structural-directives#asterisk[Angular's docs]:
 
@@ -466,7 +465,7 @@ These two HTML snippets render the same output:
 </template>
 ----
 
-As far as the `.?` is concerned, that's how you do null-safe property traversal in TypeScript. It's officially called https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html[optional chaining] and was introduced in TypeScript 3.7.
+As far as the `?.` is concerned, that's how you do null-safe property traversal in TypeScript. It's officially called https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html[optional chaining] and was introduced in TypeScript 3.7.
 ****
 
 Then add some additional CSS to `search.component.css` to improve its table layout.
@@ -506,14 +505,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 ...
 
-  search(q: string): Observable<any> {
+  search(q: string): Observable<Person[]> {
     if (!q || q === '*') {
       q = '';
     } else {
       q = q.toLowerCase();
     }
     return this.getAll().pipe(
-      map((data: any) => data
+      map((data: Person[]) => data
         .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q)))
     );
   }
@@ -526,7 +525,7 @@ Then refactor `SearchComponent` to call this method with its `query` variable.
 ----
 search(): void {
   this.searchService.search(this.query).subscribe(
-    (data: any) => { this.searchResults = data; },
+    (data: Person[]) => { this.searchResults = data; },
     error => console.log(error)
   );
 }
@@ -590,26 +589,26 @@ Update `src/app/edit/edit.component.html` to display an editable form. You might
 .src/app/edit/edit.component.html
 ----
 <div *ngIf="person">
-  <h3>{{editName}}</h3>
+  <h3>{{person.name}}</h3>
   <div>
     <label>Id:</label>
     {{person.id}}
   </div>
   <div>
     <label>Name:</label>
-    <input [(ngModel)]="editName" name="name" id="name" placeholder="name"/>
+    <input [(ngModel)]="person.name" name="name" id="name" placeholder="name"/>
   </div>
   <div>
     <label>Phone:</label>
-    <input [(ngModel)]="editPhone" name="phone" id="phone" placeholder="Phone"/>
+    <input [(ngModel)]="person.phone" name="phone" id="phone" placeholder="Phone"/>
   </div>
   <fieldset>
     <legend>Address:</legend>
     <address>
-      <input [(ngModel)]="editAddress.street" id="street"><br/>
-      <input [(ngModel)]="editAddress.city" id="city">,
-      <input [(ngModel)]="editAddress.state" id="state" size="2">
-      <input [(ngModel)]="editAddress.zip" id="zip" size="5">
+      <input [(ngModel)]="person.address.street" id="street"><br/>
+      <input [(ngModel)]="person.address.city" id="city">,
+      <input [(ngModel)]="person.address.state" id="state" size="2">
+      <input [(ngModel)]="person.address.zip" id="zip" size="5">
     </address>
   </fieldset>
   <button (click)="save()" id="save">Save</button>
@@ -623,7 +622,7 @@ Modify `EditComponent` to import model and service classes and to use the `Searc
 .src/app/edit/edit.component.ts
 ----
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Address, Person, SearchService } from '../shared';
+import { Person, SearchService } from '../shared';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -634,10 +633,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class EditComponent implements OnInit, OnDestroy {
   person!: Person;
-  editName!: string;
-  editPhone!: string;
-  editAddress!: Address;
-
   sub!: Subscription;
 
   constructor(private route: ActivatedRoute,
@@ -645,14 +640,11 @@ export class EditComponent implements OnInit, OnDestroy {
               private service: SearchService) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.sub = this.route.params.subscribe(params => {
       const id = + params.id; // (+) converts string 'id' to a number
       this.service.get(id).subscribe(person => {
         if (person) {
-          this.editName = person.name;
-          this.editPhone = person.phone;
-          this.editAddress = person.address;
           this.person = person;
         } else {
           this.gotoList();
@@ -667,23 +659,20 @@ export class EditComponent implements OnInit, OnDestroy {
     }
   }
 
-  cancel() {
-    this.router.navigate(['/search']);
+  async cancel() {
+    await this.router.navigate(['/search']);
   }
 
-  save() {
-    this.person.name = this.editName;
-    this.person.phone = this.editPhone;
-    this.person.address = this.editAddress;
+  async save() {
     this.service.save(this.person);
-    this.gotoList();
+    await this.gotoList();
   }
 
-  gotoList() {
+  async gotoList() {
     if (this.person) {
-      this.router.navigate(['/search', {term: this.person.name} ]);
+      await this.router.navigate(['/search', {term: this.person.name} ]);
     } else {
-      this.router.navigate(['/search']);
+      await this.router.navigate(['/search']);
     }
   }
 }
@@ -694,22 +683,22 @@ Modify `SearchService` to contain functions for finding a person by their id, an
 [source,typescript]
 .src/app/shared/search/search.service.ts
 ----
-search(q: string): Observable<any> {
+search(q: string): Observable<Person[]> {
   if (!q || q === '*') {
     q = '';
   } else {
     q = q.toLowerCase();
   }
   return this.getAll().pipe(
-    map((data: any) => data
+    map((data: Person[]) => data
       .map((item: Person) => !!localStorage['person' + item.id] ?
         JSON.parse(localStorage['person' + item.id]) : item)
       .filter((item: Person) => JSON.stringify(item).toLowerCase().includes(q))
     ));
 }
 
-get(id: number) {
-  return this.getAll().pipe(map((all: any) => {
+get(id: number): Observable<Person> {
+  return this.getAll().pipe(map((all: Person[]) => {
     if (localStorage['person' + id]) {
       return JSON.parse(localStorage['person' + id]);
     }
@@ -743,7 +732,7 @@ At this point, you should be able to search for a person and update their inform
 .Edit component
 image::../images/ng-demo/edit-form.png[Edit form, 800, scaledwidth="100%"]
 
-The &lt;form> in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above. The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
+The `<form>` in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above. The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
 
 [source,typescript]
 .src/app/edit/edit.component.ts
@@ -1644,16 +1633,17 @@ You'll also need to change its test to import Material modules and look for `mat
 [source,typescript]
 .src/app/app.component.spec.ts
 ----
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [RouterTestingModule, MatListModule, MatToolbarModule]
     }).compileComponents();
-  });
+  }));
 
   ...
   it('should render title', () => {
@@ -1855,8 +1845,8 @@ Remove the default route from `app-routing.ts` and add a route guard to the `/se
 import { OktaAuthGuard } from '@okta/okta-angular';
 
 const routes: Routes = [
-  {path: 'search', component: SearchComponent, canActivate: [OktaAuthGuard]},
-  {path: 'edit/:id', component: EditComponent, canActivate: [OktaAuthGuard]},
+  { path: 'search', component: SearchComponent, canActivate: [OktaAuthGuard] },
+  { path: 'edit/:id', component: EditComponent, canActivate: [OktaAuthGuard] },
 ];
 ----
 
@@ -1907,7 +1897,7 @@ export class HomeComponent implements OnInit {
     this.isAuthenticated = await this.oktaAuth.isAuthenticated();
     // Subscribe to authentication state changes
     this.oktaAuth.$authenticationState.subscribe(
-      (isAuthenticated: boolean)  => this.isAuthenticated = isAuthenticated
+      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
     );
     if (this.isAuthenticated) {
       this.user = await this.oktaAuth.getUser();

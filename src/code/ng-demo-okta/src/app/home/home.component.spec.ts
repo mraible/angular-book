@@ -20,8 +20,7 @@ describe('HomeComponent', () => {
         OktaAuthModule
       ],
       providers: [{provide: OKTA_CONFIG, useValue: oktaConfig}]
-    })
-      .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
