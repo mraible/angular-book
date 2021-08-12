@@ -526,7 +526,7 @@ Angular Schematics is a workflow tool that allows you to manipulate any project 
 
 Angular CRUD allows you to generate CRUD (create, read, update, and delete) screens and associated files from JSON.
 
-In your Angular `notes` app, install `angular-crud` using npm:å
+In your Angular `notes` app, install `angular-crud` using npm:
 
 [source,shell]
 ----
