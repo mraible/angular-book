@@ -526,12 +526,7 @@ Angular Schematics is a workflow tool that allows you to manipulate any project 
 
 Angular CRUD allows you to generate CRUD (create, read, update, and delete) screens and associated files from JSON.
 
-In your Angular `notes` app, install `angular-crud` using npm:
-
-// todo: this release still needs to happen
-// see https://github.com/manfredsteyer/angular-crud/pull/29
-// in the meantime, clone the repo, run `npm pack`,
-// then `npm install /path/to/angular-crud/*.tgz`
+In your Angular `notes` app, install `angular-crud` using npm:å
 
 [source,shell]
 ----
@@ -664,6 +659,7 @@ image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth
 
 Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
 
+// todo: update screenshot
 [[notes-list]]
 .Notes List
 image::../images/angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%"]
