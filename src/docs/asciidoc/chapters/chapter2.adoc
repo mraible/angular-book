@@ -516,8 +516,6 @@ class DemoApplication {
 
 Restart your Spring Boot app after adding this bean.
 
-To see how your final `DemoApplication` file should look, you can https://github.com/oktadeveloper/okta-spring-boot-2-angular-9-example/blob/master/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt[view the completed version in GitHub].
-
 Now that your API is working, it's time to develop a UI for it with Angular!
 
 == CRUD in Angular
