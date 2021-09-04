@@ -35,7 +35,7 @@ jobs:
         run: |
           cd ./src/code
           zip -r ${{ github.event.repository.name }}-examples-${{ env.RELEASE_VERSION }}.zip ** -x "*/node_modules/*" "*/build/*" "*/.gradle/*"
-          mv *.zip ../..
+          mv *.zip ../../build
       - name: Upload release
         uses: alexellis/upload-assets@0.3.0
         env:
