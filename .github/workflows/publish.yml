@@ -14,6 +14,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 11
+          cache: 'gradle'
       - name: Build book
         run: npm run setup
       - name: Get release version
@@ -33,7 +34,7 @@ jobs:
       - name: Package source code
         run: |
           cd ./src/code
-          zip -r ${{ github.event.repository.name }}-source-code-${{ env.RELEASE_VERSION }}.zip ** -x "*/node_modules/*" "*/build/*" "*/.gradle/*"
+          zip -r ${{ github.event.repository.name }}-examples-${{ env.RELEASE_VERSION }}.zip ** -x "*/node_modules/*" "*/build/*" "*/.gradle/*"
           mv *.zip ../..
       - name: Upload release
         uses: alexellis/upload-assets@0.3.0
