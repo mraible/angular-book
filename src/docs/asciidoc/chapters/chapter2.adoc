@@ -3,9 +3,13 @@
 
 Angular is a web framework for building mobile and desktop applications. Its first version, AngularJS, was one of the first JavaScript MVC frameworks to dominate the web landscape. Developers loved it, and it rose to popularity in the early 2010s. AngularJS 1.0 was released on June 14, 2014. Angular 11 was https://blog.angular.io/version-11-of-angular-now-available-74721b7952f7?gi=6131f1d297e3[released on November 12, 2020], giving Angular quite a successful run in the land of web frameworks.
 
+[big red yellow-background]*TODO: <Deepu:Nitpick>: Since previous chapter introduced angular is this needed?*
+
 Spring Boot is one of the most popular frameworks for developing Java applications and REST APIs. It also has first-class support for Kotlin!
 
-Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java developers write Spring apps. Instead of writing a lot of boilerplate XML or JavaConfig with annotations, Spring Boot introduced the idea of pre-configured _starters_ with smart defaults.
+[big red yellow-background]*TODO: <Deepu:Nitpick>: A small intro to Kotlin might be nice*
+
+Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java developers write Spring apps. Instead of writing a lot of boilerplate XML or JavaConfig with annotations, Spring Boot introduced the idea of pre-configured _starters_ with smart defaults via auto configuration.
 
 Long story short, they're a match made in heaven!
 
@@ -23,7 +27,7 @@ Simply put: upgrading to the latest version of Angular will make your web apps f
 
 [TIP]
 ====
-If you have an existing app, you can update to the latest release of Angular using `ng update`:
+If you have an existing app, you can update to the latest release of Angular using `ng update` command from the Angular CLI:
 
 [source,shell]
 ----
@@ -57,6 +61,8 @@ brew cask install adoptopenjdk11
 
 You can also use https://sdkman.io[SDKMAN!] to install Java 11.
 
+[big red yellow-background]*TODO: <Deepu:Question>: Shouldnt this be Java 17 now :P *
+
 [source,shell]
 ----
 sdk install java 11.0.11.hs-adpt
@@ -73,12 +79,16 @@ To create an Angular app, you first need to install Angular CLI.
 npm install -g @angular/cli@12
 ----
 
-Then create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` to create an Angular application.
+[big red yellow-background]*TODO: <Deepu:Question>: Is the Idea to always create a new project? I thought you would reuse the one from previous. I ask out of curiosity, if thats the intention ignore this*
+
+Then create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
 
 [source,shell]
 ----
 ng new notes --routing --style css
 ----
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: May be would be nice to give a line on what the flags --routing and --style does*
 
 This process will take a minute or two to complete, depending on your internet speed and hardware. Once it's finished, navigate into the directory and run `ng serve`.
 
@@ -214,7 +224,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
 NOTE: You might notice that tokens are only added for `http://localhost`. You'll need to modify the `allowedOrigins` array to include your production URL eventually.
 
-Start your app again using `ng serve`, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
+Start your app again using the `ng serve` command, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
 [[angular-login-button]]
 .Login button
@@ -242,12 +252,16 @@ Kotlin is an intriguing language for Spring developers because it reduces boiler
 
 Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
 
+[big red yellow-background]*TODO: <Deepu:Question>: A line prompting to install HTTPie before running the command to avoid confusion*
+
 [source,shell]
 ----
 http https://start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.5.2.RELEASE \
 artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
 type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
+
+[big red yellow-background]*TODO: <Deepu:Question>: A note on adjusting the bootVersion value based on whats available at the time of running this might be nice*
 
 Run this command in a terminal, and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
 
@@ -266,6 +280,8 @@ image::../images/angular-spring-boot/start.spring.io.png[Create app with start.s
 
 Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with Okta. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
 
+[big red yellow-background]*TODO: <Deepu:Question>: A short explanation on how the angular app will authenticate to the spring boot app might be nice*
+
 Open a terminal and navigate to your Spring Boot app's directory. Run `okta apps create`, specify a name, and select **Web** > **Okta Spring Boot Starter**. Accept the default redirect URIs.
 
 Your app's OIDC settings will be put in `src/main/resources/application.properties`:
@@ -276,6 +292,8 @@ okta.oauth2.issuer=https://{yourOktaDomain}/oauth2/default
 okta.oauth2.client-id={yourClientId}
 okta.oauth2.client-secret={yourClientSecret}
 ----
+
+[big red yellow-background]*TODO: <Deepu:Question>: May be its simpler to use a ENV variable placeholder in the properties and then user can set those env vars in the terminal right before running the app*
 
 However, **you should never store secrets in source control**! To prevent you from checking secrets in, you can use https://github.com/awslabs/git-secrets[git-secrets].
 
@@ -325,6 +343,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
 NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser.
 
+[big red yellow-background]*TODO: <Deepu:Nitpick>: This note is a bit confusing, isnt the idea to authenticate from the angular app?*
+
 === Spring Data REST
 
 Start by creating a new `Note` entity in `src/main/kotlin/.../notes/DemoApplication.kt`.
@@ -365,6 +385,8 @@ interface NotesRepository : JpaRepository<Note, Long>
 ----
 
 The `extends` syntax differs from Java and is a lot more concise (a colon instead of `extends`). If your IDE doesn't automatically add imports, you'll need to add the following at the top of the file.
+
+[big red yellow-background]*TODO: <Deepu:Nitpick>: Feels bit inconsistent that sometimes imports are shown in the code and sometimes they are shown separate after code*
 
 [source,kotlin]
 ----
@@ -424,6 +446,8 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
 
 Restart your Spring Boot app, and you should see the following printed to your console on startup.
 
+[big red yellow-background]*TODO: <Deepu:Question>: Shouldn't SB auto reload do that?*
+
 [source,shell]
 ----
 Note(id=1, title=Note 1, text=null, user=user)
@@ -463,6 +487,8 @@ class UserController(val repository: NotesRepository) {
     }
 }
 ----
+
+[big red yellow-background]*TODO: <Deepu>: The if check above feels unnecessary, just doing `return repository.findAllByUser(principal.name)` should do the same right?*
 
 The `findAllByUser()` method doesn't exist on `NotesRepository`, so you'll need to add it. Thanks to Spring Data JPA, all you need to do is add the method definition to the interface, and it will handle generating the finder method in the implementation.
 
@@ -657,6 +683,8 @@ image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth
 
 Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
 
+[big red yellow-background]*TODO: <Deepu:Question>: Shouldnt there be notes since there is a data initilizer added?*
+
 // todo: update screenshot
 [[notes-list]]
 .Notes List
@@ -681,6 +709,7 @@ This also happens, not sure why:
 Failed to evaluate Jackson deserialization for type [[simple type, class org.springframework.data.rest.webmvc.PersistentEntityResource]]: java.lang.NullPointerException
 
 It doesn't seem to cause any issues with data.
+Deepu: My guess is that its due to using JPA entity directly without a DTO, may be setting the property to ignore null fields would solve it or adding jackson annotation to the entity
 ////
 
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
@@ -870,13 +899,13 @@ Another option is to modify the Angular side of things. Since the ID is passed i
         map(p => p.id),
         switchMap(id => {
           if (id === 'new') { return of(new Note()); }
-+          this.id = id;
++         this.id = id;
           return this.noteService.findById(id);
         })
       )
       .subscribe(note => {
           this.note = note;
-+          this.note.id = +note.id;
++         this.note.id = +note.id;
           this.feedback = {};
         },
         err => {
@@ -884,11 +913,13 @@ Another option is to modify the Angular side of things. Since the ID is passed i
     this.noteService.save(this.note).subscribe(
       note => {
         this.note = note;
-+        this.note.id = +this.id;
++       this.note.id = +this.id;
         this.feedback = {type: 'success', message: 'Save was successful!'};
         setTimeout(() => {
           this.router.navigate(['/notes']);
 ----
+
+[big red yellow-background]*TODO: <Deepu:>: I assume the + is for converting to number, may be nice to mention it?*
 
 In the final example for this chapter, I opted to return IDs from my Spring Boot API.
 
@@ -1048,6 +1079,8 @@ TIP: Once you've deployed your Spring Boot app to a public URL, you can test you
 In this chapter, I showed you how to create an Angular app, a Spring Boot app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
 
 This section did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in the next section.
+
+[big red yellow-background]*TODO: <Deepu:comment>: This chapter feels a bit disjointed from previous, the angular part seems quite similar to previous, especially adding the OKTA schematics and such*
 
 // todo: Figure out how to share source code - maybe as a .zip on InfoQ until this repo is public?
 // proposal: Download the `source.zip` for this book from InfoQ. The `angular-spring-boot` directory has this chapter's completed example.
