@@ -45,7 +45,7 @@ Click **Provision** and wait 20-30 seconds while your Okta account is created an
 .Okta Add-On
 image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
 
-Create an `okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
+Create an `.okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
 
 [source,shell]
 ----
@@ -63,14 +63,14 @@ Start your Spring Boot app by navigating to the `notes-api` directory, sourcing 
 
 [source,shell]
 ----
-source okta.env
+source .okta.env
 ./gradlew bootRun
 ----
 
 [TIP]
 .Environment Variables in IntelliJ IDEA
 ====
-If you're using IntelliJ IDEA, you can copy the contents of `okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration and click on the **Browse** icon on the right-side of **Environment variables**.
+If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration and click on the **Browse** icon on the right-side of **Environment variables**.
 
 [[idea-edit-configuration]]
 .Edit DemoApplication Configuration
@@ -166,7 +166,7 @@ Then run the following command in the `notes-api` directory to update your depen
 
 You can verify everything still works by running `./gradlew bootRun` and navigating to `http://localhost:8080/api/notes`. You should be redirected to Okta to log in, then back to your app.
 
-TIP: If your app fails to start, you need to run `source okta.env` first.
+TIP: If your app fails to start, you need to run `source .okta.env` first.
 
 For the Angular client, you can use https://www.npmjs.com/package/npm-check-updates[npm-check-updates] to upgrade npm dependencies.
 
@@ -478,7 +478,7 @@ In another terminal, run your Spring Boot app.
 
 [source,shell]
 ----
-source okta.env
+source .okta.env
 ./gradlew bootRun -Pprod
 ----
 ////

@@ -1,17 +1,17 @@
 [[chapter-2]]
 = Integrate Angular with Spring Boot
 
-Angular is a web framework for building mobile and desktop applications. Its first version, AngularJS, was one of the first JavaScript MVC frameworks to dominate the web landscape. Developers loved it, and it rose to popularity in the early 2010s. AngularJS 1.0 was released on June 14, 2014. Angular 11 was https://blog.angular.io/version-11-of-angular-now-available-74721b7952f7?gi=6131f1d297e3[released on November 12, 2020], giving Angular quite a successful run in the land of web frameworks.
-
-[big red yellow-background]*TODO: <Deepu:Nitpick>: Since previous chapter introduced angular is this needed?*
+In the first section, you learned about Angular and how to use it without having a backend. In this section, I'll show you how to use it with a Spring Boot backend.
 
 Spring Boot is one of the most popular frameworks for developing Java applications and REST APIs. It also has first-class support for Kotlin!
 
-[big red yellow-background]*TODO: <Deepu:Nitpick>: A small intro to Kotlin might be nice*
+What is Kotlin? It's an open source, statically typed, general-purpose programming language with type inference. Kotlin originated at JetBrains, the company behind IntelliJ IDEA, in 2010, and has been open source since 2012. Today, it is widely used to develop Android applications. At first glance, Kotlin looks like a more concise and streamlined version of Java.
 
-Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java developers write Spring apps. Instead of writing a lot of boilerplate XML or JavaConfig with annotations, Spring Boot introduced the idea of pre-configured _starters_ with smart defaults via auto configuration.
+When Kotlin was announced as an official Android development language at Google I/O in May 2017, it became the third language fully supported for Android, in addition to Java and C++. As of 2020, Kotlin is still most widely used on Android, with Google estimating that 70% of the top 1000 apps on the Play Store are written in Kotlin.
 
-Long story short, they're a match made in heaven!
+Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java developers write Spring apps. Instead of writing a lot of boilerplate XML or JavaConfig with annotations, Spring Boot introduced the idea of pre-configured _starters_ with smart defaults via auto-configuration.
+
+Long story short, Angular, Kotlin, and Spring Boot are a match made in heaven!
 
 [[bootiful-angular]]
 .Bootiful Angular
@@ -43,12 +43,13 @@ In this chapter, I'll show you how to build a note-taking application with Angul
 
 The Angular and Spring Boot projects release major versions every six months. Since Java does too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
 
-Please try newer versions at your own risk and send me an email if you find issues and/or solutions! I've been known to trade t-shirts for contributions. 😉
+Please try newer versions at your own risk and email me if you find issues and/or solutions! I've been known to trade t-shirts for contributions. 😉
 
 **Prerequisites:**
 
 * https://nodejs.org/[Node 14]+
 * https://adoptopenjdk.net/[Java 11]+
+* https://httpie.io/docs#installation[HTTPie]
 
 To install Node and Java on a Mac, Linux, or Windows Subsystem for Linux (WSL), you can use https://docs.brew.sh/Installation[Homebrew].
 
@@ -61,34 +62,32 @@ brew cask install adoptopenjdk11
 
 You can also use https://sdkman.io[SDKMAN!] to install Java 11.
 
-[big red yellow-background]*TODO: <Deepu:Question>: Shouldnt this be Java 17 now :P *
-
 [source,shell]
 ----
 sdk install java 11.0.11.hs-adpt
 ----
 
-// You can refer to the table of contents below for the steps in this tutorial.
+If you like to live on the bleeding edge, Java 17 should work too.
+
+The previous section served as an intro to Angular and showed you how it works without a backend. In this section, you'll create a new app that's more of a _real-world_ application.
 
 == Create an Angular App
 
-To create an Angular app, you first need to install Angular CLI.
+You should have installed the Angular CLI in the previous section. If you did not, do it now.
 
 [source,shell]
 ----
 npm install -g @angular/cli@12
 ----
 
-[big red yellow-background]*TODO: <Deepu:Question>: Is the Idea to always create a new project? I thought you would reuse the one from previous. I ask out of curiosity, if thats the intention ignore this*
-
-Then create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
+Then, create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
 
 [source,shell]
 ----
 ng new notes --routing --style css
 ----
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: May be would be nice to give a line on what the flags --routing and --style does*
+In this command, `--routing` installs the Angular router and `--style css` makes it use CSS (as opposed to Sass and Less) for stylesheets.
 
 This process will take a minute or two to complete, depending on your internet speed and hardware. Once it's finished, navigate into the directory and run `ng serve`.
 
@@ -252,16 +251,14 @@ Kotlin is an intriguing language for Spring developers because it reduces boiler
 
 Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
 
-[big red yellow-background]*TODO: <Deepu:Question>: A line prompting to install HTTPie before running the command to avoid confusion*
-
 [source,shell]
 ----
-http https://start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.5.2.RELEASE \
+https start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.5.4 \
 artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
 type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
 
-[big red yellow-background]*TODO: <Deepu:Question>: A note on adjusting the bootVersion value based on whats available at the time of running this might be nice*
+NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version and it _should_ work. The value used here has been QA'd and is guaranteed to work.
 
 Run this command in a terminal, and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
 
@@ -270,7 +267,7 @@ Run this command in a terminal, and a `notes-api.zip` file will be downloaded. E
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
-You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.2.RELEASE&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.4&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
 [[start.spring.io]]
 .Create app with start.spring.io
@@ -280,7 +277,25 @@ image::../images/angular-spring-boot/start.spring.io.png[Create app with start.s
 
 Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with Okta. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
 
-[big red yellow-background]*TODO: <Deepu:Question>: A short explanation on how the angular app will authenticate to the spring boot app might be nice*
+In the last section, you learned how to use OIDC to authenticate a user and receive an access token. You can use this access token to securely communicate with a backend that is configured to use the same issuer. This is done by using an HTTP interceptor that adds it in an `Authorization` header as a bearer token.
+
+[source,ts]
+.src/app/shared/okta/auth.interceptor.ts
+----
+private handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+  // Only add an access token to whitelisted origins
+  const allowedOrigins = ['http://localhost'];
+  if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
+    const accessToken = this.oktaAuth.getAccessToken();
+    request = request.clone({
+      setHeaders: {
+        Authorization: 'Bearer ' + accessToken
+      }
+    });
+  }
+  return next.handle(request).toPromise();
+}
+----
 
 Open a terminal and navigate to your Spring Boot app's directory. Run `okta apps create`, specify a name, and select **Web** > **Okta Spring Boot Starter**. Accept the default redirect URIs.
 
@@ -293,11 +308,9 @@ okta.oauth2.client-id={yourClientId}
 okta.oauth2.client-secret={yourClientSecret}
 ----
 
-[big red yellow-background]*TODO: <Deepu:Question>: May be its simpler to use a ENV variable placeholder in the properties and then user can set those env vars in the terminal right before running the app*
+IMPORTANT: It's a good practice to **never store secrets in source control**. As an alternative, you can select **Web** > **Other** and use Spring Security's default callback URL (`http://localhost:8080/login/oauth2/code/okta`). This will create an `.okta.env` file you can use to set environment variables before running your app.
 
-However, **you should never store secrets in source control**! To prevent you from checking secrets in, you can use https://github.com/awslabs/git-secrets[git-secrets].
-
-For this example, copy your settings into a new `okta.env` file and ignore `*.env` in your `notes-api/.gitignore` file.
+If you chose the **Okta Spring Boot Starter** option, move your settings from `application.properties` into a new `.okta.env` file and ignore `*.env` in your `notes-api/.gitignore` file.
 
 [source,shell]
 ----
@@ -306,7 +319,7 @@ export OKTA_OAUTH2_CLIENT_ID={yourClientId}
 export OKTA_OAUTH2_CLIENT_SECRET={yourClientSecret}
 ----
 
-After replacing the `{...}` placeholders with your values, run `source okta.env` to set these environment variables. Remove the Okta-related properties from your `application.properties` file.
+After replacing the `{...}` placeholders with your values, run `source .okta.env` to set these environment variables. Make sure to remove the Okta-related properties from your `application.properties` file.
 
 Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Okta to sign in.
 
@@ -341,9 +354,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 }
 ----
 
-NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser.
-
-[big red yellow-background]*TODO: <Deepu:Nitpick>: This note is a bit confusing, isnt the idea to authenticate from the angular app?*
+NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
 
 === Spring Data REST
 
@@ -385,8 +396,6 @@ interface NotesRepository : JpaRepository<Note, Long>
 ----
 
 The `extends` syntax differs from Java and is a lot more concise (a colon instead of `extends`). If your IDE doesn't automatically add imports, you'll need to add the following at the top of the file.
-
-[big red yellow-background]*TODO: <Deepu:Nitpick>: Feels bit inconsistent that sometimes imports are shown in the code and sometimes they are shown separate after code*
 
 [source,kotlin]
 ----
@@ -473,12 +482,7 @@ class UserController(val repository: NotesRepository) {
     @GetMapping("/user/notes")
     fun notes(principal: Principal): List<Note> {
         println("Fetching notes for user: ${principal.name}")
-        val notes = repository.findAllByUser(principal.name)
-        if (notes.isEmpty()) {
-            return listOf()
-        } else {
-            return notes
-        }
+        return repository.findAllByUser(principal.name)
     }
 
     @GetMapping("/user")
@@ -487,8 +491,6 @@ class UserController(val repository: NotesRepository) {
     }
 }
 ----
-
-[big red yellow-background]*TODO: <Deepu>: The if check above feels unnecessary, just doing `return repository.findAllByUser(principal.name)` should do the same right?*
 
 The `findAllByUser()` method doesn't exist on `NotesRepository`, so you'll need to add it. Thanks to Spring Data JPA, all you need to do is add the method definition to the interface, and it will handle generating the finder method in the implementation.
 
@@ -925,7 +927,7 @@ In the final example for this chapter, I opted to return IDs from my Spring Boot
 
 == Mocking Spring Security's OIDC Configuration
 
-If you open a new terminal window and run `./gradlew test` in the `notes-api` directory, tests will fail. This happens because Spring Security cannot connect to an identity provider on startup. You can run `source okta.env` before running `./gradlew test` to solve the problem. However, this is not a good long-term solution, especially for continuous integration.
+If you open a new terminal window and run `./gradlew test` in the `notes-api` directory, tests will fail. This happens because Spring Security cannot connect to an identity provider on startup. You can run `source .okta.env` before running `./gradlew test` to solve the problem. However, this is not a good long-term solution, especially for continuous integration.
 
 To solve this problem, mock the OIDC configuration by creating a `notes-api/src/test/.../notes/MockSecurityConfiguration.kt` class.
 
