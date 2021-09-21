@@ -15,7 +15,7 @@ image::../images/angular-deployment/angular-deployment.png[Angular Deployment wi
 
 If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
-If you'd rather start from this point, download the `source.zip` for this book from InfoQ. The `angular-bootstrap` directory has the previous sections's completed example. Copy it to `angular-deployment` in your favorite code location.
+If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-bootstrap` directory has the previous section's completed example. Copy it to `angular-deployment` in your favorite code location.
 
 One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
 
@@ -1194,10 +1194,6 @@ In this section, you learned how to upgrade Angular and Spring Boot to their lat
 
 You learned how to make your Angular app more secure with security headers, force HTTPS, and make each cloud provider SPA-aware.
 
-// proposal: Download the `source.zip` for this book from InfoQ. The `angular-deployment` directory has this chapter's completed example.
-
-////
-You can find the source code for the completed example in the https://github.com/oktadeveloper/okta-angular-deployment-example[@oktadeveloper/okta-angular-deployment-example] repository.
-////
+TIP: You can download the code for this book's examples from InfoQ. The `angular-deployment` directory has this chapter's completed example.
 
 In the next section, I'll show you how to containerize and deploy your Angular + Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll show you how to deploy to Heroku and Knative on Google Cloud!

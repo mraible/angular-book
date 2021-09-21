@@ -1047,10 +1047,7 @@ TIP: Once you've deployed your Spring Boot app to a public URL, you can test you
 
 In this chapter, I showed you how to create an Angular app, a Spring Boot app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
 
+TIP: You can download the code for this book's examples from InfoQ. The `angular-spring-boot` directory has this chapter's completed example.
+
 This section did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in the next section.
-
-// todo: Figure out how to share source code - maybe as a .zip on InfoQ until this repo is public?
-// proposal: Download the `source.zip` for this book from InfoQ. The `angular-spring-boot` directory has this chapter's completed example.
-
-// You can find the source code for this chapter at https://github.com/oktadev/okta-spring-boot-2-angular-12-example[oktadev/okta-spring-boot-2-angular-12-example].
 

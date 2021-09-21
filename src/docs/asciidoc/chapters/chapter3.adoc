@@ -35,7 +35,7 @@ Today I'd like to show you how to integrate Bootstrap into an Angular applicatio
 
 If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it.
 
-If you'd rather start from this point, download the `source.zip` for this book from InfoQ. The `angular-spring-boot` directory has the previous sections's completed example. Copy it to `angular-bootstrap` in your favorite code location.
+If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-spring-boot` directory has the previous section's completed example. Copy it to `angular-bootstrap` in your favorite code location.
 
 In a terminal, navigate into this new directory and its `notes` folder. Then install the dependencies for the Angular app.
 
@@ -894,16 +894,7 @@ image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pag
 
 Phew! That was a lot of code. I hope this section has helped you see how powerful Angular and Spring Boot with Bootstrap can be!
 
-// proposal: Download the `source.zip` for this book from InfoQ. The `angular-bootstrap` directory has this chapter's completed example.
-
-////
-You can find all of the https://github.com/oktadev/okta-angular-bootstrap-example[source code for this example on GitHub].
-////
-
-////
-NOTE: I fixed the Angular tests so they work with Bootstrap in https://github.com/oktadeveloper/okta-angular-bootstrap-example/pull/1/commits/9458b76e98cda130763cfd10ab2bfa050db78869[this commit].
-////
-
+TIP: You can download the code for this book's examples from InfoQ. The `angular-bootstrap` directory has this chapter's completed example.
 
 I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
 
@@ -951,7 +942,7 @@ Then, run `npm run e2e` in another terminal window to verify everything works. H
 .KHipster Notes
 image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
 
-TIP: Want to make JHipster work with Okta? See https://www.jhipster.tech/security/#okta[JHipster's security documentation].
+TIP: Want to make JHipster work with Okta or Auth0? See https://www.jhipster.tech/security/[JHipster's security documentation].
 
 // == Learn More About Angular and Spring Boot
 == Summary
