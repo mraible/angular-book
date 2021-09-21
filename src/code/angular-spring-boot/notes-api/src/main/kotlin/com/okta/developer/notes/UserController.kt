@@ -12,12 +12,7 @@ class UserController(val repository: NotesRepository) {
     @GetMapping("/user/notes")
     fun notes(principal: Principal): List<Note> {
         println("Fetching notes for user: ${principal.name}")
-        val notes = repository.findAllByUser(principal.name)
-        if (notes.isEmpty()) {
-            return listOf()
-        } else {
-            return notes
-        }
+        return repository.findAllByUser(principal.name)
     }
 
     @GetMapping("/user")
