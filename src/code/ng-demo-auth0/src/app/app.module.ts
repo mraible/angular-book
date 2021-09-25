@@ -5,13 +5,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchComponent } from './search/search.component';
 import { FormsModule } from '@angular/forms';
+import { AuthModule } from '@auth0/auth0-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { EditComponent } from './edit/edit.component';
-import { AuthRoutingModule } from './auth-routing.module';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    HomeComponent,
     SearchComponent,
     EditComponent
   ],
@@ -20,7 +22,11 @@ import { AuthRoutingModule } from './auth-routing.module';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    AuthRoutingModule
+    AuthModule.forRoot({
+      domain: 'jhipster.us.auth0.com',
+      clientId: 'GhhQw8dIuW5C9KeybCa0Lp9f32CXNGp2',
+      redirectUri: window.location.origin + '/home'
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

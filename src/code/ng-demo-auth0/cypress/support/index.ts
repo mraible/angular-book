@@ -15,3 +15,17 @@
 
 // When a command from ./commands is ready to use, import with `import './commands'` syntax
 import './commands';
+
+before(() => {
+  cy.visit('/')
+  cy.get('#login').click()
+  cy.signIn(
+    Cypress.env('E2E_USERNAME'),
+    Cypress.env('E2E_PASSWORD')
+  )
+})
+
+after(() => {
+  cy.visit('/')
+  cy.get('#logout').click()
+})
