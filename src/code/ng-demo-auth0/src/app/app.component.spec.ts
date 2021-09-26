@@ -1,11 +1,11 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
+import { AuthModule } from '@auth0/auth0-angular';
 
 describe('AppComponent', () => {
-  const oktaConfig = {
-    issuer: 'https://not-real.okta.com',
+  const config = {
+    domain: 'https://not-real.auth0.com',
     clientId: 'fake-client-id',
     redirectUri: 'http://localhost:4200'
   };
@@ -14,12 +14,11 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        OktaAuthModule
+        AuthModule.forRoot(config)
       ],
       declarations: [
         AppComponent
-      ],
-      providers: [{provide: OKTA_CONFIG, useValue: oktaConfig}]
+      ]
     }).compileComponents();
   }));
 

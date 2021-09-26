@@ -23,8 +23,8 @@ import { HomeComponent } from './home/home.component';
     FormsModule,
     HttpClientModule,
     AuthModule.forRoot({
-      domain: 'jhipster.us.auth0.com',
-      clientId: 'GhhQw8dIuW5C9KeybCa0Lp9f32CXNGp2',
+      domain: 'dev-9fmg9dks.us.auth0.com',
+      clientId: 'OH5I6IbHlqI3QPrpNFTEPCJhS3vLJgLt',
       redirectUri: window.location.origin + '/home'
     }),
   ],
