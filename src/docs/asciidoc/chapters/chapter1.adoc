@@ -1862,7 +1862,7 @@ image::../images/ng-demo/auth0-login-form.png[Auth0 login form, 800, scaledwidth
 
 To display the authenticated user's name, you can use the `user$` observable on the `AuthService` instance.
 
-Then modify `home.component.html` to display a welcome message to the user and provide them with a link to search.
+Modify `home.component.html` to display a welcome message to the user and provide them with a link to search.
 
 [source,html]
 .src/app/home/home.component.html
