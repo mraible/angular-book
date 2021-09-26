@@ -101,7 +101,6 @@ Modify `styles.css` to add a reference to Bootstrap's CSS file:
 
 And change `app.component.html` to use Bootstrap classes.
 
-{% raw %}
 [source,html]
 .src/app/app.component.html
 ----
@@ -113,7 +112,6 @@ And change `app.component.html` to use Bootstrap classes.
   <router-outlet></router-outlet>
 </div>
 ----
-{% endraw %}
 
 Now we're getting somewhere!
 
@@ -338,7 +336,6 @@ image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600
 
 Modify the `note-list.component.html` so the breadcrumb doesn't float right and all the content is in the same card.
 
-{% raw %}
 [source,html]
 .src/app/note/note-list/note-list.component.html
 ----
@@ -388,7 +385,6 @@ Modify the `note-list.component.html` so the breadcrumb doesn't float right and 
     </div>
 </div>
 ----
-{% endraw %}
 
 That looks better!
 
