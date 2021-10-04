@@ -30,7 +30,7 @@
     "browser-sync": "2.27.5",
     "concurrently": "6.3.0",
     "nodemon": "2.0.12",
-    "release-it": "14.11.5",
+    "release-it": "14.11.6",
     "@release-it/bumper": "3.0.1"
   }
 }
