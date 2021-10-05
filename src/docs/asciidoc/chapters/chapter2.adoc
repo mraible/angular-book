@@ -591,11 +591,11 @@ Then, create a `model.json` file in it that defines metadata that's used when ge
 }
 ----
 
-Then, use the Schematics CLI and Angular CRUD to generate CRUD screens.
+Then, run the command below to generate CRUD screens.
 
 [source,shell]
 ----
-npx @angular-devkit/schematics-cli angular-crud:crud-module note --style bootstrap
+ng g angular-crud:crud-module note --style bootstrap
 ----
 
 You will see the following output.
