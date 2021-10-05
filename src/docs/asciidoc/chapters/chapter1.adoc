@@ -1470,7 +1470,7 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 
 To integrate Bootstrap 4 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[ng-bootstrap].
 
-// todo: check if Bootstrap 5 is supported before releasing
+// todo: check if Bootstrap 5 is supported before releasing - https://ng-bootstrap.github.io/
 ----
 ng add @ng-bootstrap/ng-bootstrap
 ----
@@ -1807,7 +1807,8 @@ In order to add authentication with OpenID Connect, you'll first need a https://
 Use https://github.com/oktadev/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
 
 ----
-ng add @oktadev/schematics --auth0
+npm i -D @oktadev/schematics
+npx @angular-devkit/schematics-cli @oktadev/schematics:add-auth --auth0
 ----
 
 You'll be prompted for an issuer and client ID. You should have these from the OIDC app you just created.
@@ -1820,7 +1821,7 @@ This process will perform the following steps for you.
 4. Create a `HomeComponent` and configures it with authentication logic.
 5. Updates unit tests for `AppComponent` and `HomeComponent` to mock Auth0.
 
-Remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
+In addition to these changes, remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
 
 [source,ts]
 .src/app/app-routing.ts
@@ -1852,7 +1853,7 @@ After making these changes, you should be able to run `ng serve` and see a login
 .Auth0 login button
 image::../images/ng-demo/auth0-login-button.png[Login button, 800, scaledwidth="100%"]
 
-Click the *Login* button and sign-in with one of the users that's configured in your Auth0 application.
+Click the *Login* button and sign-in with one of the users that's configured in your Auth0 application sign up as a new user.
 
 [[auth0-login-form]]
 .Auth0 login form
@@ -1896,7 +1897,7 @@ To make it so you can run your e2e tests with authentication, add a `signIn()` C
 Cypress.Commands.add('signIn', (username, password) => {
   cy.get('input[name=username]').type(username);
   cy.get('input[name=password]').type(password);
-  cy.get('button[type=submit]').click();
+  cy.get('button[type=submit]').first().click();
 })
 ----
 
@@ -1932,7 +1933,7 @@ Next, configure your credentials in `cypress.json` and turn off Chrome's securit
 "chromeWebSecurity": false
 ----
 
-Then, start your app (with `ng serve`) and run its Cypress tests.
+Then, start your app (with `ng serve`) and run its Cypress tests in a separate terminal window.
 
 [source,shell]
 ----
@@ -1949,7 +1950,7 @@ Install it:
 
 [source,shell]
 ----
-npm i -D dotenv cypress-dotenv
+npm i -D dotenv cypress-dotenv --legacy-peer-deps
 ----
 
 Add the plugin to `cypress/plugins/index.js`:
