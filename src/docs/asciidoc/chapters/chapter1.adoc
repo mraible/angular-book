@@ -1807,8 +1807,7 @@ In order to add authentication with OpenID Connect, you'll first need a https://
 Use https://github.com/oktadev/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
 
 ----
-npm i -D @oktadev/schematics
-npx @angular-devkit/schematics-cli @oktadev/schematics:add-auth --auth0
+ng add @oktadev/schematics --auth0
 ----
 
 You'll be prompted for an issuer and client ID. You should have these from the OIDC app you just created.
