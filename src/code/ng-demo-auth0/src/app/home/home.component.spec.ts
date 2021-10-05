@@ -7,7 +7,7 @@ describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   const config = {
-    domain: 'https://not-real.okta.com',
+    domain: 'https://not-real.auth0.com',
     clientId: 'fake-client-id',
     redirectUri: 'http://localhost:4200'
   };
@@ -19,7 +19,8 @@ describe('HomeComponent', () => {
         RouterTestingModule,
         AuthModule.forRoot(config)
       ]
-    }).compileComponents();
+    })
+      .compileComponents();
   }));
 
   beforeEach(() => {

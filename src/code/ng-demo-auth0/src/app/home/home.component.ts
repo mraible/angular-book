@@ -9,7 +9,8 @@ import { DOCUMENT } from '@angular/common';
 })
 export class HomeComponent {
 
-  constructor(public auth: AuthService, @Inject(DOCUMENT) private doc: Document) {}
+  constructor(public auth: AuthService, @Inject(DOCUMENT) private doc: Document) {
+  }
 
   login(): void {
     this.auth.loginWithRedirect();

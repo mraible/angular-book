@@ -8,12 +8,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthModule } from '@auth0/auth0-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { EditComponent } from './edit/edit.component';
-import { HomeComponent } from './home/home.component';
+import { AuthRoutingModule } from './auth-routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     SearchComponent,
     EditComponent
   ],
@@ -27,6 +26,7 @@ import { HomeComponent } from './home/home.component';
       clientId: 'OH5I6IbHlqI3QPrpNFTEPCJhS3vLJgLt',
       redirectUri: window.location.origin + '/home'
     }),
+    AuthRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
