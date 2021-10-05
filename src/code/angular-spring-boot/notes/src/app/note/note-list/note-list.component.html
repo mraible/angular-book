@@ -1,26 +1,22 @@
-<ol class="breadcrumb float-right">
-  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-  <li class="breadcrumb-item active">Notes</li>
-</ol>
-<div class="card">
-  <div class="header">
-    <h2 class="title">Notes List</h2>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+    <li class="breadcrumb-item active">Notes</li>
+  </ol>
+</nav>
+<h2>Notes List</h2>
+<form #f="ngForm">
+  
+  <div class="form-group">
+    <label for="title">Title:</label>
+    <input [(ngModel)]="filter.title" id="title" name="title" class="form-control ml-2 mr-2">
   </div>
-  <div class="content">
-    <form #f="ngForm">
-      
-      <div class="form-group">
-        <label for="title">Title:</label>
-        <input [(ngModel)]="filter.title" id="title" name="title" class="form-control">
-      </div>
-      
-      <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
-      <a [routerLink]="['../notes', 'new' ]" class="btn btn-default">New</a>
-    </form>
-  </div>
-</div>
-<div class="card" *ngIf="noteList.length > 0">
-  <div *ngIf="feedback" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
+  
+  <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+  <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
+</form>
+<div *ngIf="noteList.length > 0">
+  <div *ngIf="feedback.message" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
   <div class="table-responsive">
     <table class="table table-centered table-hover mb-0" id="datatable">
       <thead>
@@ -33,7 +29,6 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">
-        
           <td>{{item.id}}</td>
           <td>{{item.title}}</td>
           <td>{{item.text}}</td>
