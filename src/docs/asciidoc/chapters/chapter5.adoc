@@ -50,7 +50,7 @@ Click **Provision** and wait 20-30 seconds while your Okta account is created an
 .Okta Add-On
 image::../images/angular-docker/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
 
-Create an `okta.env` file in the `angular-docker/notes-api` directory and copy the variable values into it, where `$OKTA_*` is the value from Heroku.
+Create an `.okta.env` file in the `angular-docker/notes-api` directory and copy the variable values into it, where `$OKTA_*` is the value from Heroku.
 
 [source,shell]
 ----
@@ -68,7 +68,7 @@ Start your Spring Boot app by navigating to the `notes-api` directory, sourcing 
 
 [source,shell]
 ----
-source okta.env
+source .okta.env
 ./gradlew bootRun
 ----
 
@@ -944,7 +944,7 @@ Now you should be able to combine both apps using `./gradlew bootJar -Pprod`. On
 [source,shell]
 ----
 docker-compose -f src/main/docker/postgresql.yml up -d
-source okta.env
+source .okta.env
 java -jar build/libs/*.jar
 ----
 
