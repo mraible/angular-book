@@ -1,11 +1,7 @@
 describe('Search', () => {
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/search')
-    cy.signIn(
-      Cypress.env('E2E_USERNAME'),
-      Cypress.env('E2E_PASSWORD')
-    )
   });
 
   it('should have an input and search button', () => {

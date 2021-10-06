@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SearchComponent } from './search/search.component';
 import { EditComponent } from './edit/edit.component';
-import { OktaAuthGuard } from '@okta/okta-angular';
+import { AuthGuard } from '@auth0/auth0-angular';
 
 const routes: Routes = [
-  { path: 'search', component: SearchComponent, canActivate: [OktaAuthGuard] },
-  { path: 'edit/:id', component: EditComponent, canActivate: [OktaAuthGuard] },
+  { path: 'search', component: SearchComponent, canActivate: [AuthGuard] },
+  { path: 'edit/:id', component: EditComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

@@ -43,9 +43,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('signIn', (username, password) => {
-  cy.visit('/');
-  cy.get('#login').click()
   cy.get('input[name=username]').type(username);
   cy.get('input[name=password]').type(password);
-  cy.get('input[type=submit]').click();
+  cy.get('button[type=submit]').first().click();
 })

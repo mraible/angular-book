@@ -660,14 +660,12 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 
 Change `src/app/app.component.html` to be as simple as it can be.
 
-{% raw %}
 [source,html]
 ----
 <h1>{{ title }} app is running!</h1>
 
 <router-outlet></router-outlet>
 ----
-{% endraw %}
 
 TIP: If you want `npm test` to pass after modifying this template, you'll need to change `app.component.spec.ts` to look for `querySelector('h1')` instead of `querySelector('.content span')`.
 

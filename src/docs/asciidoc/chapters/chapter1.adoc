@@ -1246,7 +1246,7 @@ Create another end-to-end tests in `cypress/integration/search.spec.ts` to verif
 describe('Search', () => {
 
   beforeEach(() => {
-    cy.visit('/')
+    cy.visit('/search')
   });
 
   it('should have an input and search button', () => {
@@ -1430,7 +1430,7 @@ Create a `static.json` file with the configuration for secure headers and redire
 {
   "headers": {
     "/**": {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com",
       "Referrer-Policy": "no-referrer, strict-origin-when-cross-origin",
       "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
       "X-Content-Type-Options": "nosniff",
@@ -1470,7 +1470,7 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 
 To integrate Bootstrap 4 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[ng-bootstrap].
 
-// todo: check if Bootstrap 5 is supported before releasing
+// todo: check if Bootstrap 5 is supported before releasing - https://ng-bootstrap.github.io/
 ----
 ng add @ng-bootstrap/ng-bootstrap
 ----
@@ -1800,57 +1800,40 @@ const list = cy.get('app-search mat-list mat-list-item');
 
 == Add Auth with OpenID Connect
 
-In order to add authentication with OpenID Connect, you'll first need a free Okta developer account. Install the https://cli.okta.com[Okta CLI] and run `okta register` to sign up for a new account. If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press **Enter**.
-
-Use `\http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `\http://localhost:4200`.
-
-.What does the Okta CLI do?
-****
-The Okta CLI will create an OIDC Single-Page App in your Okta Org. It will add the redirect URIs you specified and grant access to the `Everyone` group. It will also add a trusted origin for `http://localhost:4200`. You will see output like the following when it's finished:
-
-[source,shell]
-----
-Okta application configuration:
-Issuer:    https://dev-133337.okta.com/oauth2/default
-Client ID: 0oab8eb55Kb9jdMIr5d6
-----
-
-NOTE: You can also use the Okta Admin Console to create your app. See https://developer.okta.com/docs/guides/sign-into-spa/angular/create-okta-application/[Create an Angular App] for more information.
-****
+In order to add authentication with OpenID Connect, you'll first need a https://auth0.com/signup[free Auth0 account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to register your account. Then, run `auth0 apps create`. Specify a name and description of your choosing. Choose **Single Page Web Application** and use `\http://localhost:4200/home` for the Callback URL. Specify `\http://localhost:4200` for the rest of the URLs.
 
 === Add OIDC Authentication with OktaDev Schematics
 
 Use https://github.com/oktadev/schematics[OktaDev Schematics] to add OAuth 2.0 and OpenID Connect (OIDC) support.
 
 ----
-ng add @oktadev/schematics --issuer YOUR_ISSUER --client-id YOUR_CLIENT_ID
+ng add @oktadev/schematics --auth0
 ----
 
 You'll be prompted for an issuer and client ID. You should have these from the OIDC app you just created.
 
 This process will perform the following steps for you.
 
-1. Install the https://github.com/okta/okta-angular[Okta Angular SDK] using `npm install @okta/okta-angular`.
+1. Install the https://github.com/auth0/auth0-angular[Auth0 Angular SDK] using `npm install @auth0/auth0-angular`.
 2. Add `src/app/auth-routing.module.ts` with OIDC configuration and initialization logic.
-3. Create and configure an `HttpInterceptor` (in `src/app/shared/okta/auth.interceptor.ts`) that adds an Authorization header with access token to outbound requests.
-4. Add authenticated logic to `src/app/app.component.ts`.
-5. Create a `HomeComponent` and configures it with authentication logic.
-6. Updates unit tests for `AppComponent` and `HomeComponent` to mock Okta.
+3. Configure an `AuthHttpInterceptor` that adds an Authorization header with access token to outbound requests.
+4. Create a `HomeComponent` and configures it with authentication logic.
+5. Updates unit tests for `AppComponent` and `HomeComponent` to mock Auth0.
 
-Remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
+In addition to these changes, remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
 
 [source,ts]
 .src/app/app-routing.ts
 ----
-import { OktaAuthGuard } from '@okta/okta-angular';
+import { AuthGuard } from '@auth0/auth0-angular';
 
 const routes: Routes = [
-  { path: 'search', component: SearchComponent, canActivate: [OktaAuthGuard] },
-  { path: 'edit/:id', component: EditComponent, canActivate: [OktaAuthGuard] },
+  { path: 'search', component: SearchComponent, canActivate: [AuthGuard] },
+  { path: 'edit/:id', component: EditComponent, canActivate: [AuthGuard] },
 ];
 ----
 
-This is necessary because the `HomeComponent` has a default route configured in `src/app/auth-routing.ts`. The `OktaAuthGuard` makes authentication required.
+This is necessary because the `HomeComponent` has a default route configured in `src/app/auth-routing.ts`. The `AuthGuard` makes authentication required.
 
 [source,typescript]
 ----
@@ -1859,73 +1842,46 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
-  },
-  {
-    path: 'callback',
-    component: OktaCallbackComponent
   }
 ];
 ----
 
 After making these changes, you should be able to run `ng serve` and see a login button at `http://localhost:4200/home`.
 
-[[okta-login-button]]
-.Okta login button
-image::../images/ng-demo/okta-login-button.png[Login button, 800, scaledwidth="100%"]
+[[auth0-login-button]]
+.Auth0 login button
+image::../images/ng-demo/auth0-login-button.png[Login button, 800, scaledwidth="100%"]
 
-Click the *Login* button and sign-in with one of the people that's configured in your Okta application.
+Click the *Login* button and sign-in with one of the users that's configured in your Auth0 application sign up as a new user.
 
-[[okta-login-form]]
-.Okta login form
-image::../images/ng-demo/okta-login-form.png[Okta login form, 800, scaledwidth="100%"]
+[[auth0-login-form]]
+.Auth0 login form
+image::../images/ng-demo/auth0-login-form.png[Auth0 login form, 800, scaledwidth="100%"]
 
 ==== Display Authenticated User's Name
 
-To display the authenticated user's name, modify `home.component.ts` to add a `user` property and fetch the user in `ngOnInit()`.
+To display the authenticated user's name, you can use the `user$` observable on the `AuthService` instance.
 
-[source,ts]
-.src/app/home/home.component.ts
-----
-export class HomeComponent implements OnInit {
-  isAuthenticated = false;
-  user: any;
-
-  constructor(public oktaAuth: OktaAuthService) {
-  }
-
-  async ngOnInit(): Promise<void> {
-    this.isAuthenticated = await this.oktaAuth.isAuthenticated();
-    // Subscribe to authentication state changes
-    this.oktaAuth.$authenticationState.subscribe(
-      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
-    );
-    if (this.isAuthenticated) {
-      this.user = await this.oktaAuth.getUser();
-    }
-  }
-}
-----
-
-Then modify `home.component.html` to display a welcome message to the user and provide them with a link to search.
+Modify `home.component.html` to display a welcome message to the user and provide them with a link to search.
 
 [source,html]
 .src/app/home/home.component.html
 ----
 <div>
-    <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()" id="login">Login</button>
-    <div *ngIf="isAuthenticated">
-        <h2>Welcome, {{user?.name}}!</h2>
-        <p><a routerLink="/search" routerLinkActive="active">Search</a></p>
-    </div>
-    <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()" id="logout">Logout</button>
+  <button *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()" id="login">Login</button>
+  <div *ngIf="auth.user$ | async as user">
+    <h2>Welcome, {{user?.name}}!</h2>
+    <p><a routerLink="/search" routerLinkActive="active">Search</a></p>
+  </div>
+  <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()" id="logout">Logout</button>
 </div>
 ----
 
-Refresh your app and you should see your name with a link to *Search*.
+Refresh your app, and you should see your name with a link to *Search*.
 
-[[okta-post-login]]
+[[auth0-post-login]]
 .View after login
-image::../images/ng-demo/okta-post-login.png[View after login, 800, scaledwidth="100%"]
+image::../images/ng-demo/auth0-post-login.png[View after login, 800, scaledwidth="100%"]
 
 If you log out and manually navigate to `http://localhost:4200/search`, you'll be required to log in.
 
@@ -1938,19 +1894,31 @@ To make it so you can run your e2e tests with authentication, add a `signIn()` C
 [source,typescript]
 ----
 Cypress.Commands.add('signIn', (username, password) => {
-  cy.visit('/');
-  cy.get('#login').click()
   cy.get('input[name=username]').type(username);
   cy.get('input[name=password]').type(password);
-  cy.get('input[type=submit]').click();
+  cy.get('button[type=submit]').first().click();
 })
 ----
 
-Then, in `cypress/support/index.ts`, uncomment the import for `commands`.
+Then, in `cypress/support/index.ts`, uncomment the import for `commands` and specify `before()` and `after()` functions that log in and log out before each test.
 
 [source,typescript]
 ----
 import './commands';
+
+before(() => {
+  cy.visit('/')
+  cy.get('#login').click()
+  cy.signIn(
+    Cypress.env('E2E_USERNAME'),
+    Cypress.env('E2E_PASSWORD')
+  )
+})
+
+after(() => {
+  cy.visit('/')
+  cy.get('#logout').click()
+})
 ----
 
 Next, configure your credentials in `cypress.json` and turn off Chrome's security.
@@ -1958,62 +1926,13 @@ Next, configure your credentials in `cypress.json` and turn off Chrome's securit
 [source,json]
 ----
 "env": {
-  "E2E_USERNAME": "YOUR_OKTA_USERNAME",
-  "E2E_PASSWORD": "YOUR_OKTA_PASSWORD"
+  "E2E_USERNAME": "YOUR_AUTH0_USERNAME",
+  "E2E_PASSWORD": "YOUR_AUTH0_PASSWORD"
 },
 "chromeWebSecurity": false
 ----
 
-Modify `search.spec.ts` to replace `beforeEach()` with `before()`:
-
-[source,typescript]
-.cypress/integration/search.spec.ts
-----
-before(() => {
-  cy.visit('/search')
-  cy.signIn(
-    Cypress.env('E2E_USERNAME'),
-    Cypress.env('E2E_PASSWORD')
-  )
-});
-----
-
-Make a similar change for `edit.spec.ts`:
-
-[source,typescript]
-.cypress/integration/edit.spec.ts
-----
-before(() => {
-  cy.visit('/edit/1')
-  cy.signIn(
-    Cypress.env('E2E_USERNAME'),
-    Cypress.env('E2E_PASSWORD')
-  )
-});
-----
-
-Refactor `home.spec.ts` to move its `cy.visit()` to a `before()` block too.
-
-[source,typescript]
-.cypress/integration/home.spec.ts
-----
-describe('Home', () => {
-  before(() => {
-    cy.visit('/')
-    cy.signIn(
-      Cypress.env('E2E_USERNAME'),
-      Cypress.env('E2E_PASSWORD')
-    )
-  })
-
-  it('Visits the initial project page', () => {
-    cy.contains('Welcome to ng-demo!')
-    cy.contains('Search')
-  })
-})
-----
-
-Then, start your app (with `ng serve`) and run its Cypress tests.
+Then, start your app (with `ng serve`) and run its Cypress tests in a separate terminal window.
 
 [source,shell]
 ----
@@ -2030,7 +1949,7 @@ Install it:
 
 [source,shell]
 ----
-npm i -D dotenv cypress-dotenv
+npm i -D dotenv cypress-dotenv --legacy-peer-deps
 ----
 
 Add the plugin to `cypress/plugins/index.js`:
@@ -2044,7 +1963,7 @@ module.exports = (on, config) => {
 }
 ----
 
-Create a `.env` file in your project's root folder with your Okta credentials in it.
+Create a `.env` file in your project's root folder with your Auth0 credentials in it.
 
 [source,shell]
 ----
@@ -2067,9 +1986,9 @@ You might've noticed I turned off Chrome's web security in `cypress.json`.
 "chromeWebSecurity": false
 ----
 
-This configuration allows Chrome to navigate between domains and sign in to Okta. Unfortunately, this ties the e2e tests to Chrome as this setting doesn't exist for other browsers.
+This configuration allows Chrome to navigate between domains and sign in to Auth0. Unfortunately, this ties the e2e tests to Chrome as this setting doesn't exist for other browsers.
 
-A better solution is to hit Okta's APIs directly for authentication. https://www.jhipster.tech[JHipster] uses this technique for its Cypress tests. However, it also benefits from doing the OAuth flow on the server-side (with Spring Boot). This makes it easy to capture Okta's authorization endpoint with all its parameters. I tried using a similar technique in this example, but found I received a 404 when trying to hit `/search` with `cy.request()` to get the redirected URI.
+A better solution is to hit Auth0's APIs directly for authentication. https://www.jhipster.tech[JHipster] uses this technique for its Cypress tests. However, it also benefits from doing the OAuth flow on the server-side (with Spring Boot). This makes it easy to capture Auth0's authorization endpoint with all its parameters.
 
 See Cypress's https://docs.cypress.io/guides/guides/web-security[Web Security documentation] for more information.
 
@@ -2080,6 +1999,6 @@ See Cypress's https://docs.cypress.io/guides/guides/web-security[Web Security do
 
 I hope you've enjoyed this introduction to Angular. You learned how to create a basic application without worrying about the backend.
 
-TIP: You can download the code for this book's examples from InfoQ. The `ng-demo` directory has this chapter's completed example. There's also examples for Angular Material, Bootstrap, and Okta.
+TIP: You can download the code for this book's examples from InfoQ. The `ng-demo` directory has this chapter's completed example. There's also examples for Angular Material, Bootstrap, and Auth0.
 
 In the next section, I'll show you how to use a modern backend to provide you data, security, and production-ready features.

@@ -1,11 +1,7 @@
 describe('Edit', () => {
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/edit/1')
-    cy.signIn(
-      Cypress.env('E2E_USERNAME'),
-      Cypress.env('E2E_PASSWORD')
-    )
   });
 
   it('should allow viewing a person',  () => {
