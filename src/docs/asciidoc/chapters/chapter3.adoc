@@ -1,13 +1,15 @@
 [[chapter-3]]
 = Beautiful Angular Apps with Bootstrap
 
-I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design content to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
+I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design contest to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
 
 However, no CSS frameworks took the world by storm like Bootstrap. Back then, it was called Twitter Bootstrap. Mark Otto and Jacob Thornton invented it in mid-2010 while they worked at Twitter. As they wrote in "Building Twitter Bootstrap" in Issue 324 of A List Apart:
 
 > Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
 They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it.
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be nice to mention that BS was different from other CSS frameworks at the time due to the fact that they embraced mobile first design and made responsive design the norm for web design. Before BS we were building different UIs for desktop and mobile using stuff like jQuery mobile and so on*
 
 Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
 
@@ -392,6 +394,8 @@ That looks better!
 .Styled Notes List
 image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: What about the javaScript for search function? Its a bit different from last chapter*
+
 === Add Validation and Bootstrap to the Note Edit Template
 
 If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/4.4/components/forms/[stylish forms] using its `form-group` and `form-control` classes. `note-edit.component.html` already uses these classes; you just need to rearrange some things to use the proper `card-*` classes.
@@ -453,6 +457,8 @@ To make the `title` field required, add a `required` attribute to its `<input>` 
   </div>
 </div>
 ----
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be nice to mention that the styling on validation comes from the code added to [ngClass], especially nice for beginners*
 
 Now when you add a new note, it'll let you know that it requires a title.
 
@@ -780,6 +786,8 @@ At the bottom of `note-list.component.html` (just after `</table>`), add the pag
 </div>
 ----
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be useful to mention what "total$ | async" does, I had to look it up as it seems new in angular (or may be I havent done angular in a while :P)*
+
 Add `NgbModule` as an import to `note.module.ts`.
 
 [source,ts]
@@ -843,6 +851,8 @@ export class NoteListComponent implements OnInit {
 }
 ----
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Can't we use `total$!: Observable<number>` instead of `total$!: Observable<any>`?*
+
 Then update `notes.service.ts` to add a `size$` observable and parameters for the page size and page number.
 
 [source,ts]
@@ -879,6 +889,8 @@ export class NoteService {
   ...
 }
 ----
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Can't we use `NoteFilter` instead of `any` for params?*
 
 Now your note list should have a working pagination feature at the bottom. Pretty slick, eh?
 
