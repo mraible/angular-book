@@ -13,7 +13,9 @@ image::../images/angular-deployment/angular-deployment.png[Angular Deployment wi
 
 == Create an Angular + Spring Boot App
 
-If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+If you're following along, you should have an `angular-bootstrap` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be slightly confusing to talk about folders from 2 chapters, may be just mentioning angular-bootstrap from previous chapter in above para would be cleaner*
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-bootstrap` directory has the previous section's completed example. Copy it to `angular-deployment` in your favorite code location.
 
@@ -32,6 +34,8 @@ To begin, you'll need to https://signup.heroku.com/login[create a Heroku account
 image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%"]
 
 After creating your app, click on the **Resources** tab and add the **Okta** add-on.
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Is an OKta account prerequisite here or is it automatically created? If not how do you authenticate?*
 
 [[okta-add-on]]
 .Okta Add-On
@@ -103,7 +107,7 @@ const routes: Routes = [
 ];
 ----
 
-Install your Angular app's dependencies and start it.
+Install your Angular app's dependencies if you haven't already and start the application.
 
 [source,shell]
 ----
@@ -169,6 +173,8 @@ You can verify everything still works by running `./gradlew bootRun` and navigat
 TIP: If your app fails to start, you need to run `source .okta.env` first.
 
 For the Angular client, you can use https://www.npmjs.com/package/npm-check-updates[npm-check-updates] to upgrade npm dependencies.
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: `npm update` command can natively do this on npm 5+ https://docs.npmjs.com/cli/v6/commands/npm-update#description*
 
 [source,shell]
 ----
@@ -261,7 +267,7 @@ Edit `environment.prod.ts` to point to your production Heroku URL. Be sure to re
 .notes/src/environments/environment.prod.ts
 ----
 export const environment = {
-  production: false,
+  production: true,
   apiUrl: 'https://bootiful-angular.herokuapp.com'
 };
 ----
@@ -338,6 +344,7 @@ tasks.processResources {
     rename("application-${profile}.properties", "application.properties")
 }
 ----
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Why is the rename required, spring should automatically pickup the correct file based on active profile right?*
 
 Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it will persist to disk, which retains data through restarts.
 
@@ -701,6 +708,8 @@ You should be able to log in now, but you won't be able to add any notes. This i
 heroku config:set ALLOWED_ORIGINS=https://$APP_NAME.herokuapp.com --remote heroku
 ----
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: The APP_NAME set on the angular app will be available on the SB app?*
+
 Now you should be able to add a note. Pat yourself on the back for a job well done!
 
 One issue you'll experience is that you're going to lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
@@ -945,7 +954,9 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 ALLOWED_ORIGINS='https://stark-lake-39546.herokuapp.com,https://ng-notes-1337.web.app,https://relaxed-brown-0b81d8.netlify.app'
 ----
 
-You'll also need to update your Okta app to whitelist the URL as a login and logout redirect.
+You'll also need to update your Okta SPA app to whitelist the URL as a login and logout redirect.
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Do we allow multiple URLs for this purpose? with some sort of intelligent routing?*
 
 If you try to log in, you'll get a `Page Not Found` error stemming from Okta trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents.
 
@@ -977,6 +988,7 @@ Create a `src/_headers` file with the following contents.
 
 [source,text]
 ----
+# for all paths under /
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com
   Referrer-Policy: no-referrer, strict-origin-when-cross-origin
