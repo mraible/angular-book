@@ -177,8 +177,6 @@ TIP: If your app fails to start, you need to run `source .okta.env` first.
 
 For the Angular client, you can use https://www.npmjs.com/package/npm-check-updates[npm-check-updates] to upgrade npm dependencies.
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: `npm update` command can natively do this on npm 5+ https://docs.npmjs.com/cli/v6/commands/npm-update#description*
-
 [source,shell]
 ----
 npm i -g npm-check-updates
@@ -192,6 +190,7 @@ At the time of this writing, this will upgrade Angular to version 9.1.9 and Type
 "typescript": "~3.8.3"
 ----
 ////
+TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
 Then run the following commands in the `notes` directory:
 
