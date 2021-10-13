@@ -863,7 +863,7 @@ export class NoteListComponent implements OnInit {
 }
 ----
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Can't we use `total$!: Observable<number>` instead of `total$!: Observable<any>`?*
+TIP: If you want to be more strict about your typing, you can make the `total$` Observable use `<number | null>` as its type. I used `<any>` as a shortcut.
 
 Then update `notes.service.ts` to add a `size$` observable and parameters for the page size and page number.
 
