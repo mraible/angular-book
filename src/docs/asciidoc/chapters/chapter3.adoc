@@ -7,9 +7,7 @@ However, no CSS frameworks took the world by storm like Bootstrap. Back then, it
 
 > Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
-They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it.
-
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be nice to mention that BS was different from other CSS frameworks at the time due to the fact that they embraced mobile first design and made responsive design the norm for web design. Before BS we were building different UIs for desktop and mobile using stuff like jQuery mobile and so on*
+They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it. Bootstrap was different from previous CSS frameworks because they embraced mobile-first design and made responsiveness the norm for web design. Before Bootstrap, we were building UIs for mobile apps with specialized frameworks like [jQuery Mobile](https://jquerymobile.com/).
 
 Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
 
@@ -458,7 +456,7 @@ To make the `title` field required, add a `required` attribute to its `<input>` 
 </div>
 ----
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be nice to mention that the styling on validation comes from the code added to [ngClass], especially nice for beginners*
+You might notice the expression on the `[ngClass]` attribute. This adds CSS classes to the element as validation rules pass and fail. It's a cool feature that web developers love!
 
 Now when you add a new note, it'll let you know that it requires a title.
 
@@ -786,7 +784,7 @@ At the bottom of `note-list.component.html` (just after `</table>`), add the pag
 </div>
 ----
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be useful to mention what "total$ | async" does, I had to look it up as it seems new in angular (or may be I havent done angular in a while :P)*
+In this code, you might notice `"total$ | async"` and wonder what it means? This is an https://angular.io/api/common/AsyncPipe[`async` pipe] that subscribes to an `Observable` or `Promise` and returns the last value produced. It's a handy way to subscribe to real-time updates.
 
 Add `NgbModule` as an import to `note.module.ts`.
 
@@ -807,6 +805,20 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 In `note-list.component.ts`, add a `total$` observable and set it from the `search()` method. Then add an `onPageChange()` method and an `onChange()` method, and modify `onSort()` to set the page to 0.
 
 // note: I had to change from Observable<number> to Observable<any> to get it to compile. Seems strange.
+////
+Error: src/app/note/note-list/note-list.component.html:45:30 - error TS2322: Type 'number | null' is not assignable to type 'number'.
+Type 'null' is not assignable to type 'number'.
+
+45                             [collectionSize]="total$ | async" [(page)]="filter.page" [pageSize]="filter.size"
+~~~~~~~~~~~~~~
+
+  src/app/note/note-list/note-list.component.ts:10:16
+    10   templateUrl: 'note-list.component.html'
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component NoteListComponent.
+////
+
+
 
 [source,ts]
 .src/app/note/note-list/note-list.component.ts

@@ -3,7 +3,7 @@ import { NoteFilter } from '../note-filter';
 import { NoteService } from '../note.service';
 import { Note } from '../note';
 import { SortableHeaderDirective, SortEvent} from './sortable.directive';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-note',
