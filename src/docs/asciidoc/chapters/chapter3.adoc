@@ -1,13 +1,13 @@
 [[chapter-3]]
 = Beautiful Angular Apps with Bootstrap
 
-I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design content to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
+I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design contest to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
 
 However, no CSS frameworks took the world by storm like Bootstrap. Back then, it was called Twitter Bootstrap. Mark Otto and Jacob Thornton invented it in mid-2010 while they worked at Twitter. As they wrote in "Building Twitter Bootstrap" in Issue 324 of A List Apart:
 
 > Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
-They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it.
+They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it. Bootstrap was different from previous CSS frameworks because they embraced mobile-first design and made responsiveness the norm for web design. Before Bootstrap, we were building UIs for mobile apps with specialized frameworks like [jQuery Mobile](https://jquerymobile.com/).
 
 Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
 
@@ -392,6 +392,8 @@ That looks better!
 .Styled Notes List
 image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: What about the javaScript for search function? Its a bit different from last chapter*
+
 === Add Validation and Bootstrap to the Note Edit Template
 
 If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/4.4/components/forms/[stylish forms] using its `form-group` and `form-control` classes. `note-edit.component.html` already uses these classes; you just need to rearrange some things to use the proper `card-*` classes.
@@ -453,6 +455,8 @@ To make the `title` field required, add a `required` attribute to its `<input>` 
   </div>
 </div>
 ----
+
+You might notice the expression on the `[ngClass]` attribute. This adds CSS classes to the element as validation rules pass and fail. It's a cool feature that web developers love!
 
 Now when you add a new note, it'll let you know that it requires a title.
 
@@ -780,6 +784,8 @@ At the bottom of `note-list.component.html` (just after `</table>`), add the pag
 </div>
 ----
 
+In this code, you might notice `"total$ | async"` and wonder what it means? This is an https://angular.io/api/common/AsyncPipe[`async` pipe] that subscribes to an `Observable` or `Promise` and returns the last value produced. It's a handy way to subscribe to real-time updates.
+
 Add `NgbModule` as an import to `note.module.ts`.
 
 [source,ts]
@@ -799,6 +805,20 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 In `note-list.component.ts`, add a `total$` observable and set it from the `search()` method. Then add an `onPageChange()` method and an `onChange()` method, and modify `onSort()` to set the page to 0.
 
 // note: I had to change from Observable<number> to Observable<any> to get it to compile. Seems strange.
+////
+Error: src/app/note/note-list/note-list.component.html:45:30 - error TS2322: Type 'number | null' is not assignable to type 'number'.
+Type 'null' is not assignable to type 'number'.
+
+45                             [collectionSize]="total$ | async" [(page)]="filter.page" [pageSize]="filter.size"
+~~~~~~~~~~~~~~
+
+  src/app/note/note-list/note-list.component.ts:10:16
+    10   templateUrl: 'note-list.component.html'
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component NoteListComponent.
+////
+
+
 
 [source,ts]
 .src/app/note/note-list/note-list.component.ts
@@ -842,6 +862,8 @@ export class NoteListComponent implements OnInit {
   }
 }
 ----
+
+TIP: If you want to be more strict about your typing, you can make the `total$` Observable use `<number | null>` as its type. I used `<any>` as a shortcut.
 
 Then update `notes.service.ts` to add a `size$` observable and parameters for the page size and page number.
 
