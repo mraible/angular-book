@@ -106,7 +106,7 @@ Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
 === Add Authentication using OpenID Connect
 
-OpenID Connect (also called OIDC) is an identity later based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Okta is an alternative that works well too.
+OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Okta is an alternative that works well too.
 
 To add OIDC login support to your Angular app, you'll first need an https://developer.okta.com/signup[free Okta developer account]. Install the https://cli.okta.com/[Okta CLI] and run `okta register` to sign up for a new account.
 
