@@ -15,8 +15,6 @@ image::../images/angular-deployment/angular-deployment.png[Angular Deployment wi
 
 If you're following along, you should have an `angular-bootstrap` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Might be slightly confusing to talk about folders from 2 chapters, may be just mentioning angular-bootstrap from previous chapter in above para would be cleaner*
-
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-bootstrap` directory has the previous section's completed example. Copy it to `angular-deployment` in your favorite code location.
 
 One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
@@ -181,7 +179,6 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 npm i -g npm-check-updates
 ncu -u
 ----
-
 ////
 At the time of this writing, this will upgrade Angular to version 9.1.9 and TypeScript to version 3.9.3. Angular 9 supports TypeScript versions >=3.6.4 and <3.9.0, so you'll need to change `package.json` to specify TypeScript 3.8.3.
 
