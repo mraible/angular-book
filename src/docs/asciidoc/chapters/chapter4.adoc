@@ -13,7 +13,7 @@ image::../images/angular-deployment/angular-deployment.png[Angular Deployment wi
 
 == Create an Angular + Spring Boot App
 
-If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+If you're following along, you should have an `angular-bootstrap` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-bootstrap` directory has the previous section's completed example. Copy it to `angular-deployment` in your favorite code location.
 
@@ -44,6 +44,13 @@ Click **Provision** and wait 20-30 seconds while your Okta account is created an
 [[heroku-config-vars]]
 .Okta Add-On
 image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
+
+.What if I already have an Okta account?
+****
+If you already have an Okta account, you can use it too. However, the Okta add-on makes things easier because it creates SPA and Web OIDC apps on Okta for you. It automatically configures their redirect URIs for Heroku too. You can create new Okta developer accounts with the same email, so you can create as many accounts as you like!
+
+If you want to use an existing Okta account, I recommend using the https://cli.okta.com[Okta CLI]. The  CLI makes it easy to create similar OIDC apps with `okta apps create spa` and `okta apps create web`. You will need to make sure their redirect URIs match your Heroku app.
+****
 
 Create an `.okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
 
@@ -103,7 +110,7 @@ const routes: Routes = [
 ];
 ----
 
-Install your Angular app's dependencies and start it.
+Install your Angular app's dependencies if you haven't already and start the application.
 
 [source,shell]
 ----
@@ -175,7 +182,6 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 npm i -g npm-check-updates
 ncu -u
 ----
-
 ////
 At the time of this writing, this will upgrade Angular to version 9.1.9 and TypeScript to version 3.9.3. Angular 9 supports TypeScript versions >=3.6.4 and <3.9.0, so you'll need to change `package.json` to specify TypeScript 3.8.3.
 
@@ -184,6 +190,7 @@ At the time of this writing, this will upgrade Angular to version 9.1.9 and Type
 "typescript": "~3.8.3"
 ----
 ////
+TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
 Then run the following commands in the `notes` directory:
 
@@ -261,7 +268,7 @@ Edit `environment.prod.ts` to point to your production Heroku URL. Be sure to re
 .notes/src/environments/environment.prod.ts
 ----
 export const environment = {
-  production: false,
+  production: true,
   apiUrl: 'https://bootiful-angular.herokuapp.com'
 };
 ----
@@ -338,6 +345,7 @@ tasks.processResources {
     rename("application-${profile}.properties", "application.properties")
 }
 ----
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Why is the rename required, spring should automatically pickup the correct file based on active profile right?*
 
 Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it will persist to disk, which retains data through restarts.
 
@@ -701,6 +709,8 @@ You should be able to log in now, but you won't be able to add any notes. This i
 heroku config:set ALLOWED_ORIGINS=https://$APP_NAME.herokuapp.com --remote heroku
 ----
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: The APP_NAME set on the angular app will be available on the SB app?*
+
 Now you should be able to add a note. Pat yourself on the back for a job well done!
 
 One issue you'll experience is that you're going to lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
@@ -945,7 +955,9 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 ALLOWED_ORIGINS='https://stark-lake-39546.herokuapp.com,https://ng-notes-1337.web.app,https://relaxed-brown-0b81d8.netlify.app'
 ----
 
-You'll also need to update your Okta app to whitelist the URL as a login and logout redirect.
+You'll also need to update your Okta SPA app to whitelist the URL as a login and logout redirect.
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Do we allow multiple URLs for this purpose? with some sort of intelligent routing?*
 
 If you try to log in, you'll get a `Page Not Found` error stemming from Okta trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents.
 
@@ -973,7 +985,7 @@ Run `ng deploy` again and you should be able to log in successfully.
 
 If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
 
-Create a `src/_headers` file with the following contents.
+Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "all paths under `/`".
 
 [source,text]
 ----
