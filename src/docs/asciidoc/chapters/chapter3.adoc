@@ -902,8 +902,6 @@ export class NoteService {
 }
 ----
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Can't we use `NoteFilter` instead of `any` for params?*
-
 Now your note list should have a working pagination feature at the bottom. Pretty slick, eh?
 
 [[notes-list-with-pagination]]
