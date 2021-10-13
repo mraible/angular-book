@@ -33,8 +33,6 @@ image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700
 
 After creating your app, click on the **Resources** tab and add the **Okta** add-on.
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Is an OKta account prerequisite here or is it automatically created? If not how do you authenticate?*
-
 [[okta-add-on]]
 .Okta Add-On
 image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 475, scaledwidth="100%"]
@@ -46,6 +44,13 @@ Click **Provision** and wait 20-30 seconds while your Okta account is created an
 [[heroku-config-vars]]
 .Okta Add-On
 image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
+
+.What if I already have an Okta account?
+****
+If you already have an Okta account, you can use it too. However, the Okta add-on makes things easier because it creates SPA and Web OIDC apps on Okta for you. It automatically configures their redirect URIs for Heroku too. You can create new Okta developer accounts with the same email, so you can create as many accounts as you like!
+
+If you want to use an existing Okta account, I recommend using the https://cli.okta.com[Okta CLI]. The  CLI makes it easy to create similar OIDC apps with `okta apps create spa` and `okta apps create web`. You will need to make sure their redirect URIs match your Heroku app.
+****
 
 Create an `.okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
 
