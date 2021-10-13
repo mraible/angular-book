@@ -985,11 +985,10 @@ Run `ng deploy` again and you should be able to log in successfully.
 
 If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
 
-Create a `src/_headers` file with the following contents.
+Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "all paths under `/`".
 
 [source,text]
 ----
-# for all paths under /
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com
   Referrer-Policy: no-referrer, strict-origin-when-cross-origin
