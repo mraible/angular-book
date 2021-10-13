@@ -106,9 +106,7 @@ Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
 === Add Authentication using OpenID Connect
 
-OpenID Connect (also called OIDC) is an identity later based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint.
-
-Okta has Authentication and User Management APIs that reduce development time with instant-on, scalable user infrastructure. Okta's intuitive API and expert support make it easy for developers to authenticate, manage, and secure users + roles in any application.
+OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Okta is an alternative that works well too.
 
 To add OIDC login support to your Angular app, you'll first need an https://developer.okta.com/signup[free Okta developer account]. Install the https://cli.okta.com/[Okta CLI] and run `okta register` to sign up for a new account.
 
@@ -152,26 +150,18 @@ It creates a `home.component.ts` that has authentication logic, as well as a tem
 [source,ts]
 .src/app/home/home.component.ts
 ----
-import { Component, OnInit } from '@angular/core';
-import { OktaAuthService } from '@okta/okta-angular';
+import { Component } from '@angular/core';
+import { OktaAuthStateService } from '@okta/okta-angular';
+import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
-  isAuthenticated: boolean = false;
+export class HomeComponent {
 
-  constructor(public oktaAuth: OktaAuthService) {
-  }
-
-  async ngOnInit() {
-    this.isAuthenticated = await this.oktaAuth.isAuthenticated();
-    // Subscribe to authentication state changes
-    this.oktaAuth.$authenticationState.subscribe(
-      (isAuthenticated: boolean)  => this.isAuthenticated = isAuthenticated
-    );
+  constructor(public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
   }
 }
 ----
@@ -180,8 +170,8 @@ export class HomeComponent implements OnInit {
 .src/app/home/home.component.html
 ----
 <div>
-  <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
-  <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
+  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
+  <button *ngIf="(authService.authState$ | async)?.isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
 </div>
 ----
 
@@ -192,13 +182,13 @@ There's also an `HttpInterceptor` created to add an access token to outgoing HTT
 ----
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
-import { OktaAuthService } from '@okta/okta-angular';
 import { Injectable } from '@angular/core';
+import { OktaAuth } from '@okta/okta-auth-js';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private oktaAuth: OktaAuthService) {
+  constructor(private oktaAuth: OktaAuth) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -308,7 +298,7 @@ okta.oauth2.client-id={yourClientId}
 okta.oauth2.client-secret={yourClientSecret}
 ----
 
-IMPORTANT: It's a good practice to **never store secrets in source control**. As an alternative, you can select **Web** > **Other** and use Spring Security's default callback URL (`http://localhost:8080/login/oauth2/code/okta`). This will create an `.okta.env` file you can use to set environment variables before running your app.
+IMPORTANT: It's a good practice to **never store secrets in source control**. As an alternative, run `okta apps create web` and use Spring Security's default callback URL (`http://localhost:8080/login/oauth2/code/okta`). This will create an `.okta.env` file you can use to set environment variables before running your app.
 
 If you chose the **Okta Spring Boot Starter** option, move your settings from `application.properties` into a new `.okta.env` file and ignore `*.env` in your `notes-api/.gitignore` file.
 
@@ -601,11 +591,11 @@ Then, create a `model.json` file in it that defines metadata that's used when ge
 }
 ----
 
-Run the command below to generate CRUD screens.
+Then, run the command below to generate CRUD screens.
 
 [source,shell]
 ----
-ng g angular-crud:crud-module note
+ng g angular-crud:crud-module note --style bootstrap
 ----
 
 You will see the following output.
@@ -616,14 +606,14 @@ CREATE src/app/note/note-filter.ts (44 bytes)
 CREATE src/app/note/note.module.ts (659 bytes)
 CREATE src/app/note/note.routes.ts (346 bytes)
 CREATE src/app/note/note.service.spec.ts (607 bytes)
-CREATE src/app/note/note.service.ts (1744 bytes)
-CREATE src/app/note/note.ts (69 bytes)
-CREATE src/app/note/note-edit/note-edit.component.html (1097 bytes)
+CREATE src/app/note/note.service.ts (1752 bytes)
+CREATE src/app/note/note.ts (72 bytes)
+CREATE src/app/note/note-edit/note-edit.component.html (1007 bytes)
 CREATE src/app/note/note-edit/note-edit.component.spec.ts (978 bytes)
-CREATE src/app/note/note-edit/note-edit.component.ts (1493 bytes)
-CREATE src/app/note/note-list/note-list.component.html (1716 bytes)
+CREATE src/app/note/note-edit/note-edit.component.ts (1495 bytes)
+CREATE src/app/note/note-list/note-list.component.html (1601 bytes)
 CREATE src/app/note/note-list/note-list.component.spec.ts (978 bytes)
-CREATE src/app/note/note-list/note-list.component.ts (1091 bytes)
+CREATE src/app/note/note-list/note-list.component.ts (1092 bytes)
 UPDATE src/app/app.module.ts (540 bytes)
 ----
 
@@ -652,9 +642,9 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 [source,html]
 ----
 <div>
-  <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
-  <p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
-  <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
+  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
+  <p><a routerLink="/notes" *ngIf="(authService.authState$ | async)?.isAuthenticated">View Notes</a></p>
+  <button *ngIf="(authService.authState$ | async)?.isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
 </div>
 ----
 
@@ -683,9 +673,6 @@ image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth
 
 Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
 
-[big red yellow-background]*TODO: <Deepu:Question>: Shouldnt there be notes since there is a data initilizer added?*
-
-// todo: update screenshot
 [[notes-list]]
 .Notes List
 image::../images/angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%"]
@@ -702,15 +689,6 @@ Add a new note, and you'll see a message like this in your backend console.
 ----
 Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: mraible@gmail.com
 ----
-
-////
-This also happens, not sure why:
-
-Failed to evaluate Jackson deserialization for type [[simple type, class org.springframework.data.rest.webmvc.PersistentEntityResource]]: java.lang.NullPointerException
-
-It doesn't seem to cause any issues with data.
-Deepu: My guess is that its due to using JPA entity directly without a DTO, may be setting the property to ignore null fields would solve it or adding jackson annotation to the entity
-////
 
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
 
@@ -919,7 +897,7 @@ Another option is to modify the Angular side of things. Since the ID is passed i
           this.router.navigate(['/notes']);
 ----
 
-[big red yellow-background]*TODO: <Deepu:>: I assume the + is for converting to number, may be nice to mention it?*
+In this example, you might notice `this.note.id = +note.id`. The `+` converts the string parameter to a number.
 
 In the final example for this chapter, I opted to return IDs from my Spring Boot API.
 
@@ -1081,5 +1059,3 @@ In this chapter, I showed you how to create an Angular app, a Spring Boot app, a
 This section did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in the next section.
 
 TIP: You can download the code for this book's examples from InfoQ. The `angular-spring-boot` directory has this chapter's completed example.
-
-[big red yellow-background]*TODO: <Deepu:comment>: This chapter feels a bit disjointed from previous, the angular part seems quite similar to previous, especially adding the OKTA schematics and such*

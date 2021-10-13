@@ -16,7 +16,7 @@ export class NoteService {
 
   findById(id: string): Observable<Note> {
     const url = `${this.api}/${id}`;
-    const params = { id };
+    const params = { id: id };
     return this.http.get<Note>(url, {params, headers});
   }
 
