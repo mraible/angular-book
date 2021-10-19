@@ -1,6 +1,8 @@
 [[chapter-5]]
 = Angular and Docker
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Is this bullet points on purpose? if so a lead line above would be nice like 'In this chapter you will learn how to:' but then the next line would seem redundant*
+
 - Dockerize an Angular App
 - Combine Angular and Spring Boot in a Single Artifact
 - Build a Docker Image with Jib
@@ -12,11 +14,11 @@ In this section, I'll show you how to use Docker to create an image for your Ang
 .Angular + Docker with a Big Hug from Spring Boot
 image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Docker with a Big Hug from Spring Boot, 800, scaledwidth="100%"]
 
-Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app—you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
+Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app — you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
 
 // == Create an Angular + Spring Boot App
 
-If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+If you're following along, you should have an `angular-deployment` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-deployment` directory has the previous section's completed example. Copy it to `angular-docker` in your favorite code location.
 
@@ -27,6 +29,8 @@ If you'd rather start from this point, download the examples for this book from 
 * https://adoptopenjdk.net/[Java] 11+
 
 // === Secure Your Angular + Spring Boot App with OpenID Connect
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Wasn't heroku and OIDC covered in previous chapter, this section looks redundant and out of place as well since we are talking about docker right before and after*
 
 OAuth 2.0 was finalized in 2012 and has since become the industry-standard protocol for authorization. In 2014, OpenID Connect (OIDC) extended OAuth, adding federated identity to delegated authorization. Together, these two layers offer a standard specification that developers can write code against in a way that will work across multiple identity providers.
 
@@ -110,7 +114,7 @@ Click the **Login** button in the top right corner. You should be logged in with
 
 == Dockerize an Angular App
 
-Create a `notes/Dockerfile` that uses Node and Nginx as a web server.
+Create a `notes/Dockerfile` that uses NodeJS as base image and Nginx as a web server.
 
 [source,docker]
 ----
@@ -205,6 +209,8 @@ export const environment = {
 You'll need to deploy your Spring Boot app to a similar public URL for your Angular + Docker container to work in production.
 
 NOTE: If you already deployed Spring Boot to Heroku (from the last section), you can skip the next section and go straight to deploying your Angular Docker container to Heroku.
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Why not just ask reader to refer previous chapter since its all in one book? otherwise it might be better value to reader to show how to deploy a spring boot app as docker image to heroku instead*
 
 === Deploy Spring Boot to Heroku
 
@@ -371,7 +377,7 @@ server {
 }
 ----
 
-You'll also need to update your `Dockerfile` so it uses the aforementioned `envsubstr`.
+You'll also need to update your `Dockerfile` so it uses the aforementioned `envsubst`.
 
 [source,docker]
 .notes/Dockerfile
@@ -418,7 +424,7 @@ And open the app in your browser:
 heroku open --remote docker
 ----
 
-You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Ookta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs.
+You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Okta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs.
 
 - Login: `\https://<angular-docker-app>.herokuapp.com/callback`
 - Logout: `\https://<angular-docker-app>.herokuapp.com`
@@ -861,6 +867,8 @@ class LogoutController(clientRegistrationRepository: ClientRegistrationRepositor
 }
 ----
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Link seems incomplete*
+
 NOTE: In link:/blog/2020/03/27/spring-oidc-logout-options[OpenID Connect Logout Options with Spring Boot], Brian Demers describes this as RP-Initiated Logout. He also shows how you can configure Spring Security's `OidcClientInitiatedLogoutSuccessHandler` to logout. I tried this technique but decided against it because it doesn't allow me to redirect back to my Angular app in dev mode. I also encountered some CORS errors that I was unable to solve.
 
 When you access the `/user/notes` endpoint with Angular, the `${principal.name}` expression correctly resolves to the user's email. However, when you access this endpoint after logging in directly to Spring Boot, it resolves to the `sub` claim. To make these values consistent, add the following property to `application-dev.properties` and `application-prod.properties`.
@@ -1164,11 +1172,15 @@ heroku open --remote jib
 
 If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A+**!
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Missing image??*
+
 [[heroku-jib-headers-a+]]
 .A+ Security Headers
 image::../images/angular-docker/heroku-jib-headers-a+.png[A+ Security Headers, 800, scaledwidth="100%"]
 
 === Knative with Spring Boot + Docker
+
+[big red yellow-background]*TODO: <Deepu:Suggestion>: This section would be an overkill for a monolith IMO, so may be note might be nice IMO?*
 
 Heroku is awesome, but sometimes people want more control over their infrastructure. Enter Knative. It's like Heroku in that it's a Platform as a Service (PaaS). Knative is built on top of Kubernetes, so you can install a number of services with a bit of YAML and `kubectl` commands.
 
@@ -1451,6 +1463,8 @@ spec:
 EOF
 ----
 
+[big red yellow-background]*TODO: <Deepu:Suggestion>: Not sure if its a good practice to deploy this as a service instead of a Deployment, but then if its a knative thing then ignore me, i'm not very familair with it*
+
 If everything works correctly, you should be able to run the following command to get the URL of your app.
 
 [source,shell]
@@ -1466,7 +1480,7 @@ NAME               URL                                                    LATEST
 bootiful-angular   https://bootiful-angular.default.34.70.42.153.nip.io   bootiful-angular-qf9hn   bootiful-angular-qf9hn   True
 ----
 
-You'll need to add this URL (+ `/login/oauth2/code/okta`) as a **Login redirect URI** and a **Logout redirect URI** in Okta in order to log in.
+You'll need to add this URL (+ `/login/oauth2/code/okta`) as a **Login redirect URI** and a **Logout redirect URI** in Okta Admin console in order to log in.
 
 ////
 [[knative-login-logout-uris]]
