@@ -976,19 +976,17 @@ heroku open --remote jib
 
 If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A+**!
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Missing image??*
-
-[[heroku-jib-headers-a+]]
+[[heroku-jib-headers]]
 .A+ Security Headers
 image::../images/angular-docker/heroku-jib-headers-a+.png[A+ Security Headers, 800, scaledwidth="100%"]
 
 === Knative with Spring Boot + Docker
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: This section would be an overkill for a monolith IMO, so may be note might be nice IMO?*
-
 Heroku is awesome, but sometimes people want more control over their infrastructure. Enter Knative. It's like Heroku in that it's a Platform as a Service (PaaS). Knative is built on top of Kubernetes, so you can install a number of services with a bit of YAML and `kubectl` commands.
 
 With Heroku, when companies reach the limitations of the platform, they have to go elsewhere to host their services. With Knative, you can just drop down to Kubernetes. It's Heroku for Kubernetes in a sense, but you don't have to switch to a different universe when you need additional functionality.
+
+IMPORTANT: Using Knative for a monolith is probably a bit excessive. However, I figured I'd include it anyway because it wasn't easy to figure out how to configure HTTPS, PostgreSQL, and Okta. You can skip to the xref:buildpacks[Cloud Native Buildpacks] section if you like.
 
 The https://knative.dev/[Knative website] says it'll make your developers more productive.
 
@@ -1267,8 +1265,6 @@ spec:
 EOF
 ----
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Not sure if its a good practice to deploy this as a service instead of a Deployment, but then if its a knative thing then ignore me, i'm not very familair with it*
-
 If everything works correctly, you should be able to run the following command to get the URL of your app.
 
 [source,shell]
@@ -1284,7 +1280,7 @@ NAME               URL                                                    LATEST
 bootiful-angular   https://bootiful-angular.default.34.70.42.153.nip.io   bootiful-angular-qf9hn   bootiful-angular-qf9hn   True
 ----
 
-You'll need to add this URL (+ `/login/oauth2/code/okta`) as a **Login redirect URI** and a **Logout redirect URI** in Okta Admin console in order to log in.
+You'll need to add this URL (+ `/login/oauth2/code/okta`) as a **Sign-in redirect URI** and a **Sign-out redirect URI** in the Okta Admin Console in order to log in.
 
 ////
 [[knative-login-logout-uris]]
@@ -1298,6 +1294,7 @@ Then, you'll be able to log into your app running on Knative! Add a note or two 
 .Angular + Spring Boot in Docker running on Knative
 image::../images/angular-docker/knative-works.png[Angular + Spring Boot in Docker running on Knative, 800, scaledwidth="100%"]
 
+[[buildpacks]]
 == Use Cloud Native Buildpacks to Build Docker Images
 
 https://buildpacks.io/[Cloud Native Buildpacks] is an initiative that was started by Pivotal and Heroku in early 2018. It has a https://github.com/buildpacks/pack[`pack` CLI] that allows you to build Docker images using buildpacks.
