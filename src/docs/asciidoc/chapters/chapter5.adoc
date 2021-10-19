@@ -1,13 +1,6 @@
 [[chapter-5]]
 = Angular and Docker
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Is this bullet points on purpose? if so a lead line above would be nice like 'In this chapter you will learn how to:' but then the next line would seem redundant*
-
-- Dockerize an Angular App
-- Combine Angular and Spring Boot in a Single Artifact
-- Build a Docker Image with Jib
-- Run via Docker on Heroku, Cloud Foundry, and KNative
-
 In this section, I'll show you how to use Docker to create an image for your Angular app and deploy it to Heroku. Then, I'll show how to combine Angular and Spring Boot into the same JAR artifact for deployment. You'll learn how to Dockerize the combined apps using Jib and Cloud Native Buildpacks. Finally, I'll show you how to deploy your Docker image to Heroku and Knative on Google Cloud.
 
 [[angular-docker-spring-boot-hug]]
@@ -15,8 +8,6 @@ In this section, I'll show you how to use Docker to create an image for your Ang
 image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Docker with a Big Hug from Spring Boot, 800, scaledwidth="100%"]
 
 Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app — you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
-
-// == Create an Angular + Spring Boot App
 
 If you're following along, you should have an `angular-deployment` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
@@ -27,90 +18,6 @@ If you'd rather start from this point, download the examples for this book from 
 * https://docs.docker.com/install/[Docker]
 * https://nodejs.org/[Node.js] 12+
 * https://adoptopenjdk.net/[Java] 11+
-
-// === Secure Your Angular + Spring Boot App with OpenID Connect
-
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Wasn't heroku and OIDC covered in previous chapter, this section looks redundant and out of place as well since we are talking about docker right before and after*
-
-OAuth 2.0 was finalized in 2012 and has since become the industry-standard protocol for authorization. In 2014, OpenID Connect (OIDC) extended OAuth, adding federated identity to delegated authorization. Together, these two layers offer a standard specification that developers can write code against in a way that will work across multiple identity providers.
-
-To begin the process of adding OIDC to Angular and Spring Boot, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log into it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
-
-[[heroku-create-app-recap]]
-.Create Heroku app
-image::../images/angular-docker/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%"]
-
-After creating your app, click on the **Resources** tab and add the **Okta** add-on.
-
-[[okta-add-on-docker]]
-.Okta Add-On
-image::../images/angular-docker/okta-add-on.png[Okta Add-On, 475, scaledwidth="100%"]
-
-CAUTION: If you haven't entered a credit card for your Heroku account, you will get an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Add a credit card to continue.
-
-Click **Provision** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now go to your app's **Settings** tab and click the **Reveal Config Vars** button. The variables displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
-
-[[heroku-config-vars-recap]]
-.Okta Add-On
-image::../images/angular-docker/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
-
-Create an `.okta.env` file in the `angular-docker/notes-api` directory and copy the variable values into it, where `$OKTA_*` is the value from Heroku.
-
-[source,shell]
-----
-export OKTA_OAUTH2_ISSUER=$OKTA_OAUTH2_ISSUER
-export OKTA_OAUTH2_CLIENT_ID=$OKTA_OAUTH2_CLIENT_ID_WEB
-export OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET_WEB
-----
-
-[NOTE]
-====
-If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install-win10[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
-====
-
-Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and running `bootRun`.
-
-[source,shell]
-----
-source .okta.env
-./gradlew bootRun
-----
-
-For Windows users, the commands will be:
-
-[source,shell]
-----
-okta.bat
-gradlew bootRun
-----
-
-Next, configure Angular for OIDC authentication by modifying its `auth-routing.module.ts` to use the generated issuer and **SPA** client ID.
-
-[source,typescript]
-.notes/src/app/auth-routing.module.ts
-----
-const oktaConfig = {
-  issuer: '$OKTA_OAUTH2_ISSUER',
-  redirectUri: '/callback',
-  clientId: '$OKTA_OAUTH2_CLIENT_ID_SPA',
-};
-----
-
-Install your Angular app's dependencies and start it.
-
-[source,shell]
-----
-npm i
-ng serve
-----
-
-Open `http://localhost:4200` in your browser.
-
-[[angular-home-docker]]
-.Angular Home
-image::../images/angular-docker/angular-home.png[Angular Home, 800, scaledwidth="100%"]
-
-Click the **Login** button in the top right corner. You should be logged in without seeing a login form because you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
 
 == Dockerize an Angular App
 
