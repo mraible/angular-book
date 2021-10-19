@@ -21,7 +21,7 @@ If you'd rather start from this point, download the examples for this book from 
 
 == Dockerize an Angular App
 
-Create a `notes/Dockerfile` that uses NodeJS as base image and Nginx as a web server.
+Create a `notes/Dockerfile` that uses Node.js as a base image and Nginx as a web server.
 
 [source,docker]
 ----
@@ -102,108 +102,7 @@ Add these Docker commands as scripts to your `package.json` file.
 "ng-notes": "docker run -p 4200:80 ng-notes"
 ----
 
-The `docker run` command will serve up the production version of the Angular app, which has its backend configured to point to a production URL on Heroku.
-
-[source,typescript]
-.notes/src/environments/environment.prod.ts
-----
-export const environment = {
-  production: true,
-  apiUrl: 'https://bootiful-angular.herokuapp.com'
-};
-----
-
-You'll need to deploy your Spring Boot app to a similar public URL for your Angular + Docker container to work in production.
-
-NOTE: If you already deployed Spring Boot to Heroku (from the last section), you can skip the next section and go straight to deploying your Angular Docker container to Heroku.
-
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Why not just ask reader to refer previous chapter since its all in one book? otherwise it might be better value to reader to show how to deploy a spring boot app as docker image to heroku instead*
-
-=== Deploy Spring Boot to Heroku
-
-One of the easiest ways to interact with Heroku is with the Heroku CLI. https://devcenter.heroku.com/articles/heroku-cli[Install it] before proceeding with the instructions below.
-
-[source,shell]
-----
-brew tap heroku/brew && brew install heroku
-----
-
-Open a terminal and log in to your Heroku account.
-
-[source,shell]
-----
-heroku login
-----
-
-You should already have a Heroku app that you've added Okta to. You can use it for hosting your Spring Boot app. Run `heroku apps` and you'll see the one that you created.
-
-[source,shell]
-----
-$ heroku apps
-=== mraible@gmail.com Apps
-bootiful-angular
-----
-
-You can run `heroku config -a $APP_NAME` to see your Okta variables. In my case, I'll be using `bootiful-angular` for `$APP_NAME`.
-
-Associate your existing Git repo with the app on Heroku.
-
-[source,shell]
-----
-heroku git:remote -a $APP_NAME
-----
-
-Set the `APP_BASE` config variable to point to the `notes-api` directory. While you're there, add the monorepo and Gradle buildpacks.
-
-[source,shell]
-----
-heroku config:set APP_BASE=notes-api
-heroku buildpacks:add https://github.com/lstoll/heroku-buildpack-monorepo
-heroku buildpacks:add heroku/gradle
-----
-
-Attach a PostgreSQL database to your app.
-
-[source,shell]
-----
-heroku addons:create heroku-postgresql
-----
-
-By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku[Heroku's Gradle support] runs `./gradlew build -x test`. Since you want it to run `./gradlew bootJar -Pprod`, you'll need to override it by setting a `GRADLE_TASK` config var.
-
-[source,shell]
-----
-heroku config:set GRADLE_TASK="bootJar -Pprod"
-----
-
-The `$OKTA_*` environment variables don't have the same names as the Okta Spring Boot starter expects. This is because the Okta Heroku Add-On creates two apps: a SPA and a web app. The web app's config variables end in `_WEB`. You'll have to make some changes so those variables are used for the Okta Spring Boot starter. Run the following command and remove `_WEB` from the two variables that have it.
-
-[source,shell]
-----
-heroku config:edit
-----
-
-Now you're ready to deploy! Heroku makes this easy with a simple `git push`.
-
-[source,shell]
-----
-git push heroku main:master
-----
-
-Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your Spring Boot app. You should see a screen like the one below.
-
-[[heroku-hello-docker]]
-.Hello on Heroku
-image::../images/angular-docker/heroku-hello.png[Hello on Heroku, 800, scaledwidth="100%"]
-
-By default, JPA is configured to create your database schema each time. Change it to simply validate the schema.
-
-[source,shell]
-----
-heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate
-----
-
-Now, you'll need to configure your Angular app to use your Heroku-deployed Spring Boot app for its production URL.
+The `docker run` command will serve up the production version of the Angular app, which should already have its backend configured to point to your Heroku app.
 
 [source,typescript]
 .notes/src/environments/environment.prod.ts
@@ -214,7 +113,7 @@ export const environment = {
 };
 ----
 
-Since this runs the production build, you'll need to add `\http://localhost:4200` as an allowed origin in your Spring Boot app on Heroku. Run the following command and add it to the end of the existing values.
+Since this runs the production build, you'll need to add `\http://localhost:4200` as an allowed origin in your Spring Boot app on Heroku. Run the following command to make this happen.
 
 [source,shell]
 ----
@@ -241,7 +140,7 @@ Verify the data made it to Heroku by going to `\https://<your-heroku-app>.heroku
 
 === Deploy Angular + Docker to Heroku
 
-Heroku has  https://devcenter.heroku.com/articles/container-registry-and-runtime[several slick features when it comes to Docker images]. If your project has a `Dockerfile`, you can deploy your app directly using the Heroku Container Registry.
+Heroku has https://devcenter.heroku.com/articles/container-registry-and-runtime[several slick features when it comes to Docker images]. If your project has a `Dockerfile`, you can deploy your app directly using the Heroku Container Registry.
 
 First, make sure you're in the `notes` directory, then log in to the Container Registry.
 
