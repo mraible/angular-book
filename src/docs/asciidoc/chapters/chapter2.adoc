@@ -1020,7 +1020,7 @@ Now, running `./gradlew test` should pass as expected.
 
 == Security Patterns for Spring Boot
 
-In link:/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
+In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
 
 1. Use HTTPS in Production
 2. Enable Cross-Site Request Forgery (CSRF) Protection
