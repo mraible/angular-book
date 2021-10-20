@@ -102,7 +102,8 @@ Add these Docker commands as scripts to your `package.json` file.
 "ng-notes": "docker run -p 4200:80 ng-notes"
 ----
 
-The `docker run` command will serve up the production version of the Angular app, which should already have its backend configured to point to your Heroku app.
+The `docker run` command will serve up the production version of the Angular app, which should already have its backend configured to point to your Heroku app. You should have deployed your Spring Boot app to Heroku in the
+<<#deploy-spring-boot-to-heroku, previous chapter>>.
 
 [source,typescript]
 .notes/src/environments/environment.prod.ts
