@@ -43,7 +43,7 @@ COPY --from=builder /opt/web/dist/notes /usr/share/nginx/html
 
 [NOTE]
 ====
-When I was trying to get everything to work, I found it handy to comment out the `RUN ng build --prod` line and use the following instead.
+When I was trying to get everything to work, I found it handy to comment out the `RUN ng build --prod` line and use the following instead:
 
 [source,shell]
 ----
@@ -230,7 +230,7 @@ And open the app in your browser:
 heroku open --remote docker
 ----
 
-You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Okta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs.
+You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Okta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs:
 
 - Login: `\https://<angular-docker-app>.herokuapp.com/callback`
 - Logout: `\https://<angular-docker-app>.herokuapp.com`
@@ -305,7 +305,7 @@ git commit -m "Add Docker for Angular"
 
 In the previous sections, you learned how to deploy your Angular and Spring Boot apps separately. Now I'll show you how to combine them into a single JAR for production. You'll still be able to run them independently in development, but deploying them to production will be easier because you won't have to worry about CORS (cross-origin resource sharing). I'll also convert the OAuth flows so they all happen server-side, which is more secure as the access token won't be stored in the browser.
 
-NOTE: Most client-side OAuth libraries keep access tokens in local storage. However, there is a https://gitlab.com/jimdigriz/oauth2-worker[oauth2-worker] project that allows you to store them in a web worker. There's also folks that think https://pragmaticwebsecurity.com/articles/oauthoidc/localstorage-xss.html[avoiding LocalStorage for tokens is the wrong solution].
+NOTE: Most client-side OAuth libraries keep access tokens in local storage. However, there is an https://gitlab.com/jimdigriz/oauth2-worker[oauth2-worker] project that allows you to store them in a web worker. There are also folks that think https://pragmaticwebsecurity.com/articles/oauthoidc/localstorage-xss.html[avoiding LocalStorage for tokens is the wrong solution].
 
 === Update Your Angular App's Authentication Mechanism
 
@@ -370,7 +370,7 @@ export class AuthService {
 <.> Logout using the `/api/logout` endpoint, which returns the Okta Logout API URL and a valid ID token.
 ====
 
-Create a `user.ts` file in the same directory, to hold your `User` model.
+Create a `user.ts` file in the same directory to hold your `User` model.
 
 [source,typescript]
 .notes/src/app/shared/user.ts
@@ -546,13 +546,13 @@ Remove Okta's Angular SDK and OktaDev Schematics from your Angular project.
 npm uninstall @okta/okta-angular @oktadev/schematics
 ----
 
-At this point, your Angular app doesn't contain any Okta-specific code for authentication. Instead, it relies  on your Spring Boot app to provide that.
+At this point, your Angular app doesn't contain any Okta-specific code for authentication. Instead, it relies on your Spring Boot app to provide that.
 
 You should still be able to run `ng serve` in your Angular app and `./gradlew bootRun` in your Spring Boot app for local development. However, you'll need to make some adjustments to your Spring Boot app to include Angular for production.
 
 === Configure Spring Boot to Include Your Angular SPA
 
-In your Spring Boot app, you'll need to change a number of things. You'll need to configure Gradle to build your Angular app when you pass in `-Pprod`, you'll need to adjust its routes (so it's SPA-aware and routes all 404s to `index.html`), and you'll need to modify Spring Security to allow HTML, CSS, and JavaScript to be anonymously accessed.
+In your Spring Boot app, you'll need to change several things. You'll need to configure Gradle to build your Angular app when you pass in `-Pprod`, you'll need to adjust its routes (so it's SPA-aware and routes all 404s to `index.html`), and you'll need to modify Spring Security to allow HTML, CSS, and JavaScript to be anonymously accessed.
 
 To begin, delete `src/main/kotlin/com/okta/developer/notes/HomeController.kt`. You'll no longer need this because your Angular app will be served up at the `/` path.
 
@@ -673,7 +673,7 @@ class LogoutController(clientRegistrationRepository: ClientRegistrationRepositor
 }
 ----
 
-NOTE: In https://developer.okta.com/blog/2020/03/27/spring-oidc-logout-options[OpenID Connect Logout Options with Spring Boot], Brian Demers describes this as RP-Initiated Logout. He also shows how you can configure Spring Security's `OidcClientInitiatedLogoutSuccessHandler` to logout. I tried this technique but decided against it because it doesn't allow me to redirect back to my Angular app in dev mode. I also encountered some CORS errors that I was unable to solve.
+NOTE: In https://developer.okta.com/blog/2020/03/27/spring-oidc-logout-options[OpenID Connect Logout Options with Spring Boot], Brian Demers describes this as RP-Initiated Logout. He also shows how you can configure Spring Security's `OidcClientInitiatedLogoutSuccessHandler` to log out. I tried this technique but decided against it because it doesn't allow me to redirect back to my Angular app in dev mode. I also encountered some CORS errors that I was unable to solve.
 
 When you access the `/user/notes` endpoint with Angular, the `${principal.name}` expression correctly resolves to the user's email. However, when you access this endpoint after logging in directly to Spring Boot, it resolves to the `sub` claim. To make these values consistent, add the following property to `application-dev.properties` and `application-prod.properties`.
 
@@ -764,7 +764,7 @@ Congrats! You modified your Angular and Spring Boot apps to be packaged together
 
 == Build a Docker Image with Jib
 
-Since everything is done via Gradle now, you can use plugins to build a Docker container. https://github.com/GoogleContainerTools/jib[Jib] builds optimized Docker images without the need for deep mastery of Docker best-practices. It reads your Gradle/Maven build files for its metadata.
+Since everything is done via Gradle now, you can use plugins to build a Docker container. https://github.com/GoogleContainerTools/jib[Jib] builds optimized Docker images without the need for deep mastery of Docker best practices. It reads your Gradle/Maven build files for its metadata.
 
 To add Jib support, add its Gradle plugin.
 
@@ -982,7 +982,7 @@ image::../images/angular-docker/heroku-jib-headers-a+.png[A+ Security Headers, 8
 
 === Knative with Spring Boot + Docker
 
-Heroku is awesome, but sometimes people want more control over their infrastructure. Enter Knative. It's like Heroku in that it's a Platform as a Service (PaaS). Knative is built on top of Kubernetes, so you can install a number of services with a bit of YAML and `kubectl` commands.
+Heroku is awesome, but sometimes people want more control over their infrastructure. Enter Knative. It's like Heroku in that it's a Platform as a Service (PaaS). Knative is built on top of Kubernetes, so you can install several services with a bit of YAML and `kubectl` commands.
 
 With Heroku, when companies reach the limitations of the platform, they have to go elsewhere to host their services. With Knative, you can just drop down to Kubernetes. It's Heroku for Kubernetes in a sense, but you don't have to switch to a different universe when you need additional functionality.
 
@@ -990,7 +990,7 @@ IMPORTANT: Using Knative for a monolith is probably a bit excessive. However, I 
 
 The https://knative.dev/[Knative website] says it'll make your developers more productive.
 
-> Knative components build on top of Kubernetes, abstracting away the complex details and enabling developers to focus on what matters. Built by codifying the best practices shared by successful real-world implementations, Knative solves the "boring but difficult" parts of deploying and managing cloud native services, so you don't have to.
+> Knative components build on top of Kubernetes, abstracting away the complex details and enabling developers to focus on what matters. Built by codifying the best practices shared by successful real-world implementations, Knative solves the "boring but difficult" parts of deploying and managing cloud-native services, so you don't have to.
 
 You'll need a Google Cloud account for this section. Go to https://cloud.google.com/[cloud.google.com] and click **Get started for free**.
 
@@ -1347,4 +1347,4 @@ TIP: You can download the code for this book's examples from InfoQ. The `angular
 
 As a developer, you probably don't want to read a book to get a baseline to start a project. The good news is https://jhipster.tech[JHipster] does everything in this book. It allows you to run your Angular and Spring Boot apps separately, use Kotlin on the server, package your apps together for production, and use Docker for distribution. If you're interested in JHipster, you're in luck: there's a https://www.infoq.com/minibooks/jhipster-mini-book/[JHipster Mini-Book]! 🤓
 
-In the meantime, I hope you enjoy your journey develping with Angular and Spring Boot! Please hit me up at @mraible { on Twitter, LinkedIn, and GitHub } if you have any questions.
+In the meantime, I hope you enjoy your journey developing with Angular and Spring Boot! Please hit me up at @mraible { on Twitter, LinkedIn, and GitHub } if you have any questions.
