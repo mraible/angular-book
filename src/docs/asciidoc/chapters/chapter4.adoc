@@ -914,7 +914,7 @@ git commit -am "Add Firebase deployment"
 
 === Angular Deployment to Netlify
 
-Netlify is a hosting provider for static sites that I've enjoyed using in the past. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality. I wrote about Netlify in link:/blog/2020/02/18/gatsby-react-netlify[Build a Secure Blog with Gatsby, React, and Netlify].
+Netlify is a hosting provider for static sites that I've enjoyed using in the past. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality. I wrote about Netlify in https://developer.okta.com/blog/2020/02/18/gatsby-react-netlify[Build a Secure Blog with Gatsby, React, and Netlify].
 
 Check out your `master` branch and create a new `netlify` one.
 
