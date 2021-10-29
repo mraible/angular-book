@@ -7,7 +7,7 @@ However, no CSS frameworks took the world by storm like Bootstrap. Back then, it
 
 > Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
-They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it. Bootstrap was different from previous CSS frameworks because they embraced mobile-first design and made responsiveness the norm for web design. Before Bootstrap, we were building UIs for mobile apps with specialized frameworks like [jQuery Mobile](https://jquerymobile.com/).
+They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it. Bootstrap was different from previous CSS frameworks because they embraced mobile-first design and made responsiveness the norm for web design. Before Bootstrap, we were building UIs for mobile apps with specialized frameworks like https://jquerymobile.com/[jQuery Mobile].
 
 Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
 
