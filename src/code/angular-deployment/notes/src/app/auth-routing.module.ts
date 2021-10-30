@@ -5,14 +5,17 @@ import { OktaCallbackComponent } from '@okta/okta-angular';
 import { HomeComponent } from './home/home.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
+import { OktaAuth } from '@okta/okta-auth-js';
 import { AuthInterceptor } from './shared/okta/auth.interceptor';
 
 const oktaConfig = {
-  issuer: 'https://oie-4417293.oktapreview.com/oauth2/default',
+  issuer: 'https://dev-2530788.okta.com/oauth2/default',
+  clientId: '0oa2416pei8aa5d4w5d7',
   redirectUri: '/callback',
-  clientId: '0oaxxy5xd9UtipIhe1d6',
   scopes: ['openid', 'profile']
 };
+
+const oktaAuth = new OktaAuth(oktaConfig);
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -37,7 +40,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes)
   ],
   providers: [
-    { provide: OKTA_CONFIG, useValue: oktaConfig },
+    { provide: OKTA_CONFIG, useValue: { oktaAuth } },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   exports: [RouterModule]
