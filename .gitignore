@@ -3,6 +3,7 @@
 ######################
 /src/main/webapp/dist
 /**/cypress/screenshots
+/**/cypress/videos
 
 ######################
 # Node
