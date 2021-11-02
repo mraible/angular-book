@@ -1,9 +1,9 @@
 [[chapter-3]]
 = Beautiful Angular Apps with Bootstrap
 
-I've been a longtime fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design contest to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
+I've been a fan of CSS frameworks since 2005. I led an open-source project called AppFuse at the time and wanted a way to provide themes for our users. We used Mike Stenhouse's CSS Framework and held a design contest to gather some themes we liked for our users. A couple of other CSS frameworks came along in the next few years, namely Blueprint in 2007 and Compass in 2008.
 
-However, no CSS frameworks took the world by storm like Bootstrap. Back then, it was called Twitter Bootstrap. Mark Otto and Jacob Thornton invented it in mid-2010 while they worked at Twitter. As they wrote in "Building Twitter Bootstrap" in Issue 324 of A List Apart:
+However, no CSS frameworks took the world by storm like Bootstrap. Back then, it was called Twitter Bootstrap. Mark Otto and Jacob Thornton invented it in mid-2010 while they worked at Twitter. As they wrote in "`Building Twitter Bootstrap`" in Issue 324 of _A List Apart_:
 
 > Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
@@ -15,7 +15,7 @@ Together, these frameworks have had quite a run. It's hard to believe that they'
 
 // == Isn't Angular Dead?
 
-I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "legacy." Others call them "revenue-generating."
+I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "`legacy.`" Others call them "`revenue-generating.`"
 
 Whatever you want to call it, Angular is far from dead.
 
@@ -53,8 +53,6 @@ npm i bootstrap @ng-bootstrap/ng-bootstrap --force
 ----
 // todo: add versions and remove force once ng-bootstrap supports Angular 12.
 // https://github.com/ng-bootstrap/ng-bootstrap/issues/4093
-
-TIP: You can leave off the version numbers if you like. However, this tutorial is only guaranteed to work with the versions specified.
 
 Import `NgbModule` in `app.module.ts`:
 
@@ -153,16 +151,16 @@ You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
 
 Before you make things awesome, I'd like to show you how to convert from using CSS with Angular to using Sass. Why? Because https://sass-lang.com/[Sass] is completely compatible with CSS, and it makes CSS more like programming. It also allows you to customize Bootstrap by overriding its variables.
 
-NOTE: If you're not into Sass, you can <<#make-angular-beautiful,skip this section>>. Everything will still work without it.
+NOTE: If you're not into Sass, you can <<#make-angular-beautiful, skip this section>>. Everything will still work without it.
 
-If you run the following `find` command:
+If you run the following `find` command...
 
 [source,shell]
 ----
 find . -name "*.css" -not -path "./node_modules/*"
 ----
 
-You'll see three files have a `.css` extension.
+...you'll see three files have a `.css` extension.
 
 [source,shell]
 ----
@@ -171,7 +169,7 @@ You'll see three files have a `.css` extension.
 ./src/styles.css
 ----
 
-You can manually rename these to have a `.scss` extension, or do it programmatically.
+You can manually rename these to have a `.scss` extension or do it programmatically.
 
 [source,shell]
 ----
@@ -289,7 +287,7 @@ image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 
 
 === Fix Bootstrap's Responsive Menu
 
-If you reduce the width of your browser window, you'll see the menu collapses to take up less real estate.
+If you reduce the width of your browser window, you'll see the menu collapse to take up less real estate.
 
 [[navbar-squished]]
 .Navbar squished
@@ -391,8 +389,6 @@ That looks better!
 [[styled-notes-list]]
 .Styled Notes List
 image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
-
-[big red yellow-background]*TODO: <Deepu:Suggestion>: What about the javaScript for search function? Its a bit different from last chapter*
 
 === Add Validation and Bootstrap to the Note Edit Template
 
