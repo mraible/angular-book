@@ -19,7 +19,7 @@ If you'd rather start from this point, download the examples for this book from 
 
 * https://docs.docker.com/install/[Docker]
 * https://nodejs.org/[Node.js] 14+
-* https://adoptium.net//[Java] 11+
+* https://adoptium.net/[Java] 11+
 
 == Dockerize an Angular App
 

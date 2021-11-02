@@ -1677,7 +1677,7 @@ Update `search.component.html` to use Material components.
 </mat-list>
 ----
 
-Update this component’s test to be aware of these components.
+Update this component's test to be aware of these components.
 
 [source,typescript]
 .src/app/search/search.component.spec.ts
