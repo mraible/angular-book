@@ -19,7 +19,7 @@ image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800,
 
 == What's New in Angular?
 
-Angular 12 is the version of Angular used in this book. It adds strict typing by default and deprecates Protractor and IE11 support. It also leverages Ivy throughout and deprecates the View Engine, which was Angular’s default renderer before Ivy.
+Angular 12 is the version of Angular used in this book. It adds strict typing by default and deprecates Protractor and IE11 support. It also leverages Ivy throughout and deprecates the View Engine, which was Angular's default renderer before Ivy.
 
 Ivy is a new compiler and renderer, introduced in Angular 9. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
 
@@ -39,7 +39,7 @@ ng update @angular/cli @angular/core
 
 Spring Boot 2.5 was released in May 2021. It adds support for Java 16, Gradle 7, better Docker images, and datasource initialization enhancements.
 
-In this chapter, I'll show you how to build a note-taking application with Angular 12 and Spring Boot 2.5. Along the way, I'll do my best to weave in security tips and how to make your apps more secure.
+In this chapter, I'll show you how to build a note-taking application with Angular 12 and Spring Boot 2.5. Along the way, I'll do my best to weave in security tips and advice on how to make your apps more secure.
 
 The Angular and Spring Boot projects release major versions every six months. Since Java does too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
 
@@ -48,7 +48,7 @@ Please try newer versions at your own risk and email me if you find issues and/o
 **Prerequisites:**
 
 * https://nodejs.org/[Node 14]+
-* https://adoptopenjdk.net/[Java 11]+
+* https://adoptium.net/[Java 11]+
 * https://httpie.io/docs#installation[HTTPie]
 
 To install Node and Java on a Mac, Linux, or Windows Subsystem for Linux (WSL), you can use https://docs.brew.sh/Installation[Homebrew].
@@ -80,7 +80,7 @@ You should have installed the Angular CLI in the previous section. If you did no
 npm install -g @angular/cli@12
 ----
 
-Then, create a directory on your hard-drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
+Then, create a directory on your hard drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
 
 [source,shell]
 ----
@@ -89,7 +89,7 @@ ng new notes --routing --style css
 
 In this command, `--routing` installs the Angular router and `--style css` makes it use CSS (as opposed to Sass and Less) for stylesheets.
 
-This process will take a minute or two to complete, depending on your internet speed and hardware. Once it's finished, navigate into the directory and run `ng serve`.
+This process will take a minute or two to complete depending on your internet speed and hardware. Once it's finished, navigate into the directory and run `ng serve`.
 
 [source,shell]
 ----
@@ -181,7 +181,7 @@ There's also an `HttpInterceptor` created to add an access token to outgoing HTT
 .src/app/shared/okta/auth.interceptor.ts
 ----
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { OktaAuth } from '@okta/okta-auth-js';
 
@@ -192,10 +192,10 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return from(this.handleAccess(request, next));
+    return this.handleAccess(request, next);
   }
 
-  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Only add an access token to allowed origins
     const allowedOrigins = ['http://localhost'];
     if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
@@ -206,7 +206,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
       });
     }
-    return next.handle(request).toPromise();
+    return next.handle(request);
   }
 }
 ----
@@ -219,13 +219,13 @@ Start your app again using the `ng serve` command, open a private/incognito wind
 .Login button
 image::../images/angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%"]
 
-Click on it, and you'll be redirected to Okta to log in.
+Click on it and you'll be redirected to Okta to log in.
 
 [[angular-okta-login]]
 .Okta Login form
 image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="100%"]
 
-Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
+Enter valid credentials and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
 [[angular-logout-button]]
 .Logout button
@@ -235,7 +235,7 @@ Now that you've created a secure Angular app let's create a Spring Boot app to s
 
 == Create a Spring Boot App
 
-The good folks at Pivotal created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with https://httpie.org/[HTTPie].
+The good folks at Pivotal (now VMWare) created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with https://httpie.org/[HTTPie].
 
 Kotlin is an intriguing language for Spring developers because it reduces boilerplate code and allows succinct, effective code. Kotlin is 100% interoperable with Java, so you can continue to use the Java libraries and frameworks you know and love. Not only that, but Spring has first-class support for Kotlin.
 
@@ -243,21 +243,21 @@ Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the nece
 
 [source,shell]
 ----
-https start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.5.4 \
+https start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.5.6 \
 artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
 type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
 
 NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version and it _should_ work. The value used here has been QA'd and is guaranteed to work.
 
-Run this command in a terminal, and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
+Run this command in a terminal and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
 
 [source,shell]
 ----
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
-You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.4&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.6&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
 [[start.spring.io]]
 .Create app with start.spring.io
@@ -272,7 +272,7 @@ In the last section, you learned how to use OIDC to authenticate a user and rece
 [source,ts]
 .src/app/shared/okta/auth.interceptor.ts
 ----
-private handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   // Only add an access token to whitelisted origins
   const allowedOrigins = ['http://localhost'];
   if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
@@ -283,7 +283,7 @@ private handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<Http
       }
     });
   }
-  return next.handle(request).toPromise();
+  return next.handle(request);
 }
 ----
 
@@ -445,8 +445,6 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
 
 Restart your Spring Boot app, and you should see the following printed to your console on startup.
 
-[big red yellow-background]*TODO: <Deepu:Question>: Shouldn't SB auto reload do that?*
-
 [source,shell]
 ----
 Note(id=1, title=Note 1, text=null, user=user)
@@ -598,7 +596,7 @@ Then, run the command below to generate CRUD screens.
 ng g angular-crud:crud-module note --style bootstrap
 ----
 
-You will see the following output.
+You will see the following output:
 
 [source,shell]
 ----
@@ -617,7 +615,7 @@ CREATE src/app/note/note-list/note-list.component.ts (1092 bytes)
 UPDATE src/app/app.module.ts (540 bytes)
 ----
 
-This schematic creates a `NotesModule`, routes, a service to communicate with the API, and list/edit screens for viewing and editing notes. If you look at the `src/app/note/note.routes.ts` file, you'll see the routes it creates.
+This schematic creates a `NotesModule`, routes a service to communicate with the API, and list/edit screens for viewing and editing notes. If you look at the `src/app/note/note.routes.ts` file, you'll see the routes it creates.
 
 [source,ts]
 ----
@@ -1007,7 +1005,7 @@ In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 E
 
 You've already implemented #4 with Okta, but what about the others?
 
-You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I like just to do it in production, so I don't need to install certificates in development.
+You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I prefer to do it in production, so I don't need to install certificates in development.
 
 CSRF protection and a CSP can be configured with Spring Security.
 
@@ -1045,11 +1043,11 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 <.> Configure a CSP that only allows local scripts
 ====
 
-Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this in https://angular.io/guide/security[Angular's Security docs].
+Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this at https://angular.io/guide/security[Angular's Security docs].
 
 In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
 
-TIP: Once you've deployed your Spring Boot app to a public URL, you can test your CSP headers are working with https://securityheaders.com/[securityheaders.com].
+TIP: Once you've deployed your Spring Boot app to a public URL, you can test if your CSP headers are working with https://securityheaders.com/[securityheaders.com].
 
 // == Learn More About Angular, Spring Boot, and Kotlin
 == Summary

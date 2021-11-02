@@ -7,7 +7,9 @@ In this section, I'll show you how to use Docker to create an image for your Ang
 .Angular + Docker with a Big Hug from Spring Boot
 image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Docker with a Big Hug from Spring Boot, 800, scaledwidth="100%"]
 
-Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app — you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
+Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app—you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
+
+// == Create an Angular + Spring Boot App
 
 If you're following along, you should have an `angular-deployment` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
 
@@ -16,8 +18,8 @@ If you'd rather start from this point, download the examples for this book from 
 **Prerequisites:**
 
 * https://docs.docker.com/install/[Docker]
-* https://nodejs.org/[Node.js] 12+
-* https://adoptopenjdk.net/[Java] 11+
+* https://nodejs.org/[Node.js] 14+
+* https://adoptium.net//[Java] 11+
 
 == Dockerize an Angular App
 
@@ -706,7 +708,7 @@ import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     ...
-    id("com.github.node-gradle.node") version "3.1.0"
+    id("com.github.node-gradle.node") version "3.1.1"
     ...
 }
 ----
@@ -718,7 +720,7 @@ Then, define the location of your Angular app and configuration for the Node plu
 val spa = "${projectDir}/../notes";
 
 node {
-    version.set("14.17.1")
+    version.set("14.18.1")
     nodeProjectDir.set(file(spa))
 }
 ----
@@ -976,7 +978,7 @@ heroku open --remote jib
 
 If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A+**!
 
-[[heroku-jib-headers]]
+[[heroku-jib-headers-a+]]
 .A+ Security Headers
 image::../images/angular-docker/heroku-jib-headers-a+.png[A+ Security Headers, 800, scaledwidth="100%"]
 
@@ -990,7 +992,7 @@ IMPORTANT: Using Knative for a monolith is probably a bit excessive. However, I 
 
 The https://knative.dev/[Knative website] says it'll make your developers more productive.
 
-> Knative components build on top of Kubernetes, abstracting away the complex details and enabling developers to focus on what matters. Built by codifying the best practices shared by successful real-world implementations, Knative solves the "boring but difficult" parts of deploying and managing cloud-native services, so you don't have to.
+> Knative components build on top of Kubernetes, abstracting away the complex details and enabling developers to focus on what matters. Built by codifying the best practices shared by successful real-world implementations, Knative solves the "`boring but difficult`" parts of deploying and managing cloud-native services, so you don't have to.
 
 You'll need a Google Cloud account for this section. Go to https://cloud.google.com/[cloud.google.com] and click **Get started for free**.
 
