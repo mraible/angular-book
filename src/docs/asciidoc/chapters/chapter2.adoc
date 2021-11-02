@@ -130,7 +130,7 @@ NOTE: You can also use the Okta Admin Console to create your app. See https://de
 
 When you create SPA apps with the Okta CLI, PKCE (Proof Key for Code Exchange) is selected by default. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
 
-TIP: To learn more about PKCE (pronounced "pixy"), see link:https://developer.okta.com/blog/2019/08/22/okta-authjs-pkce[Implement the OAuth 2.0 Authorization Code with PKCE Flow].
+TIP: To learn more about PKCE (pronounced "`pixy`"), see link:https://developer.okta.com/blog/2019/08/22/okta-authjs-pkce[Implement the OAuth 2.0 Authorization Code with PKCE Flow].
 
 Copy your client ID and your issuer URI (from the Okta CLI's output) into the following command.
 
