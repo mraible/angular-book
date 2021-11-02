@@ -3,7 +3,7 @@
 
 One of the more popular combinations of frontend and backend frameworks is Angular + Spring Boot. It's possible to combine the two—from keeping them as separate apps to combining them into a single artifact. But, what about deployment?
 
-Developers ask me from time-to-time, "What's the best way to do Angular deployment?" In this section, I'll show you several options. I'll start by showing you how to deploy a Spring Boot app to Heroku. Then, I'll show how to deploy a separate Angular app to Heroku.
+Developers ask me from time to time, "`What's the best way to do Angular deployment?`" In this section, I'll show you several options. I'll start by showing you how to deploy a Spring Boot app to Heroku. Then, I'll show how to deploy a separate Angular app to Heroku.
 
 There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
 
@@ -39,7 +39,7 @@ image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 475, scaledwidt
 
 CAUTION: If you haven't entered a credit card for your Heroku account, you will receive an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even for free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Simply add a credit card to continue.
 
-Click **Provision** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now go to your app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
+Click **Provision** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now, go to your app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
 
 [[heroku-config-vars]]
 .Okta Add-On
@@ -49,7 +49,7 @@ image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, sca
 ****
 If you already have an Okta account, you can use it too. However, the Okta add-on makes things easier because it creates SPA and Web OIDC apps on Okta for you. It automatically configures their redirect URIs for Heroku too. You can create new Okta developer accounts with the same email, so you can create as many accounts as you like!
 
-If you want to use an existing Okta account, I recommend using the https://cli.okta.com[Okta CLI]. The  CLI makes it easy to create similar OIDC apps with `okta apps create spa` and `okta apps create web`. You will need to make sure their redirect URIs match your Heroku app.
+If you want to use an existing Okta account, I recommend using the https://cli.okta.com[Okta CLI]. The CLI makes it easy to create similar OIDC apps with `okta apps create spa` and `okta apps create web`. You will need to make sure their redirect URIs match your Heroku app.
 ****
 
 Create an `.okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
@@ -124,7 +124,7 @@ Open `http://localhost:4200` in your browser.
 .Angular Home
 image::../images/angular-deployment/angular-home.png[Angular Home, 800, scaledwidth="100%"]
 
-Click the **Login** button in the top right corner. You should be logged in straight-away, since you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
+Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
 
 [[first-note-recap]]
 .First note
@@ -142,27 +142,18 @@ You're going to want to continue to develop locally—so you'll want a productio
 
 === Update Spring Boot and Angular Dependencies
 
-I'm the type of developer that likes to use the latest releases of open source libraries. I do this to take advantage of new features, performance optimizations, and security fixes.
+I'm the type of developer that likes to use the latest releases of open-source libraries. I do this to take advantage of new features, performance optimizations, and security fixes.
 
 There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradle Use Latest Versions Plugin] that provides a task to update dependencies to the latest version. Configure it by adding the following to the `plugins` block at the top of `notes-api/build.gradle.kts`.
 
 [source,kotlin]
 ----
 plugins {
-    id("se.patrikerdes.use-latest-versions") version "0.2.17"
-    id("com.github.ben-manes.versions") version "0.38.0"
+    id("se.patrikerdes.use-latest-versions") version "0.2.18"
+    id("com.github.ben-manes.versions") version "0.39.0"
     ...
 }
 ----
-
-////
-For compatibility with Spring Boot 2.3, you'll need to update the Gradle Wrapper to use Gradle 6.3+.
-
-[source,shell]
-----
-./gradlew wrapper --gradle-version=6.5 --distribution-type=bin
-----
-////
 
 Then run the following command in the `notes-api` directory to update your dependencies to the latest released versions.
 
@@ -285,7 +276,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   ...
 
-  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const allowedOrigins = [environment.apiUrl];
     ...
   }
@@ -345,7 +336,6 @@ tasks.processResources {
     rename("application-${profile}.properties", "application.properties")
 }
 ----
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Why is the rename required, spring should automatically pickup the correct file based on active profile right?*
 
 Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it will persist to disk, which retains data through restarts.
 
@@ -480,7 +470,7 @@ To test your profiles, start PostgreSQL using Docker Compose.
 docker-compose -f src/main/docker/postgresql.yml up
 ----
 
-CAUTION: If you have PostreSQL installed and running locally, you'll need to stop the process for Docker Compose to work.
+CAUTION: If you have PostgreSQL installed and running locally, you'll need to stop the process for Docker Compose to work.
 
 In another terminal, run your Spring Boot app.
 
@@ -512,7 +502,7 @@ Open a terminal and log in to your Heroku account.
 heroku login
 ----
 
-Heroku expects you to have one Git repo per application. However, in this particular example, there are multiple apps in the same repo. This is called a "monorepo", where many projects are stored in the same repository.
+Heroku expects you to have one Git repo per application. However, in this particular example, there are multiple apps in the same repo. This is called a "`monorepo,`" where many projects are stored in the same repository.
 
 Luckily, there's a https://elements.heroku.com/buildpacks/lstoll/heroku-buildpack-monorepo[heroku-buildpack-monorepo] that allows you to deploy multiple apps from the same repo.
 
@@ -620,7 +610,7 @@ To https://git.heroku.com/bootiful-angular.git
 Execution time: 2 min. 7 s.
 ----
 
-Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code.
+Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code:
 
 [source,kotlin]
 ----
@@ -700,7 +690,7 @@ heroku open --remote angular
 
 NOTE: If you experience any issues, you can run `heroku logs --remote angular` to see your app's log files.
 
-You won't be able to log in to your app until you modify its Login redirect URI on Okta. Log in to your Okta dashboard (tip: you can do this from the first Heroku app you created, under the **Resources** tab). Go to the **Applications** section, find your app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Login redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Logout redirect URIs.
+You won't be able to log in to your app until you modify its Login redirect URI on Okta. Log in to your Okta dashboard. (TIP: you can do this from the first Heroku app you created, under the **Resources** tab.) Go to the **Applications** section, find your app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Login redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Logout redirect URIs.
 
 You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
 
@@ -708,8 +698,6 @@ You should be able to log in now, but you won't be able to add any notes. This i
 ----
 heroku config:set ALLOWED_ORIGINS=https://$APP_NAME.herokuapp.com --remote heroku
 ----
-
-[big red yellow-background]*TODO: <Deepu:Suggestion>: The APP_NAME set on the angular app will be available on the SB app?*
 
 Now you should be able to add a note. Pat yourself on the back for a job well done!
 
@@ -838,7 +826,7 @@ UPDATE angular.json (3755 bytes)
 
 Now you can run `ng deploy` and everything should work.
 
-You'll need to add the project's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command.
+You'll need to add the project's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command:
 
 [source,shell]
 ----
@@ -924,7 +912,7 @@ git checkout master
 git checkout -b netlify
 ----
 
-Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "Hello, World" in the HTML file, then dragged the directory into my browser window.
+Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
 
 [[netlify-create-site]]
 .Netlify create site
@@ -957,9 +945,7 @@ ALLOWED_ORIGINS='https://stark-lake-39546.herokuapp.com,https://ng-notes-1337.we
 
 You'll also need to update your Okta SPA app to whitelist the URL as a login and logout redirect.
 
-[big red yellow-background]*TODO: <Deepu:Suggestion>: Do we allow multiple URLs for this purpose? with some sort of intelligent routing?*
-
-If you try to log in, you'll get a `Page Not Found` error stemming from Okta trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents.
+If you try to log in, you'll get a `Page Not Found` error stemming from Okta trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents:
 
 [source,shell]
 ----
@@ -985,7 +971,7 @@ Run `ng deploy` again and you should be able to log in successfully.
 
 If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
 
-Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "all paths under `/`".
+Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "`all paths under `/``".
 
 [source,text]
 ----
@@ -1042,7 +1028,7 @@ The Netlify schematic writes your access token to `angular.json`, which is a sec
 }
 ----
 
-I was notified of this issue by https://gitguardian.com/[GitGuardian], which we use to monitor our repos. If you check-in this change, make sure to delete the access token on Netlify.
+I was notified of this issue by https://gitguardian.com/[GitGuardian], which we use to monitor our repos. If you check in this change, make sure to delete the access token on Netlify.
 ====
 
 // todo: AWS is the most complicated, should we exclude it?
@@ -1154,7 +1140,7 @@ Go to the https://us-west-2.console.aws.amazon.com/lambda/home[Lambda Console] a
 
 Choose **Author from scratch** and name it `securityHeaders`. Under Permissions, select **Create a new role from AWS Policy templates**. Name the role `securityHeaders-role` and select **Basic Lambda@Edge permissions (for CloudFront trigger)**. Click **Create function**.
 
-In the Function code section, set `index.js` to have the following JavaScript.
+In the Function code section, set `index.js` to have the following JavaScript:
 
 [source,js]
 ----
@@ -1178,7 +1164,7 @@ exports.handler = (event, context, callback) => {
 };
 ----
 
-Click **Save** and add a trigger. Select **CloudFront** and **Deploy to Lambda@Edge**. For the distribution, use the ID of your CloudFront distribution. Set the event to be **Origin response**. Select the "I acknowledge..." checkbox and click **Deploy**.
+Click **Save** and add a trigger. Select **CloudFront** and **Deploy to Lambda@Edge**. For the distribution, use the ID of your CloudFront distribution. Set the event to be **Origin response**. Select the "`I acknowledge…`" checkbox and click **Deploy**.
 
 Go back to your CloudFront Console and wait for the deploy to complete.
 
