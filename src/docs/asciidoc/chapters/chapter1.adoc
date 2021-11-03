@@ -779,7 +779,8 @@ You'll want to implement `OnDestroy` and define the `ngOnDestroy` method to clea
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 export class SearchComponent implements OnInit, OnDestroy {
-...
+  ...
+
   ngOnDestroy(): void {
     if (this.sub) {
       this.sub.unsubscribe();
@@ -916,6 +917,7 @@ describe('SearchService', () => {
 
 If you run `ng test`, you will likely see some errors about the test stubs that Angular CLI created for you. You can ignore these for now.
 
+[%autofit]
 ----
 NullInjectorError: R3InjectorError(DynamicTestModule)[SearchService -> HttpClient -> HttpClient]:
   NullInjectorError: No provider for HttpClient!
