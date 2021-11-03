@@ -69,7 +69,6 @@ export class SearchComponent {
 <2> `search()` is a method that's called from the HTML's `<button>`, wired up using the `(click)` event handler.
 <3> `this.query` is a variable that's wired to `<input>` using two-way binding with `[(ngModel)]="query"`.
 
-
 TIP: Tips are shown using callouts like this.
 
 WARNING: Warnings are shown using callouts like this.

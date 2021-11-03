@@ -4,8 +4,8 @@ import { Address, Person, SearchService } from '../shared';
 import { MockActivatedRoute, MockRouter } from '../shared/search/mocks/routes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { of } from 'rxjs';
 
 describe('EditComponent', () => {
   let mockSearchService: SearchService;

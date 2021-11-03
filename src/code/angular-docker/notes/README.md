@@ -1,6 +1,6 @@
 # Notes
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.1.0.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.12.
 
 ## Development server
 

@@ -6,7 +6,7 @@ import { AuthGuard } from '@auth0/auth0-angular';
 
 const routes: Routes = [
   { path: 'search', component: SearchComponent, canActivate: [AuthGuard] },
-  { path: 'edit/:id', component: EditComponent, canActivate: [AuthGuard] },
+  { path: 'edit/:id', component: EditComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

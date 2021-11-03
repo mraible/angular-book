@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchComponent } from './search.component';
+import { MockActivatedRoute } from '../shared/search/mocks/routes';
 import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
-import { MockActivatedRoute } from '../shared/search/mocks/routes';
-import { of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,10 +18,10 @@ describe('SearchComponent', () => {
   let mockSearchService: SearchService;
   let mockActivatedRoute: MockActivatedRoute;
 
-  beforeEach((() => {
+  beforeEach(async () => {
     mockActivatedRoute = new MockActivatedRoute({term: 'nikola'});
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [SearchComponent],
       providers: [
         {provide: ActivatedRoute, useValue: mockActivatedRoute}
@@ -29,7 +29,7 @@ describe('SearchComponent', () => {
       imports: [FormsModule, RouterTestingModule, HttpClientTestingModule,
         MatListModule, MatIconModule, MatInputModule, NoopAnimationsModule]
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     // mock response
@@ -47,7 +47,7 @@ describe('SearchComponent', () => {
   });
 
   it('should search when a term is set and search() is called', () => {
-    component = fixture.debugElement.componentInstance;
+    component = fixture.componentInstance;
     component.query = 'J';
     component.search();
     expect(mockSearchService.search).toHaveBeenCalledWith('J');

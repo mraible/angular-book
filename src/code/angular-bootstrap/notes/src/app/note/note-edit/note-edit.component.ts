@@ -10,6 +10,7 @@ import { of } from 'rxjs';
   templateUrl: './note-edit.component.html'
 })
 export class NoteEditComponent implements OnInit {
+
   id!: string;
   note!: Note;
   feedback: any = {};
