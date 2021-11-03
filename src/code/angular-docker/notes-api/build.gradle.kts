@@ -2,15 +2,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
-    id("org.springframework.boot") version "2.5.4"
+    id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("se.patrikerdes.use-latest-versions") version "0.2.17"
-    id("com.github.ben-manes.versions") version "0.38.0"
-    id("com.github.node-gradle.node") version "3.1.0"
-    id("com.google.cloud.tools.jib") version "3.1.1"
-    kotlin("jvm") version "1.5.21"
-    kotlin("plugin.spring") version "1.5.21"
-    kotlin("plugin.jpa") version "1.5.21"
+    id("se.patrikerdes.use-latest-versions") version "0.2.18"
+    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.node-gradle.node") version "3.1.1"
+    id("com.google.cloud.tools.jib") version "3.1.4"
+    kotlin("jvm") version "1.5.31"
+    kotlin("plugin.spring") version "1.5.31"
+    kotlin("plugin.jpa") version "1.5.31"
 }
 
 group = "com.okta.developer"
@@ -20,7 +20,7 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 val spa = "${projectDir}/../notes";
 
 node {
-    version.set("14.17.1")
+    version.set("14.18.1")
     nodeProjectDir.set(file(spa))
 }
 
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.okta.spring:okta-spring-boot-starter:2.1.1")
+    implementation("com.okta.spring:okta-spring-boot-starter:2.1.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     if (project.hasProperty("prod")) {
