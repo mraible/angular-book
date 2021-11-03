@@ -1387,7 +1387,8 @@ Check it in on a branch, create a pull request for that branch, and you should s
 If you've checked your project into source control, you can use Jenkins to automate testing.
 
 . Create a `Jenkinsfile` in the root directory and commit/push it.
-
++
+[source,groovy]
 ----
 node {
     def nodeHome = tool name: 'node-14.x', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
@@ -1417,7 +1418,6 @@ node {
 }
 ----
 
-[start=2]
 . Install https://www.jenkins.io/download/[Jenkins] on your hard drive and start it:
 
   java -jar jenkins.war
@@ -1432,8 +1432,6 @@ node {
 This section shows you how to deploy an Angular app to https://heroku.com[Heroku].
 
 https://signup.heroku.com/[Create a Heroku account], https://devcenter.heroku.com/articles/heroku-cli[install the heroku CLI], and run `heroku login`.
-
-Then run the following commands to build and deploy your application.
 
 Run `heroku create` to create an app on Heroku.
 
@@ -1465,7 +1463,7 @@ NOTE: In this code, you might notice that some https URLs are allowed in the con
 
 For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack].
 
-Commit your changes to Git, add the Node.js + static buildpack, and deploy your Angular app.
+Commit your changes to Git, add the Node.js + static buildpack, and deploy your Angular app using `git push`.
 
 [source,shell]
 ----
@@ -1525,7 +1523,7 @@ You'll also need to change its test to look for `nav` instead of `h1`.
 expect(compiled.querySelector('nav')?.textContent).toContain('Welcome to ng-demo!');
 ----
 
-Update `search.component.html` to add a top margin to the H2, make the form inline, and add classes to input/button/table elements.
+Update `search.component.html` to add a top margin to the H2, put the form in a grid layout, and add classes to input/button/table elements.
 
 [source,html]
 .src/app/search/search.component.html
@@ -1657,7 +1655,7 @@ Then, change your HTML templates to use Material components. For example, change
 <mat-toolbar>Welcome to {{ title }}!</mat-toolbar>
 ----
 
-You'll also need to change its test to import Material modules and look for `mat-toolbar` instead of `h1`.
+You'll also need to change this component's test to import Material modules and look for `mat-toolbar` instead of `h1`.
 
 [source,typescript]
 .src/app/app.component.spec.ts
@@ -1683,7 +1681,7 @@ describe('AppComponent', () => {
   ...
   it('should render title', () => {
      ...
-     expect(compiled.querySelector('mat-toolbar').textContent).toContain('Welcome to ng-demo!');
+     expect(compiled.querySelector('mat-toolbar')?.textContent).toContain('Welcome to ng-demo!');
   });
 }
 ----
