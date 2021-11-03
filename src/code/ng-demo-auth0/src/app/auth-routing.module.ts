@@ -7,7 +7,7 @@ import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 
 const config = {
   domain: 'dev-0ua1y-go.us.auth0.com',
-  clientId: '00fBLpy4byv3Wn8awn3FGXEWtoSioRS8',
+  clientId: '9h0lqythk8bUzlqYsF7Di89x6TCVC0MV',
   redirectUri: window.location.origin + '/home',
   httpInterceptor: {
     allowedList: ['/api/*']

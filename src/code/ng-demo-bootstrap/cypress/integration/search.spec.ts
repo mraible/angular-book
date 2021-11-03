@@ -1,7 +1,7 @@
 describe('Search', () => {
 
   beforeEach(() => {
-    cy.visit('/')
+    cy.visit('/search')
   });
 
   it('should have an input and search button', () => {
