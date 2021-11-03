@@ -1540,7 +1540,7 @@ Update `search.component.html` to add a top margin to the H2, make the form inli
     <button type="button" (click)="search()" class="btn btn-primary">Search</button>
   </div>
 </form>
-<table *ngIf="searchResults" class="table">
+<table *ngIf="searchResults?.length" class="table">
   <thead>
   <tr>
     <th>Name</th>
@@ -1885,8 +1885,7 @@ After making these changes, you should be able to run `ng serve` and see a login
 
 [[auth0-login-button]]
 .Auth0 login button
-image::../images/ng-demo/
-[Login button, 800, scaledwidth="100%"]
+image::../images/ng-demo/auth0-login-button.png[Login button, 800, scaledwidth="100%"]
 
 Click the *Login* button and sign in with one of the users that's configured in your Auth0 application or sign up as a new user.
 
