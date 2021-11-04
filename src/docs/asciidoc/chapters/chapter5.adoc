@@ -5,9 +5,8 @@ Docker is a software platform for building, testing, and deploying applications 
 
 You'll learn how to use a `Dockerfile` to create an image for your Angular app and deploy it to Heroku. Then, I'll show how to combine Angular and Spring Boot into the same JAR artifact for deployment. You'll learn how to Dockerize the combined apps using Jib and Cloud Native Buildpacks. Finally, I'll show you how to deploy your Docker image to Heroku and Knative on Google Cloud.
 
-[[angular-docker-spring-boot-hug]]
 .Angular + Docker with a Big Hug from Spring Boot
-image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Docker with a Big Hug from Spring Boot, 800, scaledwidth="100%"]
+image::../images/angular-docker/angular-docker-spring-boot-hug.png[Angular + Docker with a Big Hug from Spring Boot, 800, scaledwidth="100%", align=center]
 
 Docker is the most popular way to build and share containers. _Dockerizing_ involves packaging your app—you can also include web servers to serve up your app. This is important when containerizing an Angular app because its artifacts are just JavaScript, CSS, and HTML; the production app is static files that will need to be served up by some sort of web server. As an added bonus, you can configure the web server to send security headers that make your app more secure.
 
@@ -134,9 +133,8 @@ npm run ng-notes
 
 Open your browser to `http://localhost:4200`, log in, and confirm you can add notes.
 
-[[first-note-on-heroku]]
 .First Note on Heroku
-image::../images/angular-docker/first-note-on-heroku.png[First Note on Heroku, 800, scaledwidth="100%"]
+image::../images/angular-docker/first-note-on-heroku.png[First Note on Heroku, 800, scaledwidth="100%", align=center]
 
 Verify the data made it to Heroku by going to `\https://<your-heroku-app>.herokuapp.com/api/notes`.
 
@@ -291,9 +289,8 @@ heroku container:release web --remote docker
 
 Now you should get an **A**!
 
-[[angular-docker-securityheaders]]
 .Nginx in Docker score from securityheaders.com
-image::../images/angular-docker/angular-docker-securityheaders.png[Nginx in Docker score from securityheaders.com, 800, scaledwidth="100%"]
+image::../images/angular-docker/angular-docker-securityheaders.png[Nginx in Docker score from securityheaders.com, 800, scaledwidth="100%", align=center]
 
 Commit your changes to Git.
 
@@ -1003,9 +1000,8 @@ heroku open --remote jib
 
 If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A+**!
 
-[[heroku-jib-headers-a]]
 .Security Headers with Jib
-image::../images/angular-docker/heroku-jib-headers-a.png[A+ Security Headers, 800, scaledwidth="100%"]
+image::../images/angular-docker/heroku-jib-headers-a.png[A Security Headers with Jib, 800, scaledwidth="100%", align=center]
 
 === Knative with Spring Boot + Docker
 
@@ -1314,9 +1310,8 @@ You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redir
 
 Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
 
-[[knative-works]]
 .Angular + Spring Boot in Docker running on Knative
-image::../images/angular-docker/knative-works.png[Angular + Spring Boot in Docker running on Knative, 800, scaledwidth="100%"]
+image::../images/angular-docker/knative-works.png[Angular + Spring Boot in Docker running on Knative, 800, scaledwidth="100%", align=center]
 
 [CAUTION]
 ====
@@ -1358,9 +1353,8 @@ docker-compose -f src/main/docker/app.yml up
 
 You should be able to navigate to `http://localhost:8080`, log in, and add notes.
 
-[[spring-boot-2.5-notes]]
 .Spring Boot 2.5 app running
-image::../images/angular-docker/spring-boot-2.5-notes.png[Spring Boot 2.5 app running, 800, scaledwidth="100%"]
+image::../images/angular-docker/spring-boot-2.5-notes.png[Spring Boot 2.5 app running, 800, scaledwidth="100%", align=center]
 
 Pretty neat, don't you think!?
 

@@ -23,7 +23,7 @@ You might think that Angular Material is more popular than Bootstrap these days.
 
 .What's your preferred CSS framework with Angular?
 [link=https://twitter.com/mraible/status/1196894737870938113]
-image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%"]
+image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%", align=center]
 
 == Integrate Bootstrap with Angular
 
@@ -63,9 +63,8 @@ This process will import `NgbModule` in `app.module.ts` and configure your app t
 
 If you run `ng serve -o`, you'll see it's pretty simple. And kinda ugly.
 
-[[notes-bare-bones]]
 .Bare-bones styling
-image::../images/angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwidth="100%", align=center]
 
 Let's fix that!
 
@@ -113,15 +112,13 @@ Begin by changing `app.component.html` to use Bootstrap classes.
 
 Now we're getting somewhere!
 
-[[notes-default-style]]
 .Slightly styled
-image::../images/angular-bootstrap/notes-default-style.png[Slightly styled, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-default-style.png[Slightly styled, 800, scaledwidth="100%", align=center]
 
 Enter a note and you'll see it in the list.
 
-[[first-note]]
 .First note
-image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%", align=center]
 
 You'll notice it looks _pretty good_, but things aren't quite _beautiful_. Yet...
 
@@ -200,9 +197,8 @@ Then import this file at the top of `src/styles.scss`:
 
 You'll see the colors change after these updates.
 
-[[bootstrap-sass]]
 .Customized Bootstrap variables
-image::../images/angular-bootstrap/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/bootstrap-sass.png[Customized Bootstrap variables, 800, scaledwidth="100%", align=center]
 
 Comment out (or remove) the variables in `_variables.scss` to revert to Bootstrap's default colors.
 
@@ -290,17 +286,15 @@ Remove the login and logout buttons from `home.component.html`:
 
 Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
 
-[[notes-with-navbar]]
 .Notes app with navbar
-image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 800, scaledwidth="100%", align=center]
 
 === Fix Bootstrap's Responsive Menu
 
 If you reduce the width of your browser window, you'll see the menu collapse to take up less real estate.
 
-[[navbar-squished]]
 .Navbar squished
-image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%"]
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%", align=center]
 
 However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
@@ -332,9 +326,8 @@ export class AppComponent {
 
 Now, you'll be able to toggle the menu!
 
-[[notes-menu]]
 .Squished navbar with menu
-image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%", align=center]
 
 === Refactor Unit Tests to Pass
 
@@ -398,9 +391,8 @@ Modify the `note-list.component.html` so the search form is all on one line.
 
 That looks better!
 
-[[styled-notes-list]]
 .Styled Notes List
-image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwidth="100%", align=center]
 
 === Add Validation and Bootstrap to the Note Edit Template
 
@@ -446,9 +438,8 @@ The following HTML will add floating labels to your form using the `form-floatin
 
 That's an improvement!
 
-[[styled-notes-form]]
 .Styled Notes Form
-image::../images/angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%", align=center]
 
 To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
 
@@ -469,15 +460,13 @@ You might notice the expression on the `[ngClass]` attribute. This adds CSS clas
 
 Now when you add a new note, it'll let you know that it requires a title.
 
-[[notes-edit-required-title]]
 .Title is required
-image::../images/angular-bootstrap/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%", align=center]
 
 If you give it focus and leave, it'll add a red border around the field.
 
-[[notes-edit-red-outline]]
 .Dirty title validation decoration
-image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title validation decoration, 800, scaledwidth="100%", align=center]
 
 == Add a Data Table with Searching, Sorting, and Pagination
 
@@ -758,9 +747,8 @@ _Make sure to replace `<your username>` with the email address you use to log in
 
 Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
 
-[[notes-list-with-sorting]]
 .Notes list with sorting
-image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%", align=center]
 
 === Add Pagination with Angular and Bootstrap
 
@@ -898,9 +886,8 @@ export class NoteService {
 
 Now your note list should have a working pagination feature at the bottom. Pretty slick, eh?
 
-[[notes-list-with-pagination]]
 .Notes with pagination
-image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-list-with-pagination.png[Notes with pagination, 800, scaledwidth="100%", align=center]
 
 == Angular + Bootstrap + Spring Boot = JHipster
 
@@ -952,9 +939,8 @@ docker-compose -f src/main/docker/elasticsearch.yml up -d
 
 Then, run `npm run e2e` in another terminal window to verify everything works. Here's a screenshot of the app's Notes form with validation.
 
-[[khipster-notes]]
 .KHipster Notes
-image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%", align=center]
 
 TIP: Want to make JHipster work with Okta or Auth0? See https://www.jhipster.tech/security/[JHipster's security documentation].
 

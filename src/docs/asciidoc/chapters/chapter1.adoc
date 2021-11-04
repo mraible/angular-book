@@ -111,9 +111,8 @@ ng serve
 
 You should see a screen like the one below at `http://localhost:4200`.
 
-[[default-homepage]]
 .Default homepage
-image::../images/ng-demo/default-homepage.png[Default Homepage, 800, scaledwidth="100%"]
+image::../images/ng-demo/default-homepage.png[Default Homepage, 800, scaledwidth=100%, align=center]
 
 You can make sure your new project's tests pass, run `ng test`:
 
@@ -218,9 +217,8 @@ export class AppModule { }
 
 Run `ng serve` again and now you should be able to see the search form when you visit `http://localhost:4200/search`.
 
-[[search-component]]
 .Search component
-image::../images/ng-demo/search-without-css.png[Search component, 800, scaledwidth="100%"]
+image::../images/ng-demo/search-without-css.png[Search component, 800, scaledwidth="100%", align=center]
 
 If yours looks different, it's because I trimmed my `app.component.html` to the bare minimum.
 
@@ -495,9 +493,8 @@ td {
 
 Now the search results look better.
 
-[[search-results]]
 .Search results
-image::../images/ng-demo/search-results.png[Search Results, 800, scaledwidth="100%"]
+image::../images/ng-demo/search-results.png[Search Results, 800, scaledwidth="100%", align=center]
 
 But wait, you still don't have search functionality! To add a search feature, add a `search()` method to `SearchService`.
 
@@ -730,9 +727,8 @@ button {
 
 At this point, you should be able to search for a person and update their information.
 
-[[edit-form]]
 .Edit component
-image::../images/ng-demo/edit-form.png[Edit form, 800, scaledwidth="100%"]
+image::../images/ng-demo/edit-form.png[Edit form, 800, scaledwidth="100%", align=center]
 
 The `<form>` in `src/app/edit/edit.component.html` calls a `save()` function to update a person's data. You already implemented this above. The function calls a `gotoList()` function that appends the person's name to the URL when sending the user back to the search screen.
 
@@ -821,9 +817,8 @@ You'll also need to wrap everything in a `<form>` element. Add `<form>` after th
 
 After making these changes, the name field will be required.
 
-[[edit-form-required]]
 .Edit form with validation
-image::../images/ng-demo/edit-form-validation.png[Edit form with validation, 800, scaledwidth="100%"]
+image::../images/ng-demo/edit-form-validation.png[Edit form with validation, 800, scaledwidth="100%", align=center]
 
 In this screenshot, you might notice the address fields are blank and the save button is enabled. This is explained by the error in your console.
 
@@ -849,9 +844,8 @@ To fix this, add a `name` attribute to all the address fields. For example:
 
 Now values display in all fields, `name` is required, and save is enabled.
 
-[[edit-form-names]]
 .Edit form with names and validation
-image::../images/ng-demo/edit-form-names.png[Edit form with names and validation, 800, scaledwidth="100%"]
+image::../images/ng-demo/edit-form-names.png[Edit form with names and validation, 800, scaledwidth="100%", align=center]
 
 To learn more about forms and validation, see https://angular.io/guide/form-validation[Angular's Validating form input documentation].
 
@@ -1185,9 +1179,8 @@ describe('Home', () => {
 
 Then, run `ng e2e`. This will compile your app, start in on `http://localhost:4200`, and launch the Cypress app.
 
-[[cypress-app]]
 .Cypress App
-image::../images/ng-demo/cypress-app.png[Cypress App, 800, scaledwidth="100%"]
+image::../images/ng-demo/cypress-app.png[Cypress App, 800, scaledwidth="100%", align=center]
 
 If you click on the file name, it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more. You can learn more about Cypress' features at https://armno.in.th/2020/02/26/cypress-angular-integration-testing/[Setting up Cypress for an Angular Project].
 
@@ -1301,9 +1294,8 @@ describe('Edit', () => {
 
 With your app running, execute `npm run cypress:run` to verify all your end-to-end tests pass. You should see a success message similar to the one below in your terminal window.
 
-[[cypress-success]]
 .Cypress success
-image::../images/ng-demo/cypress-success.png[Cypress success, 800, scaledwidth="100%"]
+image::../images/ng-demo/cypress-success.png[Cypress success, 800, scaledwidth="100%", align=center]
 
 If you made it this far and have all your specs passing—congratulations! You're well on your way to writing quality code with Angular and verifying it works.
 
@@ -1324,9 +1316,8 @@ You can also open `coverage/ng-demo/index.html` in your browser.
 
 You might notice that the `EditComponent` could use some additional coverage. If you feel the need to improve this coverage, please create a pull request!
 
-[[test-coverage]]
 .Test coverage
-image::../images/ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%"]
+image::../images/ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%", align=center]
 
 == Continuous Integration
 
@@ -1610,9 +1601,8 @@ Make similar changes to `edit.component.html`:
 
 After modifying your templates, the edit screen will look as follows:
 
-[[bootstrap4]]
 .Bootstrap 5
-image::../images/ng-demo/bootstrap5.png[Bootstrap 5, 800, scaledwidth="100%"]
+image::../images/ng-demo/bootstrap5.png[Bootstrap 5, 800, scaledwidth="100%", align=center]
 
 == Styling with Angular Material
 
@@ -1820,9 +1810,8 @@ describe('EditComponent', () => {
 
 After completing these changes, the edit screen will look as follows:
 
-[[angular-material]]
 .Angular Material
-image::../images/ng-demo/angular-material.png[Angular Material, 800, scaledwidth="100%"]
+image::../images/ng-demo/angular-material.png[Angular Material, 800, scaledwidth="100%", align=center]
 
 Run `npm test` to confirm your unit tests pass.
 
@@ -1895,15 +1884,13 @@ it('should render title', () => {
 
 After making these changes, you should be able to run `ng serve` and see a login button at `http://localhost:4200/home`.
 
-[[auth0-login-button]]
 .Auth0 login button
-image::../images/ng-demo/auth0-login-button.png[Login button, 800, scaledwidth="100%"]
+image::../images/ng-demo/auth0-login-button.png[Login button, 800, scaledwidth="100%", align=center]
 
 Click the *Login* button and sign in with one of the users that's configured in your Auth0 application or sign up as a new user.
 
-[[auth0-login-form]]
 .Auth0 login form
-image::../images/ng-demo/auth0-login-form.png[Auth0 login form, 800, scaledwidth="100%"]
+image::../images/ng-demo/auth0-login-form.png[Auth0 login form, 800, scaledwidth="100%", align=center]
 
 ==== Display Authenticated User's Name
 
@@ -1926,9 +1913,8 @@ Modify `home.component.html` to display a welcome message to the user and provid
 
 Refresh your app, and you should see your name with a link to *Search*.
 
-[[auth0-post-login]]
 .View after login
-image::../images/ng-demo/auth0-post-login.png[View after login, 800, scaledwidth="100%"]
+image::../images/ng-demo/auth0-post-login.png[View after login, 800, scaledwidth="100%", align=center]
 
 If you log out and manually navigate to `http://localhost:4200/search`, you'll be required to log in.
 
