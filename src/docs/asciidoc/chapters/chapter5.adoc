@@ -1128,7 +1128,7 @@ And configure free TLS certificate issuing with https://letsencrypt.org/[Let's E
 [source,shell]
 ----
 kubectl apply -f - <<EOF
-apiVersion: cert-manager.io/v1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-http01-issuer
@@ -1195,9 +1195,6 @@ metadata:
   name: postgres
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      service: postgres
   template:
     metadata:
       labels:
@@ -1236,7 +1233,7 @@ spec:
   selector:
     service: postgres
 ---
-apiVersion: serving.knative.dev/v1
+apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
   name: bootiful-angular
@@ -1266,7 +1263,7 @@ Once the deployment has completed, run the command below to change it so Hiberna
 [source,shell]
 ----
 kubectl apply -f - <<EOF
-apiVersion: serving.knative.dev/v1
+apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
   name: bootiful-angular
@@ -1306,12 +1303,15 @@ The result should look similar to this:
 [source,shell]
 ----
 NAME               URL                                                    LATESTCREATED            LATESTREADY              READY   REASON
-bootiful-angular   https://bootiful-angular.default.34.70.42.153.nip.io   bootiful-angular-qf9hn   bootiful-angular-qf9hn   True
+bootiful-angular   https://bootiful-angular.default.35.232.41.220.nip.io   bootiful-angular-rwz7g   bootiful-angular-rwz7g   True
 ----
 
-You'll need to add this URL (+ `/login/oauth2/code/okta`) as a **Sign-in redirect URI** and a **Sign-out redirect URI** in the Okta Admin Console in order to log in.
+You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redirect URI** to the `Web` app in the Okta Admin Console in order to log in.
 
-Then, you'll be able to log into your app running on Knative! Add a note or two to prove it all works.
+- Sign-in redirect: `\https://bootiful-angular.default.35.232.41.220.nip.io/login/oauth2/code/okta`
+- Sign-out redirect: `\https://bootiful-angular.default.35.232.41.220.nip.io`
+
+Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
 
 [[knative-works]]
 .Angular + Spring Boot in Docker running on Knative
