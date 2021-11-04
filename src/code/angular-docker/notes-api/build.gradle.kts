@@ -4,28 +4,28 @@ import com.github.gradle.node.npm.task.NpxTask
 plugins {
     id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.6.0-RC2"
+    kotlin("plugin.spring") version "1.6.0-RC2"
+    kotlin("plugin.jpa") version "1.6.0-RC2"
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
     id("com.github.ben-manes.versions") version "0.39.0"
     id("com.github.node-gradle.node") version "3.1.1"
     id("com.google.cloud.tools.jib") version "3.1.4"
-    kotlin("jvm") version "1.5.31"
-    kotlin("plugin.spring") version "1.5.31"
-    kotlin("plugin.jpa") version "1.5.31"
 }
 
 group = "com.okta.developer"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
+repositories {
+    mavenCentral()
+}
+
 val spa = "${projectDir}/../notes";
 
 node {
     version.set("14.18.1")
     nodeProjectDir.set(file(spa))
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -57,7 +57,8 @@ tasks.withType<Test> {
 
 val buildWeb = tasks.register<NpxTask>("buildNpm") {
     dependsOn(tasks.npmInstall)
-    command.set("build")
+    command.set("ng")
+    args.set(listOf("build"))
     inputs.dir("${spa}/src")
     inputs.dir(fileTree("${spa}/node_modules").exclude("${spa}/.cache"))
     outputs.dir("${spa}/dist")

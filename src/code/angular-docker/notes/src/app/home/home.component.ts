@@ -7,12 +7,15 @@ import { AuthService } from '../shared/auth.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  isAuthenticated: boolean = false;
+  isAuthenticated!: boolean;
 
   constructor(public auth: AuthService) {
   }
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
+    this.auth.$authenticationState.subscribe(
+      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
+    );
   }
 }

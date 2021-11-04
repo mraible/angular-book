@@ -2,7 +2,7 @@ import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { NoteFilter } from '../note-filter';
 import { NoteService } from '../note.service';
 import { Note } from '../note';
-import { SortableHeaderDirective, SortEvent} from './sortable.directive';
+import { SortableHeaderDirective, SortEvent } from './sortable.directive';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,12 +10,12 @@ import { Observable } from 'rxjs';
   templateUrl: 'note-list.component.html'
 })
 export class NoteListComponent implements OnInit {
-  total$!: Observable<any>;
-  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
 
+  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
   filter = new NoteFilter();
   selectedNote!: Note;
   feedback: any = {};
+  total$!: Observable<any>;
 
   get noteList(): Note[] {
     return this.noteService.noteList;
@@ -31,32 +31,6 @@ export class NoteListComponent implements OnInit {
   search(): void {
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
-  }
-
-  onChange(pageSize: number) {
-    this.filter.size = pageSize;
-    this.filter.page = 0;
-    this.search();
-  }
-
-  onPageChange(page: number) {
-    this.filter.page = page - 1;
-    this.search();
-    this.filter.page = page;
-  }
-
-  onSort({column, direction}: SortEvent) {
-    // reset other headers
-    this.headers.forEach(header => {
-      if (header.sortable !== column) {
-        header.direction = '';
-      }
-    });
-
-    this.filter.column = column;
-    this.filter.direction = direction;
-    this.filter.page = 0;
-    this.search();
   }
 
   select(selected: Note): void {
@@ -76,5 +50,30 @@ export class NoteListComponent implements OnInit {
         }
       );
     }
+  }
+
+  onChange(pageSize: number) {
+    this.filter.size = pageSize;
+    this.filter.page = 0;
+    this.search();
+  }
+
+  onPageChange(page: number) {
+    this.filter.page = page - 1;
+    this.search();
+  }
+
+  onSort({column, direction}: SortEvent) {
+    // reset other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
+
+    this.filter.column = column;
+    this.filter.direction = direction;
+    this.filter.page = 0;
+    this.search();
   }
 }

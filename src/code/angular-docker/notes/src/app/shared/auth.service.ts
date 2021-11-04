@@ -20,7 +20,9 @@ export class AuthService {
   getUser(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <1>
       map((response: User) => {
-        this.$authenticationState.next(true);
+        if (response !== null) {
+          this.$authenticationState.next(true);
+        }
         return response;
       })
     );

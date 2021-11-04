@@ -9,6 +9,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher
 
 @EnableWebSecurity
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+
     override fun configure(http: HttpSecurity) {
         //@formatter:off
         http
@@ -22,19 +23,19 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .oauth2ResourceServer().jwt()
 
         http.requiresChannel()
-                .requestMatchers(RequestMatcher {
+            .requestMatchers(RequestMatcher {
                     r -> r.getHeader("X-Forwarded-Proto") != null
-                }).requiresSecure()
+            }).requiresSecure()
 
         http.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
         http.headers()
-                .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/")
+            .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
                 .and()
-                .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
+            .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
                 .and()
-                .featurePolicy("accelerometer 'none'; camera 'none'; microphone 'none'")
+            .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
         //@formatter:on
     }

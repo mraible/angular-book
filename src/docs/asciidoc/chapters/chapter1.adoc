@@ -543,7 +543,7 @@ Error: src/app/search/search.component.ts:18:31 - error TS2345:
 
 Since `query` will always be assigned (even if it's empty), change its variable declaration to:
 
-[source,ts]
+[source,typescript]
 ----
 query!: string; // query: string = ''; will also work
 ----
@@ -871,7 +871,7 @@ TIP: You can use `x` and `f` prefixes in front of `describe` and `it` functions 
 
 If you changed the `app.component.html` template as I did, you'll need to modify `app.component.spec.ts` to account for the change in HTML. Change its last test to look for an `<h1>` element and the welcome message inside it.
 
-[source,ts]
+[source,typescript]
 .src/app/app/app.component.spec.ts
 ----
 it('should render title', () => {
@@ -1171,7 +1171,7 @@ When prompted to proceed and use Cypress for `ng e2e`, answer "`Yes`".
 
 This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Rename `cypress/integration/spec.ts` to `home.spec.ts` and change it to look for the title of your app.
 
-[source,ts]
+[source,typescript]
 .cypress/integration/home.spec.ts
 ----
 describe('Home', () => {
@@ -1857,7 +1857,7 @@ This process will perform the following steps for you:
 
 In addition to these changes, remove the default route from `app-routing.ts` and add a route guard to the `/search` and `/edit` routes.
 
-[source,ts]
+[source,typescript]
 .src/app/app-routing.ts
 ----
 import { AuthGuard } from '@auth0/auth0-angular';
@@ -1879,6 +1879,18 @@ const routes: Routes = [
     component: HomeComponent
   }
 ];
+----
+
+You'll also need to update the `app.component.spec.ts` file's last test to look for the correct welcome message.
+
+[source,typescript]
+----
+it('should render title', () => {
+  const fixture = TestBed.createComponent(AppComponent);
+  fixture.detectChanges();
+  const compiled = fixture.nativeElement as HTMLElement;
+  expect(compiled.querySelector('h1')?.textContent).toContain('Welcome to ng-demo!');
+});
 ----
 
 After making these changes, you should be able to run `ng serve` and see a login button at `http://localhost:4200/home`.

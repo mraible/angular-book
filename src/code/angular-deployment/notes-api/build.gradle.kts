@@ -3,13 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.6.0-RC2"
+    kotlin("plugin.spring") version "1.6.0-RC2"
+    kotlin("plugin.jpa") version "1.6.0-RC2"
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
     id("com.github.ben-manes.versions") version "0.39.0"
-    id("com.github.node-gradle.node") version "3.1.1"
-    id("com.google.cloud.tools.jib") version "3.1.4"
-    kotlin("jvm") version "1.5.31"
-    kotlin("plugin.spring") version "1.5.31"
-    kotlin("plugin.jpa") version "1.5.31"
 }
 
 group = "com.okta.developer"
