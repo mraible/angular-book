@@ -1,9 +1,84 @@
-This is information that InfoQ will request from you for your book’s landing page.
+This is information that InfoQ will request from you for your book's landing page.
 
 Book Abstract:
 
+The Angular Mini-Book is a guide to getting started with Angular. You'll learn how to develop a bare-bones application, test it, and deploy it. Then you'll move on to adding Bootstrap, Angular Material, continuous integration, and authentication. Spring Boot is a popular framework for building REST APIs. You'll learn how to integrate Angular with Spring Boot and use security best practices like HTTPS and a content security policy.
+
+This initial edition (v1.0) uses Angular 12 and Spring Boot 2.5. I do plan on updating it for Angular 13 and Spring Boot 2.6. If you have any tips for upgrading, please let me know!
+
+Follow @mraible on Twitter for book updates.
+
 Purpose of the book:
+
+I think building web and mobile applications with Angular, Bootstrap, and Spring Boot is a great experience. I'd like to encourage more developers to try it.
 
 Table of Contents:
 
+The Angular Mini-Book
+Dedication
+Acknowledgments
+Preface
+Introduction
+Build an Angular App
+    A Brief History of Angular
+    Create a new Angular project
+    Unit and End-to-End Testing
+    Continuous Integration
+    Deployment to Heroku
+    Styling with Bootstrap
+    Styling with Angular Material
+    Add Auth with OpenID Connect
+    Summary
+Integrate Angular with Spring Boot
+    What’s New in Angular?
+    What’s New in Spring Boot?
+    Create an Angular App
+    Create a Spring Boot App
+    CRUD in Angular
+    Mocking Spring Security’s OIDC Configuration
+    Security Patterns for Spring Boot
+    Summary
+Beautiful Angular Apps with Bootstrap
+    Angular Loves Bootstrap
+    Integrate Bootstrap with Angular
+    Make Your Angular App Beautiful with Bootstrap
+    Add a Data Table with Searching, Sorting, and Pagination
+    Angular + Bootstrap + Spring Boot = JHipster
+    Summary
+Angular Deployment
+    Create an Angular + Spring Boot App
+    Deploy Angular to Heroku with Secure Headers
+    Use ng deploy with Firebase, Netlify, and AWS
+Summary
+    Angular and Docker
+    Dockerize an Angular App
+    Combine Angular and Spring Boot in a Single Artifact
+    Build a Docker Image with Jib
+    Run via Docker on Heroku and Knative
+    Use Cloud Native Buildpacks to Build Docker Images
+    Summary
+Action!
+    Additional reading
+    Folks to follow
+About the author
+
 Author Bio:
+
+Matt Raible is a web developer, Java Champion, and developer advocate @oktadev with a passion for skiing, mountain biking, classic VWs, and good 🍺. He drives a '66 21-window and a '90 Syncro Westy. He's made in Montana and resides in Centennial, Colorado with his fabulous family.
+
+https://www.flickr.com/photos/mraible/16900780428
+
+Back Cover:
+
+Building an app with web technologies can be scary if you've never done it before. Should you use plain ol' JavaScript with jQuery or a full-featured framework like Angular? Angular com
+
+The things you need to do to set up a new software project can be daunting. First, you have to select the back-end framework to create your API, choose your database, set up security, and choose your build tool. Then you have to choose the tools to create your front end: select a UI framework, configure a build tool, set up Sass processing, configure your browser to auto-refresh when you make changes, and configure the client and server so they work in unison. If you’re building a new application using Spring Boot and Angular, you can save days by using JHipster.
+
+JHipster generates a complete and modern web app, unifying:
+
+* A high-performance and robust Java stack on the server side with Spring Boot
+* A sleek, modern, mobile-first front-end with Angular and Bootstrap
+* A robust microservice architecture with the JHipster Registry, Netflix OSS, the ELK stack, and Docker
+* A powerful workflow to build your application with Yeoman, Webpack, and Maven/Gradle
+
+JHipster is a treasure trove of information of how to build modern web applications and microservice architectures. It can turn any curious and willing developer into a Java Hipster!

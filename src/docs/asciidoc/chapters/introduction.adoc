@@ -1,9 +1,23 @@
 = Introduction
 
-Angular is written in TypeScript, compiles to JavaScript, and just using it makes you a hipster! Like Struts in the early 2000s and Rails in the mid-2000s, Angular and other JavaScript frameworks have changed the way developers write web applications. Today, data is exposed via REST APIs and UIs are written in JavaScript (or TypeScript). As a Java developer, I was immediately attracted to Angular when I saw its separation of concerns. It recommended organizing your application into several different components:
+Angular is a web framework that helps you build web, mobile web, native mobile, and desktop applications.
+
+Angular apps are authored in TypeScript and compile to JavaScript. They run in browser-based runtimes that have become fast and efficient over the last decade.
+
+Like Struts in the early 2000s and Rails in the mid-2000s, Angular and other JavaScript frameworks have changed the way developers write applications. Today, data is exposed via REST APIs and UIs are written in JavaScript (or TypeScript).
+
+As a Java web developer, I was immediately attracted to AngularJS when I saw its separation of concerns: controllers, services, directives for data manipulation. Then along came Angular 2.0 and changed everything. The team adopted TypeScript as its language and this refined version lives on today!
+
+The Angular team releases a major version every six months, often with backward compatibility, making for a thriving and enthusiastic open source community. Want to make your users happy? Just make it easy to upgrade!
+
+An Angular app is composed of many different building blocks:
 
 * Components: Classes that retrieve data from services and expose it to templates.
 * Services: Classes that make HTTP calls to an API.
 * Templates: HTML pages that display data from components. Use Angular directives to iterate over collections and show/hide elements.
 * Pipes: Data-manipulation tools that can transform data (e.g., uppercase, lowercase, ordering, and searching).
 * Directives: HTML processors that simplify logic in templates. Similar to JSP tags.
+
+This book shows you how to build apps with Angular and guides you through many tools, techniques, security best practices, and production deployment options.
+
+I hope you learn something from it! 😃

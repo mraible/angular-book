@@ -1,11 +1,13 @@
 = Acknowledgments
 
-I'm extremely grateful to Trish, Abbie, and Jack. They put up with my late nights and extended screen time while I worked on this book.
+I'm incredibly grateful to Trish, Abbie, and Jack. They put up with my late nights and extended screen time while I worked on this book.
 
-// thank creators of JavaScript/TypeScript and the open web
+To Miško Hevery, thank you for inventing Angular and changing the lives of frontend developers. To the whole Angular team, I appreciate you and all you do for the community. Kudos for making our apps faster with every release!
 
-// thanks to tech editors
+To Phil Webb and Dave Syer, thanks for creating Spring Boot and simplifying Java for everyone. Hats off to the whole Spring team for their tireless dedication to quality open source development. I'm excited for Spring 6.0!
 
-// thanks to Maureen!
+I want to thank this book's tech editor, Deepu K Sasidharan. I looked to him for his deep experience with both TypeScript and JavaScript. Many sections are more streamlined because of his advice!
 
-// thanks to Angular creators, it's remarkable!
+This book's copy editor, Maureen Spencer, helped correct my grammar and make this book easier on the eyes. Thanks, Maureen!
+
+Finally, my compliments to you, dear reader. It's a heckuva time to be writing code. Enjoy your learning adventures!

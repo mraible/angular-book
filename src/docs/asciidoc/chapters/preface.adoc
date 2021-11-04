@@ -21,7 +21,7 @@ We use several typographical conventions within this book that distinguish betwe
 Code in the text, including commands, variables, file names, CSS class names, and property names are shown as follows:
 
 [example]
-Spring Boot uses a `public static void main` entry-point that launches an embedded web server for you.
+The Angular CLI will create a `ng-demo` project and run `npm install` in it.
 
 A block of code is set out as follows. It may be colored, depending on the format in which you're reading this book.
 

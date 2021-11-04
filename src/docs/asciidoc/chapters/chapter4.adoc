@@ -378,8 +378,9 @@ data class Note(@Id @GeneratedValue var id: Long? = null,
 
 This will cause compilation errors and you'll need to rename method names and variables to fix them.
 
-// todo: verify this looks OK in Print, PDF, and EPUB
+ifdef::backend-html5[]
 .Click to see the diff
+endif::[]
 [%collapsible]
 ====
 [source,diff]
