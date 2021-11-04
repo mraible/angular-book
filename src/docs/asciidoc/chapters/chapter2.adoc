@@ -170,8 +170,10 @@ export class HomeComponent {
 .src/app/home/home.component.html
 ----
 <div>
-  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated" (click)="oktaAuth.signInWithRedirect()">Login</button>
-  <button *ngIf="(authService.authState$ | async)?.isAuthenticated" (click)="oktaAuth.signOut()">Logout</button>
+  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
+          (click)="oktaAuth.signInWithRedirect()">Login</button>
+  <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
+          (click)="oktaAuth.signOut()">Logout</button>
 </div>
 ----
 
@@ -917,7 +919,7 @@ If you open a new terminal window and run `./gradlew test` in the `notes-api` di
 
 To solve this problem, mock the OIDC configuration by creating a `notes-api/src/test/.../notes/MockSecurityConfiguration.kt` class.
 
-[source,kotlin]
+[source%autofit,kotlin]
 .notes-api/src/test/kotlin/com/okta/developer/notes/MockSecurityConfiguration.kt
 ----
 package com.okta.developer.notes

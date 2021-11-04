@@ -174,11 +174,11 @@ At the time of this writing, this will upgrade Angular from version ~12.2.0 to ~
 "typescript": "~4.3.5"
 ----
 
-While you're in there, change RxJS to use version `~6.6.0`.
+While you're in there, change RxJS back to its original `~6.6.0` version.
 
 [source,json]
 ----
-"typescript": "~6.6.0"
+"rxjs": "~6.6.0"
 ----
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
@@ -266,7 +266,7 @@ export const environment = {
 
 Update `auth-interceptor.ts` to use `environment.apiUrl`.
 
-[source,typescript]
+[source%autofit,typescript]
 .notes/src/app/shared/okta/auth.interceptor.ts
 ----
 import { environment } from '../../../environments/environment';

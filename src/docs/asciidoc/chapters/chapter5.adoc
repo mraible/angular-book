@@ -1,7 +1,9 @@
 [[chapter-5]]
 = Angular and Docker
 
-In this section, I'll show you how to use Docker to create an image for your Angular app and deploy it to Heroku. Then, I'll show how to combine Angular and Spring Boot into the same JAR artifact for deployment. You'll learn how to Dockerize the combined apps using Jib and Cloud Native Buildpacks. Finally, I'll show you how to deploy your Docker image to Heroku and Knative on Google Cloud.
+Docker is a software platform for building, testing, and deploying applications quickly. It enables you to separate your apps from your infrastructure so you can deliver software faster. Creating a Docker container isn't too difficult, and there are many ways to do it.
+
+You'll learn how to use a `Dockerfile` to create an image for your Angular app and deploy it to Heroku. Then, I'll show how to combine Angular and Spring Boot into the same JAR artifact for deployment. You'll learn how to Dockerize the combined apps using Jib and Cloud Native Buildpacks. Finally, I'll show you how to deploy your Docker image to Heroku and Knative on Google Cloud.
 
 [[angular-docker-spring-boot-hug]]
 .Angular + Docker with a Big Hug from Spring Boot
@@ -56,7 +58,7 @@ This allows you to skip the lengthy Angular build process.
 
 This will build your project and add Nginx as a web server. You'll need to create the `nginx.config` file to make Nginx SPA-aware.
 
-[source,config]
+[source,nginx]
 .notes/nginx.config
 ----
 server {
@@ -167,7 +169,7 @@ You'll need to update `nginx.config` so it reads from a `$PORT` environment vari
 
 Replace your `nginx.config` with the following configuration that defaults to 80 and escapes the `$uri` variable so it's not replaced with a blank value.
 
-[source,config]
+[source,nginx]
 .notes/nginx.config
 ----
 server {
@@ -232,8 +234,8 @@ heroku open --remote docker
 
 You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Okta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs:
 
-- Login: `\https://<angular-docker-app>.herokuapp.com/callback`
-- Logout: `\https://<angular-docker-app>.herokuapp.com`
+- Sign-in: `\https://<angular-docker-app>.herokuapp.com/callback`
+- Sign-out: `\https://<angular-docker-app>.herokuapp.com`
 
 You'll need to add the new app's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command.
 
@@ -255,7 +257,7 @@ Now you should be able to log in and see the note you created earlier.
 
 If you test your freshly-deployed Angular app with https://securityheaders.com/[securityheaders.com], you'll get an **F**. To solve this, modify your `nginx.config` to add security headers.
 
-[source,config]
+[source,nginx]
 .notes/nginx.conf
 ----
 server {
@@ -1060,7 +1062,7 @@ gcloud container clusters create knative \
 _You can safely ignore the warnings that result from running this command._
 
 Next, set up a cluster administrator and install Istio.
-
+// todo: update to Knative 1.0
 [source,shell]
 ----
 kubectl create clusterrolebinding cluster-admin-binding \
@@ -1297,7 +1299,6 @@ If everything works correctly, you should be able to run the following command t
 kubectl get ksvc bootiful-angular
 ----
 
-// todo: update above YAML to Knative 1.0
 The result should look similar to this:
 
 [source,shell]
@@ -1308,8 +1309,8 @@ bootiful-angular   https://bootiful-angular.default.35.232.41.220.nip.io   booti
 
 You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redirect URI** to the `Web` app in the Okta Admin Console in order to log in.
 
-- Sign-in redirect: `\https://bootiful-angular.default.35.232.41.220.nip.io/login/oauth2/code/okta`
-- Sign-out redirect: `\https://bootiful-angular.default.35.232.41.220.nip.io`
+- Sign-in: `\https://bootiful-angular.default.35.232.41.220.nip.io/login/oauth2/code/okta`
+- Sign-out: `\https://bootiful-angular.default.35.232.41.220.nip.io`
 
 Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
 

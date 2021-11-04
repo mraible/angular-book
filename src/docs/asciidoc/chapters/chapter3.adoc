@@ -22,6 +22,7 @@ Whatever you want to call it, Angular is far from dead.
 You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
 
 .What's your preferred CSS framework with Angular?
+[link=https://twitter.com/mraible/status/1196894737870938113]
 image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%"]
 
 == Integrate Bootstrap with Angular
