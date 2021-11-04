@@ -23,10 +23,10 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             }).requiresSecure() // <.>
 
         http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()); // <.>
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <.>
 
         http.headers()
-            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/"); // <.>
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
         //@formatter:on
     }
 }
