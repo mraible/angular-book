@@ -13,7 +13,7 @@ Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java d
 
 Long story short, Angular, Kotlin, and Spring Boot are a match made in heaven!
 
-[[bootiful-angular]]
+[.text-center]
 .Bootiful Angular
 image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%"]
 
@@ -98,7 +98,7 @@ ng serve
 
 Open your browser to `http://localhost:4200`, and you'll see the default homepage.
 
-[[angular-homepage]]
+[.text-center]
 .Angular default homepage
 image::../images/angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%"]
 
@@ -141,7 +141,7 @@ ng add @oktadev/schematics --issuer=$issuer --clientId=$clientId
 
 This command adds Okta's Angular SDK and configures OIDC authentication for your app.
 
-[[oktadev-schematics]]
+[.text-center]
 .OktaDev Schematics in Action
 image::../images/angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%"]
 
@@ -217,19 +217,19 @@ NOTE: You might notice that tokens are only added for `\http://localhost`. You'l
 
 Start your app again using the `ng serve` command, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
-[[angular-login-button]]
+[.text-center]
 .Login button
 image::../images/angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%"]
 
 Click on it and you'll be redirected to Okta to log in.
 
-[[angular-okta-login]]
+[.text-center]
 .Okta Login form
 image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="100%"]
 
 Enter valid credentials and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
-[[angular-logout-button]]
+[.text-center]
 .Logout button
 image::../images/angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%"]
 
@@ -261,7 +261,7 @@ unzip notes-api.zip -d angular-spring-boot/notes-api
 
 You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.6&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
-[[start.spring.io]]
+[.text-center]
 .Create app with start.spring.io
 image::../images/angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%"]
 
@@ -671,25 +671,25 @@ TIP: If you want `npm test` to pass after modifying this template, you'll need t
 
 Run `ng serve` (and make sure your Spring Boot app is running too).
 
-[[notes-login]]
+[.text-center]
 .Notes App Login
 image::../images/angular-spring-boot/notes-login.png[Notes App Login, 800, scaledwidth="100%"]
 
 Log in, and you should see a **View Notes** link.
 
-[[notes-link]]
+[.text-center]
 .Notes Link
 image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth="100%"]
 
 Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
 
-[[notes-list]]
+[.text-center]
 .Notes List
 image::../images/angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%"]
 
 Click on the **New** link to add a new note.
 
-[[notes-detail]]
+[.text-center]
 .Notes Detail
 image::../images/angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%"]
 
@@ -716,7 +716,7 @@ find(filter: NoteFilter): Observable<Note[]> {
 
 Now you'll see your notes listed. Nice work!
 
-[[notes-user-list]]
+[.text-center]
 .Notes User List
 image::../images/angular-spring-boot/notes-user-list.png[Notes User List, 800, scaledwidth="100%"]
 

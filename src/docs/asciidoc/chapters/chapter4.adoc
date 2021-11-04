@@ -7,7 +7,7 @@ Developers ask me from time to time, "`What's the best way to do Angular deploym
 
 There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
 
-[[angular-deployment-with-spring-boot]]
+[.text-center]
 .Angular Deployment with a Side of Spring Boot
 image::../images/angular-deployment/angular-deployment.png[Angular Deployment with a Side of Spring Boot, 800, scaledwidth="100%"]
 
@@ -19,7 +19,7 @@ If you'd rather start from this point, download the examples for this book from 
 
 One of the slick features of this app is its full-featured data table that allows sorting, searching, and pagination. This feature is powered by NG Bootstrap and Spring Data JPA. Below is a screenshot:
 
-[[notes-list-with-sorting-recap]]
+[.text-center]
 .Notes list with sorting
 image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 800, scaledwidth="100%"]
 
@@ -27,13 +27,13 @@ image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with s
 
 To begin, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log in to it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
 
-[[heroku-create-app]]
+[.text-center]
 .Create Heroku app
 image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%"]
 
 After creating your app, click on the **Resources** tab and add the **Okta** add-on.
 
-[[okta-add-on]]
+[.text-center]
 .Okta Add-On
 image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="100%"]
 
@@ -41,7 +41,7 @@ CAUTION: If you haven't entered a credit card for your Heroku account, you will 
 
 Click **Submit Order Form** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now, go to your app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
 
-[[heroku-config-vars]]
+[.text-center]
 .Okta Add-On
 image::../images/angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%"]
 
@@ -79,13 +79,13 @@ source .okta.env
 ====
 If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration and click on the **Browse** icon on the right-side of **Environment variables**.
 
-[[idea-edit-configuration]]
+[.text-center]
 .Edit DemoApplication Configuration
 image::../images/angular-deployment/idea-edit-configuration.png[Edit DemoApplication Configuration, 800, scaledwidth="100%"]
 
 Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Okta from IDEA!
 
-[[idea-env-variables]]
+[.text-center]
 .IntelliJ Environment Variables
 image::../images/angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="100%"]
 ====
@@ -113,13 +113,13 @@ ng serve
 
 Open `http://localhost:4200` in your browser.
 
-[[angular-home]]
+[.text-center]
 .Angular Home
 image::../images/angular-deployment/angular-home.png[Angular Home, 800, scaledwidth="100%"]
 
 Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
 
-[[first-note-recap]]
+[.text-center]
 .First note
 image::../images/angular-deployment/first-note.png[First note, 800, scaledwidth="100%"]
 
@@ -649,7 +649,7 @@ Commit this change and run `git push heroku main` to update your app on Heroku.
 
 Now when you access the app, it should say hello.
 
-[[heroku-hello]]
+[.text-center]
 .Hello, SUPER ADMIN
 image::../images/angular-deployment/heroku-hello.png[Hello, SUPER ADMIN, 800, scaledwidth="100%"]
 
@@ -781,7 +781,7 @@ git push angular main
 
 Now you'll have a security report you can be proud of!
 
-[[heroku-headers]]
+[.text-center]
 .Security Report Summary with an A
 image::../images/angular-deployment/heroku-headers.png[Security Report Summary with an A, 800, scaledwidth="100%"]
 
@@ -928,7 +928,7 @@ NOTE: You don't need to include a `Strict-Transport-Security` header because Fir
 
 Run `ng deploy` and you should get an **A** now!
 
-[[firebase-headers]]
+[.text-center]
 .Firebase app score from securityheaders.com
 image::../images/angular-deployment/firebase-headers.png[Firebase app score from securityheaders.com, 800, scaledwidth="100%"]
 
@@ -954,7 +954,7 @@ git checkout -b netlify
 
 Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
 
-[[netlify-create-site]]
+[.text-center]
 .Netlify create site
 image::../images/angular-deployment/netlify-create-site.png[Netlify create site, 650, scaledwidth="100%"]
 
@@ -1040,7 +1040,7 @@ Modify `angular.json` to include this file in its assets.
 
 Run `ng deploy` and you should get an **A** now!
 
-[[netlify-headers]]
+[.text-center]
 .Netlify score from securityheaders.com
 image::../images/angular-deployment/netlify-headers.png[Netlify score from securityheaders.com, 800, scaledwidth="100%"]
 
@@ -1117,7 +1117,7 @@ Next, you need to https://docs.aws.amazon.com/AmazonS3/latest/user-guide/static-
 
 Type `index.html` for the index and error document and click **Save changes**.
 
-[[aws-static-website]]
+[.text-center]
 .AWS static website
 image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="100%"]
 
@@ -1196,7 +1196,7 @@ Now you should be able to authenticate to your Angular app on AWS successfully!
 
 If you test your new CloudFront + S3 site on https://securityheaders.com/[securityheaders.com], you'll get an **A**.
 
-[[aws-headers]]
+[.text-center]
 .AWS score from securityheaders.com
 image::../images/angular-deployment/aws-headers.png[AWS score from securityheaders.com, 800, scaledwidth="100%"]
 
