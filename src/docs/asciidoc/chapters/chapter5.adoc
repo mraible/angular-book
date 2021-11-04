@@ -565,7 +565,7 @@ Add this file as a `proxyConfig` option in `angular.json`.
 },
 ----
 
-Remove Okta's Angular SDKs and OktaDev Schematics from your Angular project.
+Remove Okta's SDKs and OktaDev Schematics from your Angular project.
 
 [source,shell]
 ----
@@ -633,19 +633,19 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .oauth2ResourceServer().jwt()
 
         http.requiresChannel()
-                .requestMatchers(RequestMatcher {
-                    r -> r.getHeader("X-Forwarded-Proto") != null
-                }).requiresSecure()
+            .requestMatchers(RequestMatcher {
+                r -> r.getHeader("X-Forwarded-Proto") != null
+            }).requiresSecure()
 
         http.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
         http.headers()
-                .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
+            .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
                 .and()
-                .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
+            .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
                 .and()
-                .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
+            .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
         //@formatter:on
     }

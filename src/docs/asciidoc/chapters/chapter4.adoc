@@ -706,7 +706,7 @@ heroku open --remote angular
 
 NOTE: If you experience any issues, you can run `heroku logs --remote angular` to see your app's log files.
 
-You won't be able to log in to your app until you modify its Login redirect URI on Okta. Log in to your Okta dashboard. (tip: you can do this from the first Heroku app you created, under the **Resources** tab by clicking on **Okta**.) Go to the **Applications** section, find your **SPA** app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Sign-in redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Sign-out redirect URIs.
+You won't be able to log in to your app until you modify its Sign-in redirect URI on Okta. Log in to your Okta dashboard. (tip: you can do this from the first Heroku app you created, under the **Resources** tab by clicking on **Okta**.) Go to the **Applications** section, find your **SPA** app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Sign-in redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Sign-out redirect URIs.
 
 You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
 
@@ -1105,11 +1105,6 @@ ng add @jefiozie/ngx-aws-deploy
 
 You won't be prompted for your AWS settings because of the authors have realized it's not a good idea to add secrets to `angular.json`.
 
-Use the following command with your values
-When prompted, enter your region, bucket name, access key, and access key ID. When prompted for the folder, leave it blank.
-
-CAUTION: This process writes these raw values to your `angular.json`. For a more secure setup, use environment variables: `NG_DEPLOY_AWS_ACCESS_KEY_ID`, `NG_DEPLOY_AWS_SECRET_ACCESS_KEY`, `NG_DEPLOY_AWS_BUCKET` and `NG_DEPLOY_AWS_REGION`.
-
 Run `ng deploy` with your AWS setting to deploy your Angular app to your AWS S3 bucket.
 
 [source,shell]
@@ -1173,7 +1168,7 @@ Select **Origin override** if it's not selected for any headers by default. Clic
 
 Back on your distribution page, refresh the **Response headers policy** options and select the policy you just created.
 
-Near the bottom, enter `index.html` as the **Default Root Object**, and select **Create Distribution**. When the Last modified column changes from `Deploying` to today's date, navigate to the domain name in your browser.
+Near the bottom, enter `index.html` as the **Default Root Object**, and select **Create Distribution**. When the Last modified column changes from `Deploying` to today's date, navigate to the domain in your browser.
 
 NOTE: Once you've created your distribution, it can take 20 minutes for it to deploy.
 

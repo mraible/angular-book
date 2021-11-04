@@ -14,12 +14,12 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         //@formatter:off
         http
             .authorizeRequests()
-            .antMatchers("/**/*.{js,html,css}").permitAll()
-            .antMatchers("/", "/user").permitAll()
-            .anyRequest().authenticated()
-            .and()
+                .antMatchers("/**/*.{js,html,css}").permitAll()
+                .antMatchers("/", "/user").permitAll()
+                .anyRequest().authenticated()
+                .and()
             .oauth2Login()
-            .and()
+                .and()
             .oauth2ResourceServer().jwt()
 
         http.requiresChannel()
@@ -32,9 +32,9 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
         http.headers()
             .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
-            .and()
+                .and()
             .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-            .and()
+                .and()
             .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
         //@formatter:on

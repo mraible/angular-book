@@ -278,6 +278,7 @@ export class AppComponent {
   }
 }
 ----
+
 Remove the login and logout buttons from `home.component.html`:
 
 [source,html]
@@ -334,6 +335,44 @@ Now, you'll be able to toggle the menu!
 [[notes-menu]]
 .Squished navbar with menu
 image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%"]
+
+=== Refactor Unit Tests to Pass
+
+You changed some elements and values that will cause tests in `app.component.spec.ts` to fail. Update the tests to look for uppercase "`Note`" and import `NgbModule`.
+
+[source,typescript]
+----
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+describe('AppComponent', () => {
+  ...
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        ...
+        NgbModule
+      ],
+      ...
+    }).compileComponents();
+  }));
+
+  ...
+
+  it(`should have as title 'notes'`, () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('Notes');
+  });
+
+  it('should render title', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('nav')?.textContent).toContain('Notes');
+  });
+});
+----
 
 === Update the Note List Angular Template
 
@@ -746,8 +785,8 @@ At the bottom of `note-list.component.html` (just after `</table>`), add the pag
 ----
 <div class="d-flex justify-content-between p-2">
   <ngb-pagination [maxSize]="10" [collectionSize]="total$ | async" [(page)]="filter.page"
-                      [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
-      </ngb-pagination>
+                  [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
+  </ngb-pagination>
 
   <select class="custom-select" style="width: auto" name="pageSize"
           [(ngModel)]="filter.size" (ngModelChange)="onChange(filter.size)">
