@@ -9,32 +9,33 @@ import org.springframework.security.web.util.matcher.RequestMatcher
 
 @EnableWebSecurity
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+
     override fun configure(http: HttpSecurity) {
         //@formatter:off
         http
             .authorizeRequests()
-                .antMatchers("/**/*.{js,html,css}").permitAll()
-                .antMatchers("/", "/user").permitAll()
-                .anyRequest().authenticated()
-                .and()
+            .antMatchers("/**/*.{js,html,css}").permitAll()
+            .antMatchers("/", "/user").permitAll()
+            .anyRequest().authenticated()
+            .and()
             .oauth2Login()
-                .and()
+            .and()
             .oauth2ResourceServer().jwt()
 
         http.requiresChannel()
-                .requestMatchers(RequestMatcher {
+            .requestMatchers(RequestMatcher {
                     r -> r.getHeader("X-Forwarded-Proto") != null
-                }).requiresSecure()
+            }).requiresSecure()
 
         http.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
         http.headers()
-                .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/")
-                .and()
-                .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-                .and()
-                .featurePolicy("accelerometer 'none'; camera 'none'; microphone 'none'")
+            .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
+            .and()
+            .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
+            .and()
+            .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
         //@formatter:on
     }

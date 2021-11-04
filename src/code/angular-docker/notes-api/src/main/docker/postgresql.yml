@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   notes-postgresql:
-    image: postgres:13.3
+    image: postgres:14.0
     environment:
       - POSTGRES_USER=notes
       - POSTGRES_PASSWORD=@-xYcoZn2

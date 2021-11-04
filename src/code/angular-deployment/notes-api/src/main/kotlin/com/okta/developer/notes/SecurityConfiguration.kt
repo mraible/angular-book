@@ -18,15 +18,15 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .oauth2ResourceServer().jwt()
 
         http.requiresChannel()
-                .requestMatchers(RequestMatcher {
+            .requestMatchers(RequestMatcher {
                     r -> r.getHeader("X-Forwarded-Proto") != null
-                }).requiresSecure()
+            }).requiresSecure() // <.>
 
         http.csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()); // <.>
 
         http.headers()
-                .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/")
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/"); // <.>
         //@formatter:on
     }
 }

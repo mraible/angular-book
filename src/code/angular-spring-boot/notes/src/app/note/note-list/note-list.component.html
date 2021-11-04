@@ -6,12 +6,12 @@
 </nav>
 <h2>Notes List</h2>
 <form #f="ngForm">
-
+  
   <div class="form-group">
     <label for="title">Title:</label>
     <input [(ngModel)]="filter.title" id="title" name="title" class="form-control ml-2 mr-2">
   </div>
-
+  
   <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
   <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
 </form>
@@ -20,23 +20,23 @@
   <div class="table-responsive">
     <table class="table table-centered table-hover mb-0" id="datatable">
       <thead>
-      <tr>
-        <th class="border-top-0" scope="col">Id</th>
-        <th class="border-top-0" scope="col">Title</th>
-        <th class="border-top-0" scope="col">Text</th>
-        <th class="border-top-0" scope="col" style="width:120px"></th>
-      </tr>
+        <tr>
+          <th class="border-top-0" scope="col">Id</th>
+          <th class="border-top-0" scope="col">Title</th>
+          <th class="border-top-0" scope="col">Text</th>
+          <th class="border-top-0" scope="col" style="width:120px"></th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">
-        <td>{{item.id}}</td>
-        <td>{{item.title}}</td>
-        <td>{{item.text}}</td>
-        <td style="white-space: nowrap">
-          <a [routerLink]="['../notes', item.id ]" class="btn btn-secondary">Edit</a>&nbsp;
-          <button (click)="delete(item)" class="btn btn-danger">Delete</button>
-        </td>
-      </tr>
+        <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">
+          <td>{{item.id}}</td>
+          <td>{{item.title}}</td>
+          <td>{{item.text}}</td>
+          <td style="white-space: nowrap">
+            <a [routerLink]="['../notes', item.id ]" class="btn btn-secondary">Edit</a>&nbsp;
+            <button (click)="delete(item)" class="btn btn-danger">Delete</button>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

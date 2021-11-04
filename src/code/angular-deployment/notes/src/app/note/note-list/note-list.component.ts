@@ -2,7 +2,7 @@ import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { NoteFilter } from '../note-filter';
 import { NoteService } from '../note.service';
 import { Note } from '../note';
-import { SortableHeaderDirective, SortEvent} from './sortable.directive';
+import { SortableHeaderDirective, SortEvent } from './sortable.directive';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -10,12 +10,12 @@ import { Observable } from 'rxjs';
   templateUrl: 'note-list.component.html'
 })
 export class NoteListComponent implements OnInit {
-  total$!: Observable<any>;
-  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
 
+  @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
   filter = new NoteFilter();
   selectedNote!: Note;
   feedback: any = {};
+  total$!: Observable<any>;
 
   get noteList(): Note[] {
     return this.noteService.noteList;
@@ -31,6 +31,25 @@ export class NoteListComponent implements OnInit {
   search(): void {
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
+  }
+
+  select(selected: Note): void {
+    this.selectedNote = selected;
+  }
+
+  delete(note: Note): void {
+    if (confirm('Are you sure?')) {
+      this.noteService.delete(note).subscribe(() => {
+          this.feedback = {type: 'success', message: 'Delete was successful!'};
+          setTimeout(() => {
+            this.search();
+          }, 1000);
+        },
+        err => {
+          this.feedback = {type: 'warning', message: 'Error deleting.'};
+        }
+      );
+    }
   }
 
   onChange(pageSize: number) {
@@ -57,24 +76,5 @@ export class NoteListComponent implements OnInit {
     this.filter.direction = direction;
     this.filter.page = 0;
     this.search();
-  }
-
-  select(selected: Note): void {
-    this.selectedNote = selected;
-  }
-
-  delete(note: Note): void {
-    if (confirm('Are you sure?')) {
-      this.noteService.delete(note).subscribe(() => {
-          this.feedback = {type: 'success', message: 'Delete was successful!'};
-          setTimeout(() => {
-            this.search();
-          }, 1000);
-        },
-        err => {
-          this.feedback = {type: 'warning', message: 'Error deleting.'};
-        }
-      );
-    }
   }
 }

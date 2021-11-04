@@ -13,8 +13,6 @@ Another web framework took the world by storm the following year: AngularJS. Ang
 
 Together, these frameworks have had quite a run. It's hard to believe that they've lasted so long, especially considering both projects have had major rewrites!
 
-// == Isn't Angular Dead?
-
 I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "`legacy.`" Others call them "`revenue-generating.`"
 
 Whatever you want to call it, Angular is far from dead.
@@ -23,11 +21,8 @@ Whatever you want to call it, Angular is far from dead.
 
 You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
 
-++++
-<div style="max-width: 500px; margin: 0 auto 1.25rem">
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">If you&#39;re developing <a href="https://twitter.com/angular?ref_src=twsrc%5Etfw">@angular</a> apps, what&#39;s your preferred CSS framework? <a href="https://twitter.com/hashtag/Angular?src=hash&amp;ref_src=twsrc%5Etfw">#Angular</a> <a href="https://twitter.com/hashtag/CSS?src=hash&amp;ref_src=twsrc%5Etfw">#CSS</a></p>&mdash; Matt Raible (@mraible) <a href="https://twitter.com/mraible/status/1196894737870938113?ref_src=twsrc%5Etfw">November 19, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-</div>
-++++
+.What's your preferred CSS framework with Angular?
+image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%"]
 
 == Integrate Bootstrap with Angular
 
@@ -49,39 +44,23 @@ Add Bootstrap and NG Bootstrap:
 
 [source,shell]
 ----
-npm i bootstrap @ng-bootstrap/ng-bootstrap --force
-----
-// todo: add versions and remove force once ng-bootstrap supports Angular 12.
-// https://github.com/ng-bootstrap/ng-bootstrap/issues/4093
-
-Import `NgbModule` in `app.module.ts`:
-
-[source,ts]
-.src/app/app.module.ts
-----
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-@NgModule({
-  ...
-  imports: [
-    ...
-    NgbModule
-  ],
-  ...
-})
-export class AppModule { }
+ng add @ng-bootstrap/ng-bootstrap@next
 ----
 
-If you run `ng serve -o`, you'll get a blank screen. Look in your browser's developer console, and you'll see why.
+[CAUTION]
+====
+If NG Bootstrap v11 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], use `ng add @ng-bootstrap/ng-bootstrap@11` for the command above.
 
-[source,shell]
-----
-Uncaught Error: It looks like your application or one of its dependencies is using i18n.
-Angular 9 introduced a global `$localize()` function that needs to be loaded.
-Please run `ng add @angular/localize` from the Angular CLI.
-----
+The current release (v11.0.0-beta.2) doesn't install Bootstrap 5 by default, so install it:
 
-Cancel the process and run `ng add @angular/localize` to fix this error. Now, if you restart your app, you'll see it's pretty simple. And kinda ugly.
+----
+npm i bootstrap@5
+----
+====
+
+This process will import `NgbModule` in `app.module.ts` and configure your app to use Bootstrap by adding a reference to `bootstrap.min.css` in `angular.json`.
+
+If you run `ng serve -o`, you'll see it's pretty simple. And kinda ugly.
 
 [[notes-bare-bones]]
 .Bare-bones styling
@@ -89,21 +68,41 @@ image::../images/angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800,
 
 Let's fix that!
 
-Modify `styles.css` to add a reference to Bootstrap's CSS file:
+.Security Configuration
+****
+Both app's should have their security configured to use OIDC from the last chapter. If you need to configure security for them, you can use the Okta CLI.
 
-[source,css]
-.src/styles.css
+[source,shell]
 ----
-@import "~bootstrap/dist/css/bootstrap.css";
+# in the notes directory
+okta apps create # select SPA > callback > http://localhost:4200/callback
+
+# in the notes-api directory
+okta apps create web # callback > http://localhost:8080/login/oauth2/code/okta
 ----
 
-And change `app.component.html` to use Bootstrap classes.
+Restart each app:
+
+[source,shell]
+----
+# in the notes directory
+npm start
+
+# in the notes-api directory
+source .okta.env
+./gradlew bootRun
+----
+****
+
+Begin by changing `app.component.html` to use Bootstrap classes.
 
 [source,html]
 .src/app/app.component.html
 ----
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand text-light" href="#">{{ title }} app is running!</a>
+  <div class="container-fluid">
+    <a class="navbar-brand text-light" href="#">{{ title }} app is running!</a>
+  </div>
 </nav>
 
 <div class="container-fluid pt-3">
@@ -113,39 +112,17 @@ And change `app.component.html` to use Bootstrap classes.
 
 Now we're getting somewhere!
 
-[[notes-slightly-styled]]
+[[notes-default-style]]
 .Slightly styled
-image::../images/angular-bootstrap/notes-slightly-styled.png[Slightly styled, 800, scaledwidth="100%"]
+image::../images/angular-bootstrap/notes-default-style.png[Slightly styled, 800, scaledwidth="100%"]
 
-To make the login button work, you need to configure both apps' security configurations. Thankfully, that's easy with the Okta CLI!
-
-[source,shell]
-----
-# in the notes directory
-okta apps create # select SPA > http://localhost:4200/callback
-
-# in the notes-api directory
-okta apps create # select Web > Spring Boot Starter > defaults
-----
-
-Restart both apps:
-
-[source,shell]
-----
-# in the notes directory
-npm start
-
-# in the notes-api directory
-./gradlew bootRun
-----
-
-Now you should be able to log in with your Okta credentials and create notes to your heart's content!
+Enter a note and you'll see it in the list.
 
 [[first-note]]
 .First note
 image::../images/angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%"]
 
-You'll notice there's some styling, but things aren't quite _beautiful_. Yet...
+You'll notice it looks _pretty good_, but things aren't quite _beautiful_. Yet...
 
 === Use Sass to Customize Bootstrap
 
@@ -153,7 +130,7 @@ Before you make things awesome, I'd like to show you how to convert from using C
 
 NOTE: If you're not into Sass, you can <<#make-angular-beautiful, skip this section>>. Everything will still work without it.
 
-If you run the following `find` command...
+If you run the following `find` command in the `notes` project...
 
 [source,shell]
 ----
@@ -185,7 +162,7 @@ Then, replace all references to `.css` files.
 find ./src/app -type f -exec sed -i '' -e  's/.css/.scss/g' {} \;
 ----
 
-Modify `angular.json` to reference `src/styles.scss` (in the `build` and `test` sections).
+Modify `angular.json` to reference `src/styles.scss` (in the `build` and `test` sections) and remove `bootstrap.min.css`.
 
 [source,json]
 ----
@@ -202,7 +179,7 @@ And change `styles.scss` to import Bootstrap's Sass.
 @import "~bootstrap/scss/bootstrap.scss";
 ----
 
-To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v4-dev/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.1.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
 
 [source,sass]
 ----
@@ -232,51 +209,81 @@ anchor:make-angular-beautiful[]
 
 == Make Your Angular App Beautiful with Bootstrap
 
-You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/4.4/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
+You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/5.1/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
 
 [source,html]
 .src/app/app.component.html
 ----
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">
-    <img src="/assets/images/angular.svg" width="30" height="30" class="d-inline-block align-top" alt="Angular">
-    {{ title }}
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="/assets/images/angular.svg" width="30" height="30"
+           class="d-inline-block align-top" alt="Angular">
+      {{ title }}
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="#">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://twitter.com/mraible">@mraible</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://github.com/mraible">GitHub</a>
-      </li>
-      <li class="nav-item pl-lg-3">
-        <button *ngIf="!isAuthenticated" (click)="oktaAuth.signInWithRedirect()" class="btn btn-outline-primary">Login</button>
-        <button *ngIf="isAuthenticated" (click)="oktaAuth.signOut()" class="btn btn-outline-secondary">Logout</button>
-      </li>
-    </ul>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/mraible">@mraible</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mraible">GitHub</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
+                (click)="oktaAuth.signInWithRedirect()"
+                class="btn btn-outline-primary">Login</button>
+        <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
+                (click)="oktaAuth.signOut()"
+                class="btn btn-outline-secondary">Logout</button>
+      </form>
+    </div>
   </div>
 </nav>
 
 <div class="container-fluid pt-3">
-  <a *ngIf="!isAuthenticated">Please log in to manage your notes.</a>
+  <a *ngIf="!(authService.authState$ | async)?.isAuthenticated">Please log in to manage your notes.</a>
   <router-outlet></router-outlet>
 </div>
 ----
 
-Remove the login and logout buttons from `home.component.html`.
+Add `OktaAuth` and `OktaAuthStateService` as dependencies to `AppComponent`:
+
+[source,typescript]
+----
+import { Component } from '@angular/core';
+import { OktaAuthStateService } from '@okta/okta-angular';
+import { OktaAuth } from '@okta/okta-auth-js';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  title = 'notes';
+
+  constructor(public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
+  }
+}
+----
+Remove the login and logout buttons from `home.component.html`:
 
 [source,html]
 .src/app/home/home.component.html
 ----
-<p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
+<p><a routerLink="/notes"
+      *ngIf="(authService.authState$ | async)?.isAuthenticated">View Notes</a></p>
 ----
 
 Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
@@ -309,12 +316,11 @@ However, if you click on it, the menu doesn't expand. To fix that, you need to u
 
 Then add `isCollapsed` in `app.component.ts` and change the `title` to be capitalized.
 
-[source,ts]
+[source,typescript]
 .src/app/app/app.component.ts
 ----
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'Notes';
-  isAuthenticated: boolean = false;
   isCollapsed = true;
 
   ...
@@ -330,58 +336,24 @@ image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600
 
 === Update the Note List Angular Template
 
-// todo: Reword for Angular CRUD 2.0 release
+Modify the `note-list.component.html` so the search form is all on one line.
 
-Modify the `note-list.component.html` so the breadcrumb doesn't float right and all the content is in the same card.
-
-[source,html]
+[source%autofit,html]
 .src/app/note/note-list/note-list.component.html
 ----
-<ol class="breadcrumb">
-  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-  <li class="breadcrumb-item active">Notes</li>
-</ol>
-<div class="card">
-  <div class="card-body">
-    <h2 class="card-title">Notes List</h2>
-    <div class="card-text">
-      <form #f="ngForm" class="form-inline">
-        <div class="form-group">
-          <label for="title">Title:</label>
-          <input [(ngModel)]="filter.title" id="title" name="title" class="form-control ml-2 mr-2">
-        </div>
-
-        <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
-        <a [routerLink]="['../notes', 'new' ]" class="btn btn-default">New</a>
-      </form>
-    </div>
-    <div *ngIf="noteList.length > 0">
-      <div *ngIf="feedback.message" class="alert alert-{{feedback.type}} m-2">{{ feedback.message }}</div>
-      <div class="table-responsive">
-        <table class="table table-centered table-hover mb-0" id="datatable">
-          <thead>
-          <tr>
-            <th class="border-top-0" scope="col">Id</th>
-            <th class="border-top-0" scope="col">Title</th>
-            <th class="border-top-0" scope="col">Text</th>
-            <th class="border-top-0" scope="col" style="width:120px"></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">
-            <td>{{item.id}}</td>
-            <td>{{item.title}}</td>
-            <td>{{item.text}}</td>
-            <td style="white-space: nowrap">
-              <a [routerLink]="['../notes', item.id ]" class="btn btn-secondary">Edit</a>&nbsp;
-              <button (click)="delete(item)" class="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-</div>
+...
+<h2>Notes List</h2>
+<form #f="ngForm" class="row g-2">
+  <div class="col-auto">
+    <input [(ngModel)]="filter.title" type="search" name="query"
+           placeholder="Title" class="form-control ml-2 mr-2">
+  </div>
+  <div class="col-auto">
+    <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+    <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
+  </div>
+</form>
+...
 ----
 
 That looks better!
@@ -392,44 +364,44 @@ image::../images/angular-bootstrap/styled-notes-list.png[Styled Notes List, 800,
 
 === Add Validation and Bootstrap to the Note Edit Template
 
-If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/4.4/components/forms/[stylish forms] using its `form-group` and `form-control` classes. `note-edit.component.html` already uses these classes; you just need to rearrange some things to use the proper `card-*` classes.
+If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/5.1/forms/overview/[stylish forms] using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
 
-// todo: Reword for Angular CRUD 2.0 release
+The following HTML will add floating labels to your form using the `form-floating` class and add more spacing with `mb-3`.
 
-[source,html]
+[source%autofit,html]
 .src/app/note/note-edit/note-edit.component.html
 ----
-<ol class="breadcrumb">
-  <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-  <li class="breadcrumb-item active">Notes</li>
-</ol>
-<div class="card">
-  <div class="card-body">
-    <h2 class="card-title">Notes Detail</h2>
-    <div class="card-text">
-      <div *ngIf="feedback.message" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
-      <form *ngIf="note" #editForm="ngForm" (ngSubmit)="save()">
-        <div class="form-group">
-          <label>Id</label>
-          {{note.id || 'n/a'}}
-        </div>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+    <li class="breadcrumb-item active">Notes</li>
+  </ol>
+</nav>
+<h2>Notes Detail</h2>
+<div *ngIf="feedback.message" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
+<form *ngIf="note" #editForm="ngForm" (ngSubmit)="save()" class="form-floating">
 
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input [(ngModel)]="note.title" id="title" name="title" class="form-control">
-        </div>
-
-        <div class="form-group">
-          <label for="text">Text</label>
-          <input [(ngModel)]="note.text" id="text" name="text" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
-        <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
-      </form>
-    </div>
+  <div class="mb-3">
+    <label>Id</label>
+    {{note.id || 'n/a'}}
   </div>
-</div>
+
+  <div class="form-floating mb-3">
+    <input [(ngModel)]="note.title" id="title" name="title" class="form-control" placeholder="title">
+    <label for="title">Title</label>
+  </div>
+
+  <div class="form-floating mb-3">
+    <input [(ngModel)]="note.text" id="text" name="text" class="form-control" placeholder="text">
+    <label for="text">Text</label>
+  </div>
+
+  <div class="btn-group mt-3" role="group">
+    <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
+  </div>
+</form>
+
 ----
 
 That's an improvement!
@@ -440,15 +412,16 @@ image::../images/angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800,
 
 To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
 
-[source,html]
+[source%autofit,html]
 ----
-<div class="form-group">
-  <label for="title">Title</label>
-  <input [(ngModel)]="note.title" id="title" name="title" class="form-control" required
-         #name="ngModel" [ngClass]="{'is-invalid': name.touched && name.invalid,  'is-valid': name.touched && name.valid}">
+<div class="form-floating mb-3">
+  <input [(ngModel)]="note.title" id="title" name="title" class="form-control"
+         placeholder="title" required #name="ngModel"
+         [ngClass]="{'is-invalid': name.touched && name.invalid, 'is-valid': name.touched && name.valid}">
   <div [hidden]="name.valid" style="display: block" class="invalid-feedback">
     Title is required
   </div>
+  <label for="title">Title</label>
 </div>
 ----
 
@@ -484,7 +457,7 @@ fun notes(principal: Principal, title: String?): List<Note> {
         repository.findAllByUser(principal.name)
     } else {
         println("Searching for title: ${title}")
-        repository.findAllByUserAndTitleContainingIgnoringCase(principal.name, title)
+        repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title)
     }
 }
 ----
@@ -505,9 +478,9 @@ Restart your server and add a few notes, and you should be able to search for th
 
 === Add Sort Functionality with Angular and Bootstrap
 
-To begin, create a `sortable.directive.ts`.
+To begin, create a `sortable.directive.ts` directive to show a direction indicator.
 
-[source,ts]
+[source,typescript]
 .src/app/note/note-list/sortable.directive.ts
 ----
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
@@ -543,8 +516,8 @@ export class SortableHeaderDirective {
 
 Add it as a declaration in `note.module.ts`.
 
-[source,ts]
-.src/app/note/node.module.ts
+[source,typescript]
+.src/app/note/note.module.ts
 ----
 import { SortableHeaderDirective } from './note-list/sortable.directive';
 
@@ -560,11 +533,11 @@ import { SortableHeaderDirective } from './note-list/sortable.directive';
 
 Add a `headers` variable to `note-list.component.ts` and an `onSort()` method.
 
-[source,ts]
+[source,typescript]
 .src/app/note/node.module.ts
 ----
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { SortableHeaderDirective, SortEvent} from './sortable.directive';
+import { QueryList, ViewChildren } from '@angular/core';
+import { SortableHeaderDirective, SortEvent } from './sortable.directive';
 
 export class NoteListComponent implements OnInit {
   @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
@@ -590,7 +563,7 @@ export class NoteListComponent implements OnInit {
 
 Update the `note-filter.ts` to have `column` and `direction` properties.
 
-[source,ts]
+[source,typescript]
 .src/app/note/note-filter.ts
 ----
 export class NoteFilter {
@@ -602,7 +575,7 @@ export class NoteFilter {
 
 Modify the `find()` method in `NoteService` to pass a `sort` parameter when appropriate.
 
-[source,ts]
+[source,typescript]
 .src/app/note/note.service.ts
 ----
 import { map } from 'rxjs/operators';
@@ -632,10 +605,10 @@ Update `note-list.component.html` so it uses the `sortable` directive and calls 
 ----
 <thead>
   <tr>
-    <th class="border-top-0" scope="col">#</th>
-    <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
-    <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
-    <th class="border-top-0" scope="col" style="width:120px"></th>
+  <th class="border-top-0" scope="col">#</th>
+  <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
+  <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+  <th class="border-top-0" scope="col" style="width:120px"></th>
   </tr>
 </thead>
 ----
@@ -723,9 +696,10 @@ interface NotesRepository : JpaRepository<Note, Long> {
 }
 ----
 
-While you're updating the Spring Boot side of things, modify `DataInitializer` to create a thousand notes for your user. Make sure to replace `<your username>` with the email address you use to log in to Okta.
+While you're updating the Spring Boot side of things, modify `DataInitializer` to create a thousand notes for your user.
 
 [source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
 ----
 @Component
 class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
@@ -740,6 +714,8 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
 }
 ----
 
+_Make sure to replace `<your username>` with the email address you use to log in to Okta._
+
 Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
 
 [[notes-list-with-sorting]]
@@ -750,13 +726,13 @@ image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with s
 
 The last feature to add is pagination with NG Bootstrap's `<ngb-pagination>` component. Begin by adding `page` and `size` variables (with default values) to `note-filter.ts`.
 
-[source,ts]
-.src/app/note/note-filter.ts
+[source,typescript]
+.notes/src/app/note/note-filter.ts
 ----
 export class NoteFilter {
   title = '';
-  column: string;
-  direction: string;
+  column!: string;
+  direction!: string;
   page = 0;
   size = 20;
 }
@@ -765,14 +741,15 @@ export class NoteFilter {
 At the bottom of `note-list.component.html` (just after `</table>`), add the pagination component, along with a page-size selector.
 
 [source,html]
-.src/app/note/note-list/note-list.component.html
+.notes/src/app/note/note-list/note-list.component.html
 ----
 <div class="d-flex justify-content-between p-2">
-  <ngb-pagination [maxSize]="10"
-    [collectionSize]="total$ | async" [(page)]="filter.page" [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
-  </ngb-pagination>
+  <ngb-pagination [maxSize]="10" [collectionSize]="total$ | async" [(page)]="filter.page"
+                      [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
+      </ngb-pagination>
 
-  <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="filter.size" (ngModelChange)="onChange(filter.size)">
+  <select class="custom-select" style="width: auto" name="pageSize"
+          [(ngModel)]="filter.size" (ngModelChange)="onChange(filter.size)">
     <option [ngValue]="10">10 items per page</option>
     <option [ngValue]="20">20 items per page</option>
     <option [ngValue]="100">100 items per page</option>
@@ -784,7 +761,7 @@ In this code, you might notice `"total$ | async"` and wonder what it means? This
 
 Add `NgbModule` as an import to `note.module.ts`.
 
-[source,ts]
+[source,typescript]
 .src/app/note/note.module.ts
 ----
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -800,23 +777,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 In `note-list.component.ts`, add a `total$` observable and set it from the `search()` method. Then add an `onPageChange()` method and an `onChange()` method, and modify `onSort()` to set the page to 0.
 
-// note: I had to change from Observable<number> to Observable<any> to get it to compile. Seems strange.
-////
-Error: src/app/note/note-list/note-list.component.html:45:30 - error TS2322: Type 'number | null' is not assignable to type 'number'.
-Type 'null' is not assignable to type 'number'.
-
-45                             [collectionSize]="total$ | async" [(page)]="filter.page" [pageSize]="filter.size"
-~~~~~~~~~~~~~~
-
-  src/app/note/note-list/note-list.component.ts:10:16
-    10   templateUrl: 'note-list.component.html'
-                      ~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Error occurs in the template of component NoteListComponent.
-////
-
-
-
-[source,ts]
+[source,typescript]
 .src/app/note/note-list/note-list.component.ts
 ----
 import { Observable } from 'rxjs';
@@ -840,7 +801,6 @@ export class NoteListComponent implements OnInit {
   onPageChange(page: number) {
     this.filter.page = page - 1;
     this.search();
-    this.filter.page = page;
   }
 
   onSort({column, direction}: SortEvent) {
@@ -859,14 +819,12 @@ export class NoteListComponent implements OnInit {
 }
 ----
 
-TIP: If you want to be more strict about your typing, you can make the `total$` Observable use `<number | null>` as its type. I used `<any>` as a shortcut.
-
 Then update `notes.service.ts` to add a `size$` observable and parameters for the page size and page number.
 
-[source,ts]
+[source,typescript]
 .src/app/note/note.service.ts
 ----
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 ...
 
@@ -912,11 +870,11 @@ TIP: You can download the code for this book's examples from InfoQ. The `angular
 
 I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
 
-1. Install JHipster and KHipster
+1. Install JHipster and KHipster:
 
- npm install -g generator-jhipster generator-jhipster-kotlin
+  npm install -g generator-jhipster generator-jhipster-kotlin
 
-2. Create an `easy-notes` directory and a `notes.jdl` file in it
+2. Create an `easy-notes` directory and a `notes.jdl` file in it:
 
   application {
     config {
@@ -937,7 +895,9 @@ I also wanted to let you know you can get a lot of this functionality for free w
   }
   paginate Note with pagination
 
-3. In a terminal, navigate to the `easy-notes` directory and run `khipster import-jdl notes.jdl`
+3. In a terminal, navigate to the `easy-notes` directory and run:
+
+  khipster jdl notes.jdl
 
 That's it!
 
@@ -958,14 +918,13 @@ image::../images/angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scale
 
 TIP: Want to make JHipster work with Okta or Auth0? See https://www.jhipster.tech/security/[JHipster's security documentation].
 
-// == Learn More About Angular and Spring Boot
 == Summary
 
 I used the following resources to gather historical information about Angular and Bootstrap.
 
 * https://raibledesigns.com/rd/entry/refreshing_appfuse_s_ui_with[Refreshing AppFuse's UI with Twitter Bootstrap]
 * https://alistapart.com/article/building-twitter-bootstrap/[Building Twitter Bootstrap]
-* https://v4-alpha.getbootstrap.com/about/history/[Bootstrap > About > History]
+* https://getbootstrap.com/docs/4.0/about/history/[Bootstrap > About > History]
 * https://medium.com/dailyjs/angular-1-0-turns-five-years-old-4d7108a5e412[Angular 1.0 Turns Five Years Old]
 
 In the next section, I'll show you how to deploy your Angular app to production. Buckle up!

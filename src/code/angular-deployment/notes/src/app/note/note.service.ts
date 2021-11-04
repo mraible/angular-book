@@ -1,9 +1,10 @@
 import { Note } from './note';
 import { NoteFilter } from './note-filter';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, EMPTY } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const headers = new HttpHeaders().set('Accept', 'application/json');
@@ -19,7 +20,7 @@ export class NoteService {
 
   findById(id: string): Observable<Note> {
     const url = `${this.api}/${id}`;
-    const params = { id };
+    const params = { id: id };
     return this.http.get<Note>(url, {params, headers});
   }
 
