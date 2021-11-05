@@ -77,8 +77,6 @@ Back Cover:
 
 Angular is a web framework that helps you build web, mobile web, native mobile, and desktop applications. Angular apps are authored in TypeScript, compile to JavaScript, and run in browser-based runtimes that have become fast and efficient over the last decade.
 
-Like Struts in the early 2000s and Rails in the mid-2000s, Angular and other JavaScript frameworks have changed the way developers write applications. Today, data is exposed via REST APIs and UIs are written in JavaScript (or TypeScript).
-
 As a Java web developer, I was immediately attracted to AngularJS when I saw its separation of concerns: controllers, services, and directives for data manipulation. Then along came Angular 2.0 in 2016 and changed everything. The team adopted TypeScript as Angular's default language, refined its architecture for the future, and created awesome tools like the Angular CLI.
 
 It worked! The Angular project is still going strong five years later.
