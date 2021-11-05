@@ -18,6 +18,11 @@ The Angular Mini-Book
 Dedication
 Acknowledgments
 Preface
+    What is in an InfoQ mini-book?
+    Who this book is for
+    What you need for this book
+    Conventions
+    Reader feedback
 Introduction
 Build an Angular App
     A Brief History of Angular
@@ -70,15 +75,12 @@ https://www.flickr.com/photos/mraible/16900780428
 
 Back Cover:
 
-Building an app with web technologies can be scary if you've never done it before. Should you use plain ol' JavaScript with jQuery or a full-featured framework like Angular? Angular com
+Angular is a web framework that helps you build web, mobile web, native mobile, and desktop applications. Angular apps are authored in TypeScript, compile to JavaScript, and run in browser-based runtimes that have become fast and efficient over the last decade.
 
-The things you need to do to set up a new software project can be daunting. First, you have to select the back-end framework to create your API, choose your database, set up security, and choose your build tool. Then you have to choose the tools to create your front end: select a UI framework, configure a build tool, set up Sass processing, configure your browser to auto-refresh when you make changes, and configure the client and server so they work in unison. If you’re building a new application using Spring Boot and Angular, you can save days by using JHipster.
+Like Struts in the early 2000s and Rails in the mid-2000s, Angular and other JavaScript frameworks have changed the way developers write applications. Today, data is exposed via REST APIs and UIs are written in JavaScript (or TypeScript).
 
-JHipster generates a complete and modern web app, unifying:
+As a Java web developer, I was immediately attracted to AngularJS when I saw its separation of concerns: controllers, services, and directives for data manipulation. Then along came Angular 2.0 in 2016 and changed everything. The team adopted TypeScript as Angular's default language, refined its architecture for the future, and created awesome tools like the Angular CLI.
 
-* A high-performance and robust Java stack on the server side with Spring Boot
-* A sleek, modern, mobile-first front-end with Angular and Bootstrap
-* A robust microservice architecture with the JHipster Registry, Netflix OSS, the ELK stack, and Docker
-* A powerful workflow to build your application with Yeoman, Webpack, and Maven/Gradle
+It worked! The Angular project is still going strong five years later.
 
-JHipster is a treasure trove of information of how to build modern web applications and microservice architectures. It can turn any curious and willing developer into a Java Hipster!
+This book shows you how to build apps with Angular and guides you through many tools, techniques, security best practices, and production deployment options.
