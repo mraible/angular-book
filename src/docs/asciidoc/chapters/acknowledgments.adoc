@@ -4,7 +4,7 @@ I'm incredibly grateful to Trish, Abbie, and Jack. They put up with my late nigh
 
 To Miško Hevery, thank you for inventing Angular and changing the lives of frontend developers. To the whole Angular team, I appreciate you and all you do for the community. Kudos for making our apps faster with every release!
 
-To Phil Webb and Dave Syer, thanks for creating Spring Boot and simplifying Java for everyone. Hats off to the whole Spring team for their tireless dedication to quality open source development. I'm excited for Spring 6.0.
+To Phil Webb and Dave Syer, thanks for creating Spring Boot and simplifying Java for everyone. Hats off to the whole Spring team for their tireless dedication to quality open source projects.
 
 I want to thank this book's tech editor, Deepu K Sasidharan. I looked to him for his deep experience with both TypeScript and JavaScript. Many sections are more streamlined because of his advice.
 
