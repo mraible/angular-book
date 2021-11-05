@@ -19,6 +19,10 @@ Learn how Spring Boot simplifies cloud-native application development and deploy
 
 I wrote https://www.infoq.com/minibooks/jhipster-mini-book[_The JHipster Mini-Book_] (InfoQ, November 2018). JHipster automates the generation of Angular + Spring Boot apps with best practices and security baked in by default! I plan to update this book for JHipster 7 in 2022.
 
+ifeval::["{media}" == "prepress"]
+<<<
+endif::[]
+
 == Folks to follow
 
 If you're on Twitter, follow these Angular experts for news, events, and howtos:

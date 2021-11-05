@@ -14,8 +14,8 @@ An Angular app is composed of several building blocks:
 
 * Components: Classes that retrieve data from services and expose it to templates.
 * Services: Classes that make HTTP calls to an API.
-* Templates: HTML pages that display data from components. Use Angular directives to iterate over collections and show/hide elements.
-* Pipes: Data-manipulation tools that can transform data (e.g., uppercase, lowercase, ordering, and searching).
+* Templates: HTML pages that display data from components.
+* Pipes: Data-transformation tools (e.g., format dates, currency, etc.).
 * Directives: HTML processors that simplify logic in templates. Similar to JSP tags.
 
 This book shows you how to build apps with Angular and guides you through many tools, techniques, security best practices, and production deployment options.

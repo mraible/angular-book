@@ -1299,8 +1299,8 @@ The result should look similar to this:
 
 [source,shell]
 ----
-NAME               URL                                                    LATESTCREATED            LATESTREADY              READY   REASON
-bootiful-angular   https://bootiful-angular.default.35.232.41.220.nip.io   bootiful-angular-rwz7g   bootiful-angular-rwz7g   True
+NAME               URL
+bootiful-angular   https://bootiful-angular.default.35.232.41.220.nip.io
 ----
 
 You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redirect URI** to the `Web` app in the Okta Admin Console in order to log in.
