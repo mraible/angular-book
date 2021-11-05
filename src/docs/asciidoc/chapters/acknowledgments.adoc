@@ -8,6 +8,6 @@ To Phil Webb and Dave Syer, thanks for creating Spring Boot and simplifying Java
 
 I want to thank this book's tech editor, Deepu K Sasidharan. I looked to him for his deep experience with both TypeScript and JavaScript. Many sections are more streamlined because of his advice.
 
-This book's copy editor, Maureen Spencer, helped correct my grammar and make this book easier on the eyes. I'm thankful your help, Maureen.
+This book's copy editor, Maureen Spencer, helped correct my grammar and make this book easier on the eyes. I'm thankful for your help, Maureen.
 
 Finally, my compliments to you, dear reader. It's a heckuva time to be writing code. Enjoy your learning adventures!
