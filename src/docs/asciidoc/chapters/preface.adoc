@@ -21,7 +21,7 @@ We use several typographical conventions within this book that distinguish betwe
 Code in the text, including commands, variables, file names, CSS class names, and property names are shown as follows:
 
 [example]
-Spring Boot uses a `public static void main` entry-point that launches an embedded web server for you.
+The Angular CLI will create a `ng-demo` project and run `npm install` in it.
 
 A block of code is set out as follows. It may be colored, depending on the format in which you're reading this book.
 
@@ -87,6 +87,13 @@ Finally, this text shows what a quote looks like:
 
 We always welcome feedback from our readers. Let us know what you thought about this book—what you liked or disliked. Reader feedback helps us develop titles that deliver the most value to you.
 
+[.text-left]
 To send us feedback, e-mail us at feedback@infoq.com, send a tweet to @mraible, or post a question on Stack Overflow using the "`angular`" tag.
 
+[.text-left]
 If you're interested in writing a mini-book for InfoQ, see http://www.infoq.com/minibook-guidelines.
+
+ifeval::["{media}" == "prepress"]
+[.text-left]
+The most up-to-date version of this book can be downloaded from https://infoq.com/minibooks/angular-mini-book.
+endif::[]

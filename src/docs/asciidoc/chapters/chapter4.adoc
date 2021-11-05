@@ -378,8 +378,9 @@ data class Note(@Id @GeneratedValue var id: Long? = null,
 
 This will cause compilation errors and you'll need to rename method names and variables to fix them.
 
-// todo: verify this looks OK in Print, PDF, and EPUB
+ifdef::backend-html5[]
 .Click to see the diff
+endif::[]
 [%collapsible]
 ====
 [source,diff]
@@ -1199,4 +1200,4 @@ You learned how to make your Angular app more secure with security headers, forc
 
 TIP: You can download the code for this book's examples from InfoQ. The `angular-deployment` directory has this chapter's completed example.
 
-In the next section, I'll show you how to containerize and deploy your Angular + Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll show you how to deploy to Heroku and Knative on Google Cloud!
+In the next section, I'll show you how to containerize and deploy your Angular + Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll provide instructions for deploying to Heroku and Knative on Google Cloud!

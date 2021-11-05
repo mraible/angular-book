@@ -1,12 +1,39 @@
 [[action]]
 = Action!
 
-I hope you've enjoyed learning how Angular is awesome!
+I hope you've enjoyed learning how Angular can help you develop secure web applications! It's a fantastic open source project that's changed my life as a UI developer. Writing testable MVC code with TypeScript is much easier to maintain than the glob of jQuery code I used to write.
 
-// advice
+I encourage you to follow the Angular Blog at https://blog.angular.io[Angular Blog] and https://twitter.com/angular[@angular] on Twitter.
+
+Now that you've learned how to use Angular, Bootstrap, Spring Boot, and a bit of Kotlin, go forth and develop amazing applications!
 
 == Additional reading
 
 If you want to learn more, here are some suggestions.
 
-// recommended books
+One of the most complete books I've read on Angular is https://www.ng-book.com/2/[_ng-book: The Complete Book on Angular_] by Nathan Murray, Felipe Coury, Ari Lerner, and Carlos Taborda) (Fullstack.io, continuously updated).
+
+https://www.packtpub.com/product/angular-projects-second-edition/9781800205260[_Angular Projects_] by Aristeidis Bampakos (Packt, July 2021) covers Angular and its ecosystem, including Angular Router, Scully, Electron, PWAs, Nx monorepo tools, NgRx, and more.
+
+Learn how Spring Boot simplifies cloud-native application development and deployment with https://www.oreilly.com/library/view/spring-boot-up/9781492076971/[_Spring Boot: Up and Running_] by Mark Heckler (O'Reilly Media, Inc., February 2021).
+
+I wrote https://www.infoq.com/minibooks/jhipster-mini-book[_The JHipster Mini-Book_] (InfoQ, November 2018). JHipster automates the generation of Angular + Spring Boot apps with best practices and security baked in by default! I plan to update this book for JHipster 7 in 2022.
+
+ifeval::["{media}" == "prepress"]
+<<<
+endif::[]
+
+== Folks to follow
+
+If you're on Twitter, follow these Angular experts for news, events, and howtos:
+
+- https://twitter.com/manfredsteyer[Manfred Styer]
+- https://twitter.com/mgechev[Minko Gechev]
+- https://twitter.com/ladyleet[Tracy Lee]
+- https://twitter.com/alisaduncan[Alisa Duncan]
+
+For the latest happenings in the world of Spring Boot, I recommend following these fine folks:
+
+- https://twitter.com/starbuxman[Josh Long]
+- https://twitter.com/phillip_webb[Phil Webb]
+- https://twitter.com/snicoll[Stéphane Nicoll]

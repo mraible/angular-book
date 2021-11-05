@@ -27,7 +27,7 @@ image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet
 
 == Integrate Bootstrap with Angular
 
-Today I'd like to show you how to integrate Bootstrap into an Angular application. I'll start with the note-taking example from the last section. I'll show you how to integrate Bootstrap, convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
+Integrating Bootstrap into an Angular application is fairly easy thanks to NG Bootstrap. I'll start with the note-taking example from the last section. If you follow along, you'll convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
 
 If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it.
 
