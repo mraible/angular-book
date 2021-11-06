@@ -21,8 +21,9 @@ Rather than explain all the concepts in Angular, I'll show you how to build a ba
 
 NOTE: I should warn you about my teaching style. My words will tell you to do things that cause errors to happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading. 🙂
 
-ifdef::backend-pdf[<<<]
-
+ifeval::["{media}" != "prepress"]
+<<<
+endif::[]
 **Prerequisites:**
 
 [.text-left]

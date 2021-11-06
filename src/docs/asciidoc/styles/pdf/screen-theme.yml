@@ -115,7 +115,7 @@ title_page:
     margin_top: 215
     font_size: $heading_h2_font_size * 1.25
   revision:
-    delimiter: ': '
+    delimiter: '  |  '
     margin_top: 10
     font_size: $heading_h3_font_size
 block:
