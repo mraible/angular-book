@@ -17,6 +17,9 @@ I've heard many developers say that Angular is dead. As a veteran Java developer
 
 Whatever you want to call it, Angular is far from dead.
 
+.Build Beautiful Angular Apps with Bootstrap
+image::../images/angular-bootstrap/bootstrap-angular.png[Beautiful Angular 😍, 800, scaledwidth="100%", align=center]
+
 == Angular Loves Bootstrap
 
 You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
