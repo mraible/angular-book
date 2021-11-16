@@ -18,7 +18,7 @@ I've heard many developers say that Angular is dead. As a veteran Java developer
 Whatever you want to call it, Angular is far from dead.
 
 .Build Beautiful Angular Apps with Bootstrap
-image::../images/angular-bootstrap/bootstrap-angular.png[Beautiful Angular 😍, 800, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/angular-bootstrap.png[Beautiful Angular 😍, 800, scaledwidth="100%", align=center]
 
 == Angular Loves Bootstrap
 
