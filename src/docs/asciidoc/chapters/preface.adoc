@@ -1,6 +1,22 @@
 = Preface
 
-Why did you write this book?
+I've been developing websites and web applications since the 1990s. Along the way, I've become a web framework aficionado. I appreciate web frameworks because of the patterns they provide, the testability they offer, and the flourishing communities that tend to sprout up around them.
+
+I started working with open source web frameworks, notably Struts and Spring MVC, in the early 2000s. I spent a few years developing with them (doing mostly server-side MVC) then returned to UI development with HTML, JavaScript, and CSS. Boy did I have good timing!
+
+The JavaScript Renaissance started in the mid-2000s with jQuery. jQuery leveled the playing field to write code that would work on most popular browsers and freed developers from the browser wars burden. From there, full-fledged JavaScript frameworks like Ember.js, Backbone.js, and AngularJS took the developer world by storm.
+
+Java didn't have much innovation while the JavaScript Renaissance was happening. I was a Java developer at LinkedIn in 2007-2008, then moved to full-time frontend development with GWT and jQuery at Evite in 2009. The frontend landscape flourished for the next few years, while the Java ecosystem languished.
+
+In 2009, Node.js was created and the first version of npm. Node allows you to run JavaScript outside a browser, and JavaScript found itself well-positioned on the server.
+
+In 2013, GitHub created Electron and introduced a way to write multi-platform desktop applications with JavaScript. Some of the most often-used software developers use today (Slack and VS Code) are powered by Electron!
+
+In 2014++, along came React, Angular (with TypeScript), and Vue. They continue to be the dominant frameworks for writing browser-based applications.
+
+Another notable release happened in 2014: Spring Boot 1.0. Spring Boot was a breath of fresh air for those using the Spring framework with its starters and simplified configuration. Spring Boot led to Spring Cloud, and both helped fuel the microservices boom that continues today.
+
+I wanted to write this book because I think Angular and Spring Boot are one of the most powerful combinations for writing web apps today. You can use JHipster to generate an app with both frameworks, but if you really want to learn how something works, I think it's important to learn the building blocks.
 
 == What is in an InfoQ mini-book?
 
