@@ -1031,94 +1031,85 @@ gcloud services enable \
   containerregistry.googleapis.com
 ----
 
+When prompted, authorize Cloud Shell to make a GCP API call.
+
 NOTE: This command can take a minute or two to complete.
 
-When it's done, set your default zone and region:
-
-[source,shell]
-----
-gcloud config set compute/zone us-central1-c
-gcloud config set compute/region us-central1
-----
-
-And create a Kubernetes cluster:
+Then, create a Kubernetes cluster called `knative`:
 
 [source,shell]
 ----
 gcloud container clusters create knative \
-  --addons=HorizontalPodAutoscaling,HttpLoadBalancing \
+  --zone=us-central1-c \
+  --num-nodes=5 \
   --machine-type=n1-standard-4 \
-  --cluster-version=1.21 \
-  --logging=SYSTEM,WORKLOAD --monitoring=SYSTEM --enable-ip-alias \
-  --enable-autoscaling --min-nodes=5 --num-nodes=5 --max-nodes=10 \
-  --enable-autorepair \
+  --enable-ip-alias \
   --scopes cloud-platform
 ----
 
 _You can safely ignore the warnings that result from running this command._
 
-Next, set up a cluster administrator and install Istio.
-// todo: update to Knative 1.0
+Next, set up a cluster administrator.
+
 [source,shell]
 ----
 kubectl create clusterrolebinding cluster-admin-binding \
   --clusterrole=cluster-admin \
   --user=$(gcloud config get-value core/account)
-
-kubectl apply -f \
- https://github.com/knative/serving/raw/v0.14.0/third_party/istio-1.5.1/istio-crds.yaml
-
-while [[ $(kubectl get crd gateways.networking.istio.io -o jsonpath='{.status.conditions[?(@.type=="Established")].status}') != 'True' ]]; do
-  echo "Waiting on Istio CRDs"; sleep 1
-done
-
-kubectl apply -f \
- https://github.com/knative/serving/raw/v0.14.0/third_party/istio-1.5.1/istio-minimal.yaml
 ----
 
 Now, you should be able to install Knative!
 
 [source,shell]
 ----
-kubectl apply --selector knative.dev/crd-install=true -f \
- https://github.com/knative/serving/releases/download/v0.14.0/serving.yaml
+kubectl apply -f \
+ https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-crds.yaml
 
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/v0.14.0/serving.yaml
-
-while [[ $(kubectl get svc istio-ingressgateway -n istio-system \
-  -o 'jsonpath={.status.loadBalancer.ingress[0].ip}') == '' ]]; do
-  echo "Waiting on external IP"; sleep 1
-done
+ https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-core.yaml
 ----
 
-You'll need a domain to enable HTTPS, so set that up and point it to the cluster's IP address.
+Then, install Istio:
 
 [source,shell]
 ----
-export IP_ADDRESS=$(kubectl get svc istio-ingressgateway -n istio-system \
-  -o 'jsonpath={.status.loadBalancer.ingress[0].ip}')
-echo $IP_ADDRESS
+kubectl apply -l knative.dev/crd-install=true -f \
+ https://github.com/knative/net-istio/releases/download/knative-v1.0.0/istio.yaml
+kubectl apply -f \
+ https://github.com/knative/net-istio/releases/download/knative-v1.0.0/istio.yaml
 
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config-domain
-  namespace: knative-serving
-data:
-  $IP_ADDRESS.nip.io: ""
-EOF
+while [[ $(kubectl get crd gateways.networking.istio.io -o jsonpath='{.status.conditions[?(@.type=="Established")].status}') != 'True' ]]; do
+  echo "Waiting on Istio CRDs"; sleep 1
+done
+
+kubectl apply -f \
+ https://github.com/knative/net-istio/releases/download/knative-v1.0.0/net-istio.yaml
+----
+
+You'll need a domain to enable HTTPS, so set up a default domain name.
+
+[source,shell]
+----
+kubectl apply -f \
+ https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-default-domain.yaml
 ----
 
 Install https://cert-manager.io/[cert-manager] to automatically provision and manage TLS certificates in Kubernetes.
 
 [source,shell]
 ----
-kubectl apply --validate=false -f \
- https://github.com/jetstack/cert-manager/releases/download/v0.14.3/cert-manager.yaml
+kubectl apply -f \
+ https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
 
 kubectl wait --for=condition=Available -n cert-manager deployments/cert-manager-webhook
+----
+
+Connect Knative with `cert-manager`:
+
+[source,shell]
+----
+kubectl apply -f \
+ https://github.com/knative/net-certmanager/releases/download/knative-v1.0.0/release.yaml
 ----
 
 And configure free TLS certificate issuing with https://letsencrypt.org/[Let's Encrypt].
@@ -1126,7 +1117,7 @@ And configure free TLS certificate issuing with https://letsencrypt.org/[Let's E
 [source,shell]
 ----
 kubectl apply -f - <<EOF
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-http01-issuer
@@ -1141,8 +1132,7 @@ spec:
          class: istio
 EOF
 
-kubectl apply -f \
- https://github.com/knative/serving/releases/download/v0.14.0/serving-cert-manager.yaml
+kubectl wait --for=condition=Ready clusterissuer/letsencrypt-http01-issuer
 
 kubectl apply -f - <<EOF
 apiVersion: v1
@@ -1150,6 +1140,9 @@ kind: ConfigMap
 metadata:
   name: config-certmanager
   namespace: knative-serving
+  labels:
+    serving.knative.dev/release: v1.0.0
+    networking.knative.dev/certificate-provider: cert-manager
 data:
   issuerRef: |
     kind: ClusterIssuer
@@ -1163,14 +1156,26 @@ metadata:
   name: config-network
   namespace: knative-serving
 data:
-  autoTLS: Enabled
-  httpProtocol: Enabled
+  auto-tls: Enabled
+  http-protocol: Enabled
 EOF
 ----
 
 _Phew!_ That was a lot of `kubectl` and YAML, don't you think?! The good news is you're ready to deploy PostgreSQL and your Spring Boot app.
 
-The following command can deploy everything, but you'll need to change the `<...>` placeholders to match your values first.
+First, you'll need to set environment variables to match your Docker and Okta settings.
+
+[source,shell]
+----
+# generate a random password for PostgreSQL
+DB_PASSWORD=$(head -c 16 /dev/urandom | base64 -w0)
+DOCKER_USERNAME=<your-dockerhub-username>
+OKTA_ISSUER=<your-okta-issuer>
+OKTA_CLIENT_ID=<your-okta-client-id>
+OKTA_CLIENT_SECRET=<your-okta-client-secret>
+----
+
+Then, run:
 
 [source,shell]
 ----
@@ -1193,6 +1198,9 @@ metadata:
   name: postgres
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      service: postgres
   template:
     metadata:
       labels:
@@ -1209,7 +1217,7 @@ spec:
             - name: POSTGRES_USER
               value: bootiful-angular
             - name: POSTGRES_PASSWORD
-              value: <your-db-password>
+              value: $DB_PASSWORD
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: pgdata
@@ -1231,7 +1239,7 @@ spec:
   selector:
     service: postgres
 ---
-apiVersion: serving.knative.dev/v1alpha1
+apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: bootiful-angular
@@ -1239,29 +1247,29 @@ spec:
   template:
     spec:
       containers:
-        - image: <your-username>/bootiful-angular
+        - image: $DOCKER_USERNAME/bootiful-angular
           env:
           - name: SPRING_DATASOURCE_URL
             value: jdbc:postgresql://pgservice:5432/bootiful-angular
           - name: SPRING_DATASOURCE_USERNAME
             value: bootiful-angular
           - name: SPRING_DATASOURCE_PASSWORD
-            value: <your-db-password>
+            value: $DB_PASSWORD
           - name: OKTA_OAUTH2_ISSUER
-            value: <your-okta-issuer>
+            value: $OKTA_ISSUER
           - name: OKTA_OAUTH2_CLIENT_ID
-            value: <your-okta-client-id>
+            value: $OKTA_CLIENT_ID
           - name: OKTA_OAUTH2_CLIENT_SECRET
-            value: <your-okta-client-secret>
+            value: $OKTA_CLIENT_SECRET
 EOF
 ----
 
-Once the deployment has completed, run the command below to change it so Hibernate doesn't try to recreate your schema on restart.
+Once the deployment is ready (use `kubectl get deployments` to find out), run the command below to change it so Hibernate doesn't try to recreate your schema on restart.
 
 [source,shell]
 ----
 kubectl apply -f - <<EOF
-apiVersion: serving.knative.dev/v1alpha1
+apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: bootiful-angular
@@ -1269,20 +1277,20 @@ spec:
   template:
     spec:
       containers:
-        - image: <your-username>/bootiful-angular
+        - image: $DOCKER_USERNAME/bootiful-angular
           env:
           - name: SPRING_DATASOURCE_URL
             value: jdbc:postgresql://pgservice:5432/bootiful-angular
           - name: SPRING_DATASOURCE_USERNAME
             value: bootiful-angular
           - name: SPRING_DATASOURCE_PASSWORD
-            value: <your-db-password>
+            value: $DB_PASSWORD
           - name: OKTA_OAUTH2_ISSUER
-            value: <your-okta-issuer>
+            value: $OKTA_ISSUER
           - name: OKTA_OAUTH2_CLIENT_ID
-            value: <your-okta-client-id>
+            value: $OKTA_CLIENT_ID
           - name: OKTA_OAUTH2_CLIENT_SECRET
-            value: <your-okta-client-secret>
+            value: $OKTA_CLIENT_SECRET
           - name: SPRING_JPA_HIBERNATE_DDL_AUTO
             value: validate
 EOF
@@ -1300,13 +1308,13 @@ The result should look similar to this:
 [source,shell]
 ----
 NAME               URL
-bootiful-angular   https://bootiful-angular.default.35.232.41.220.nip.io
+bootiful-angular   https://bootiful-angular.default.35.232.41.220.sslip.io
 ----
 
 You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redirect URI** to the `Web` app in the Okta Admin Console in order to log in.
 
-- Sign-in: `\https://bootiful-angular.default.35.232.41.220.nip.io/login/oauth2/code/okta`
-- Sign-out: `\https://bootiful-angular.default.35.232.41.220.nip.io`
+- Sign-in: `\https://bootiful-angular.default.35.232.41.220.sslip.io/login/oauth2/code/okta`
+- Sign-out: `\https://bootiful-angular.default.35.232.41.220.sslip.io`
 
 Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
 
