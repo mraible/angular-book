@@ -65,6 +65,10 @@ task prepress(type: AsciidoctorTask, description: 'Generates PDF for prepress pr
     backends 'pdf'
     outputDir "$buildDir/asciidoc/pdf-prepress"
     separateOutputDirs false
+
+    asciidoctorj {
+        inProcess 'IN_PROCESS'
+    }
 }
 
 task pdf(type: AsciidoctorTask, description: 'Generates PDF for download') {
