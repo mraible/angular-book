@@ -29,7 +29,7 @@ endif::[]
 [.text-left]
 * A favorite text editor or IDE. I recommend https://www.jetbrains.com/idea/[IntelliJ IDEA].
 * http://nodejs.org/[Node.js] and npm installed.
-* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@12`.
+* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@13`.
 
 NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, checkout https://code.visualstudio.com/[Visual Studio Code].
 
@@ -57,9 +57,9 @@ $ ng version
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-Angular CLI: 12.2.12
+Angular CLI: 13.1.2
 Node: 14.18.1
-Package Manager: npm 8.1.2
+Package Manager: npm 8.3.0
 OS: darwin x64
 
 Angular:
@@ -67,10 +67,20 @@ Angular:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1202.12 (cli-only)
-@angular-devkit/core         12.2.12 (cli-only)
-@angular-devkit/schematics   12.2.12 (cli-only)
-@schematics/angular          12.2.12 (cli-only)
+@angular-devkit/architect    0.1301.2 (cli-only)
+@angular-devkit/core         13.1.2 (cli-only)
+@angular-devkit/schematics   13.1.2 (cli-only)
+@schematics/angular          13.1.2 (cli-only)
+
+Angular:
+...
+
+Package                      Version
+------------------------------------------------------
+@angular-devkit/architect    0.1301.2 (cli-only)
+@angular-devkit/core         13.1.2 (cli-only)
+@angular-devkit/schematics   13.1.2 (cli-only)
+@schematics/angular          13.1.2 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
@@ -83,24 +93,25 @@ If you run this command from the `ng-demo` directory, you'll see even more infor
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-Angular CLI: 12.2.12
+Angular CLI: 13.1.2
 Node: 14.18.1
-Package Manager: npm 8.1.2
+Package Manager: npm 8.3.0
 OS: darwin x64
 
-Angular: 12.2.12
-... animations, cli, common, compiler, compiler-cli, core, forms
+Angular: 13.1.1
+... animations, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
-Package                     	Version
+Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect   	0.1202.12
-@angular-devkit/build-angular   12.2.12
-@angular-devkit/core        	12.2.12
-@angular-devkit/schematics  	12.2.12
-@schematics/angular         	12.2.12
-rxjs                        	6.6.7
-typescript                  	4.3.5
+@angular-devkit/architect       0.1301.2
+@angular-devkit/build-angular   13.1.2
+@angular-devkit/core            13.1.2
+@angular-devkit/schematics      13.1.2
+@angular/cli                    13.1.2
+@schematics/angular             13.1.2
+rxjs                            7.4.0
+typescript                      4.5.4
 ----
 
 === Run the application
@@ -121,7 +132,7 @@ You can make sure your new project's tests pass, run `ng test`:
 ----
 $ ng test
 ...
-Chrome 95.0.4638.69 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.131 secs / 0.121 secs)
+Chrome 97.0.4692.71 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.111 secs / 0.097 secs)
 ----
 
 === Add a search feature
