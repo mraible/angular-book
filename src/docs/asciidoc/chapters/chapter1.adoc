@@ -1490,19 +1490,8 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 To integrate Bootstrap 5 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[NG Bootstrap].
 
 ----
-ng add @ng-bootstrap/ng-bootstrap@next
+ng add @ng-bootstrap/ng-bootstrap@11
 ----
-
-[CAUTION]
-====
-If NG Bootstrap v11 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], use `ng add @ng-bootstrap/ng-bootstrap@11` for the command above.
-
-The current release (v11.0.0-beta.2) doesn't install Bootstrap 5 by default, so install it:
-
-----
-npm i bootstrap@5
-----
-====
 
 This will install Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 

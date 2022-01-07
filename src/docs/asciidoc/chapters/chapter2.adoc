@@ -76,7 +76,7 @@ You should have installed the Angular CLI in the previous section. If you did no
 
 [source,shell]
 ----
-npm install -g @angular/cli@12
+npm install -g @angular/cli@13
 ----
 
 Then, create a directory on your hard drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
