@@ -57,9 +57,10 @@ $ ng version
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-Angular CLI: 13.1.2
-Node: 14.18.1
-Package Manager: npm 8.3.0
+
+Angular CLI: 13.2.0
+Node: 16.13.2
+Package Manager: npm 8.1.2
 OS: darwin x64
 
 Angular:
@@ -67,51 +68,33 @@ Angular:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1301.2 (cli-only)
-@angular-devkit/core         13.1.2 (cli-only)
-@angular-devkit/schematics   13.1.2 (cli-only)
-@schematics/angular          13.1.2 (cli-only)
-
-Angular:
-...
-
-Package                      Version
-------------------------------------------------------
-@angular-devkit/architect    0.1301.2 (cli-only)
-@angular-devkit/core         13.1.2 (cli-only)
-@angular-devkit/schematics   13.1.2 (cli-only)
-@schematics/angular          13.1.2 (cli-only)
+@angular-devkit/architect    0.1302.0 (cli-only)
+@angular-devkit/core         13.2.0 (cli-only)
+@angular-devkit/schematics   13.2.0 (cli-only)
+@schematics/angular          13.2.0 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
 
 ----
-     _                      _                 ____ _     ___
-    / \   _ __   __ _ _   _| | __ _ _ __     / ___| |   |_ _|
-   / △ \ | '_ \ / _` | | | | |/ _` | '__|   | |   | |    | |
-  / ___ \| | | | (_| | |_| | | (_| | |      | |___| |___ | |
- /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
-                |___/
-
-Angular CLI: 13.1.2
-Node: 14.18.1
-Package Manager: npm 8.3.0
+Angular CLI: 13.2.0
+Node: 16.13.2
+Package Manager: npm 8.1.2
 OS: darwin x64
 
-Angular: 13.1.1
-... animations, common, compiler, compiler-cli, core, forms
+Angular: 13.2.0
+... animations, cli, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1301.2
-@angular-devkit/build-angular   13.1.2
-@angular-devkit/core            13.1.2
-@angular-devkit/schematics      13.1.2
-@angular/cli                    13.1.2
-@schematics/angular             13.1.2
-rxjs                            7.4.0
-typescript                      4.5.4
+@angular-devkit/architect       0.1302.0
+@angular-devkit/build-angular   13.2.0
+@angular-devkit/core            13.2.0
+@angular-devkit/schematics      13.2.0
+@schematics/angular             13.2.0
+rxjs                            7.5.2
+typescript                      4.5.5
 ----
 
 === Run the application
@@ -132,7 +115,7 @@ You can make sure your new project's tests pass, run `ng test`:
 ----
 $ ng test
 ...
-Chrome 97.0.4692.71 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.111 secs / 0.097 secs)
+Chrome 97.0.4692.99 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.148 secs / 0.131 secs)
 ----
 
 === Add a search feature
@@ -164,8 +147,19 @@ Open `src/app/search/search.component.html` and replace its default HTML with th
 If you try to start your app at this point, you'll receive a compilation error.
 
 ----
-ERROR in src/app/search/search.component.html:3:50 - error TS2339:
+Error: src/app/search/search.component.html:3:37 - error NG8002:
+ Can't bind to 'ngModel' since it isn't a known property of 'input'.
+
+ <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
+----
+
+This happens because you haven't imported Angular's `FormsModule` in to your project. We'll get to that in a minute. If you scroll down a bit, you'll see another error:
+
+----
+Error: src/app/search/search.component.html:3:50 - error TS2339:
  Property 'query' does not exist on type 'SearchComponent'.
+
+ <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
 ----
 
 To fix this, add a `query` property to `src/app/search/search.component.ts`. While you're there, add a `searchResults` property and an empty `search()` method.
@@ -177,9 +171,7 @@ export class SearchComponent implements OnInit {
   query: string | undefined;
   searchResults: any;
 
-  constructor() { }
-
-  ngOnInit(): void { }
+  ...
 
   search(): void { }
 
@@ -401,10 +393,10 @@ Then update the `search()` method to call the service's `getAll()` method.
 .src/app/search/search.component.ts
 ----
 search(): void {
-  this.searchService.getAll().subscribe(
-    (data: Person[]) => { this.searchResults = data; },
-    error => console.log(error)
-  );
+  this.searchService.getAll().subscribe({
+    next: (data: Person[]) => { this.searchResults = data },
+    error: (e) => console.log(e)
+  });
 }
 ----
 
@@ -548,7 +540,7 @@ This won't compile right away.
 
 [source,shell]
 ----
-Error: src/app/search/search.component.ts:18:31 - error TS2345:
+Error: src/app/search/search.component.ts:19:31 - error TS2345:
  Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
 ----
 
