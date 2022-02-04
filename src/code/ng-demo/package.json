@@ -9,7 +9,7 @@
     "test": "ng test",
     "e2e": "ng e2e",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run --browser chrome",
+    "cypress:run": "cypress run --browser chrome --headed",
     "cy:run": "concurrently \"ng serve\" \"cypress run\""
   },
   "private": true,
