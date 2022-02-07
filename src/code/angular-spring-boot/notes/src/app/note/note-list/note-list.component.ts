@@ -34,16 +34,17 @@ export class NoteListComponent implements OnInit {
 
   delete(note: Note): void {
     if (confirm('Are you sure?')) {
-      this.noteService.delete(note).subscribe(() => {
+      this.noteService.delete(note).subscribe({
+        next: () => {
           this.feedback = {type: 'success', message: 'Delete was successful!'};
           setTimeout(() => {
             this.search();
           }, 1000);
         },
-        err => {
+        error: err => {
           this.feedback = {type: 'warning', message: 'Error deleting.'};
         }
-      );
+      });
     }
   }
 }

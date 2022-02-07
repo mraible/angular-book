@@ -26,41 +26,41 @@ export class NoteEditComponent implements OnInit {
       .route
       .params
       .pipe(
-        map(p => p.id),
+        map(p => p['id']),
         switchMap(id => {
-          if (id === 'new') { return of(new Note()); }
-          // this.id = id;
+          if (id === 'new') {
+            return of(new Note());
+          }
           return this.noteService.findById(id);
         })
       )
-      .subscribe(note => {
+      .subscribe({
+        next: note => {
           this.note = note;
-          // this.note.id = +note.id;
           this.feedback = {};
         },
-        err => {
+        error: err => {
           this.feedback = {type: 'warning', message: 'Error loading'};
         }
-      );
+      });
   }
 
   save() {
-    this.noteService.save(this.note).subscribe(
-      note => {
+    this.noteService.save(this.note).subscribe({
+      next: note => {
         this.note = note;
-        // this.note.id = +this.id;
         this.feedback = {type: 'success', message: 'Save was successful!'};
-        setTimeout(() => {
-          this.router.navigate(['/notes']);
+        setTimeout(async () => {
+          await this.router.navigate(['/notes']);
         }, 1000);
       },
-      err => {
+      error: err => {
         this.feedback = {type: 'warning', message: 'Error saving'};
       }
-    );
+    });
   }
 
-  cancel() {
-    this.router.navigate(['/notes']);
+  async cancel() {
+    await this.router.navigate(['/notes']);
   }
 }

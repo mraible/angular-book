@@ -21,21 +21,22 @@ export class NoteService {
   }
 
   load(filter: NoteFilter): void {
-    this.find(filter).subscribe(result => {
+    this.find(filter).subscribe({
+      next: result => {
         this.noteList = result;
       },
-      err => {
+      error: err => {
         console.error('error loading', err);
       }
-    );
+    });
   }
 
   find(filter: NoteFilter): Observable<Note[]> {
     const params = {
-      title: filter.title,
+      'title': filter.title,
     };
-    const userNotes = 'http://localhost:8080/user/notes';
-    return this.http.get<Note[]>(userNotes, {params, headers});
+
+    return this.http.get<Note[]>(this.api, {params, headers});
   }
 
   save(entity: Note): Observable<Note> {
