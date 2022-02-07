@@ -18,7 +18,7 @@ image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800,
 
 == What's New in Angular?
 
-Angular 12 is the version of Angular used in this book. It adds strict typing by default and deprecates Protractor and IE11 support. It also leverages Ivy throughout and deprecates the View Engine, which was Angular's default renderer before Ivy.
+Angular 13 is the version of Angular used in this book. It adds a build cache for improving build times and removes Internet Explorer support. It also leverages Ivy throughout and removes the View Engine, which was Angular's default renderer before Ivy.
 
 Ivy is a new compiler and renderer, introduced in Angular 9. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
 
@@ -36,9 +36,9 @@ ng update @angular/cli @angular/core
 
 == What's New in Spring Boot?
 
-Spring Boot 2.5 was released in May 2021. It adds support for Java 16, Gradle 7, better Docker images, and datasource initialization enhancements.
+Spring Boot 2.6 was released in November 2021. It adds support for Java 17, SameSite attributes on session cookies, allows you to test Spring MVC using `WebTestClient`, improves embedded MongoDB support, and consolidates Elasticsearch properties so they match between Spring MVC and WebFlux.
 
-In this chapter, I'll show you how to build a note-taking application with Angular 12 and Spring Boot 2.5. Along the way, I'll do my best to weave in security tips and advice on how to make your apps more secure.
+In this chapter, I'll show you how to build a note-taking application with Angular 13 and Spring Boot 2.6. Along the way, I'll do my best to weave in security tips and advice on how to make your apps more secure.
 
 The Angular and Spring Boot projects release major versions every six months. Since Java does too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
 
@@ -46,7 +46,7 @@ Please try newer versions at your own risk and email me if you find issues and/o
 
 **Prerequisites:**
 
-* https://nodejs.org/[Node 14]+
+* https://nodejs.org/[Node 16]+
 * https://adoptium.net/[Java 11]+
 * https://httpie.io/docs#installation[HTTPie]
 
@@ -63,7 +63,7 @@ You can also use https://sdkman.io[SDKMAN!] to install Java 11.
 
 [source,shell]
 ----
-sdk install java 11.0.11.hs-adpt
+sdk install java 11.0.2-open
 ----
 
 If you like to live on the bleeding edge, Java 17 should work too.
@@ -110,7 +110,7 @@ To add OIDC login support to your Angular app, you'll first need an https://deve
 
 If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press kbd:[Return].
 
-Use `\http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `\http://localhost:4200`.
+Use `\http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `\http://localhost:4200/`.
 
 .What does the Okta CLI do?
 ****
@@ -123,7 +123,7 @@ Issuer:    https://dev-133337.okta.com/oauth2/default
 Client ID: 0oab8eb55Kb9jdMIr5d6
 ----
 
-NOTE: You can also use the Okta Admin Console to create your app. See https://developer.okta.com/docs/guides/sign-into-spa/angular/create-okta-application/[Create an Angular App] for more information.
+NOTE: You can also use the Okta Admin Console to create your app. See https://developer.okta.com/docs/guides/sign-into-spa/angular/create-okta-application/[Create an Angular App] for more information. Make sure to use the same redirect URIs if you use the Admin Console.
 ****
 
 When you create SPA apps with the Okta CLI, authorization code flow with PKCE (Proof Key for Code Exchange) is selected by default. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
@@ -147,8 +147,8 @@ It creates a `home.component.ts` that has authentication logic, as well as a tem
 [source,typescript]
 .src/app/home/home.component.ts
 ----
-import { Component } from '@angular/core';
-import { OktaAuthStateService } from '@okta/okta-angular';
+import { Component, Inject } from '@angular/core';
+import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
@@ -158,7 +158,8 @@ import { OktaAuth } from '@okta/okta-auth-js';
 })
 export class HomeComponent {
 
-  constructor(public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
+  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
+              public authService: OktaAuthStateService) {
   }
 }
 ----
@@ -181,13 +182,14 @@ There's also an `HttpInterceptor` created to add an access token to outgoing HTT
 ----
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { OKTA_AUTH } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private oktaAuth: OktaAuth) {
+  constructor(@Inject(OKTA_AUTH) private oktaAuth: OktaAuth) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -239,7 +241,7 @@ Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the nece
 
 [source,shell]
 ----
-https start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.5.6 \
+https start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.6.3 \
 artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
 type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
@@ -253,7 +255,7 @@ Run this command in a terminal and a `notes-api.zip` file will be downloaded. Ex
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
-You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.5.6&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.6.3&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
 .Create app with start.spring.io
 image::../images/angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
@@ -315,26 +317,31 @@ TIP: If you don't get prompted, it's because you're already logged in. Try it in
 Your Spring Boot API is now secure, and it's configured to look for an `Authorization` header with an access token in it. The Okta Spring Boot starter configures your Spring Boot API as an OAuth 2.0 resource server by default and enables login.
 
 To override the default configuration, create a `SecurityConfiguration.kt` class in the same directory as `DemoApplication.kt`:
+
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
 package com.okta.developer.notes
 
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.SecurityFilterChain
 
-@EnableWebSecurity
-class SecurityConfiguration : WebSecurityConfigurerAdapter() {
-    override fun configure(http: HttpSecurity) {
-        //@formatter:off
+@Configuration
+class SecurityConfiguration {
+
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeRequests().anyRequest().authenticated()
-                .and()
+            .authorizeHttpRequests { authorize ->
+                authorize.anyRequest().authenticated()
+            }
             .oauth2Login()
-                .and()
+            .and()
             .oauth2ResourceServer().jwt()
-        //@formatter:on
+
+        return http.build();
     }
 }
 ----
@@ -399,7 +406,7 @@ class AddUserToNote {
 
     @HandleBeforeCreate
     fun handleCreate(note: Note) {
-        val username: String = SecurityContextHolder.getContext().getAuthentication().name
+        val username: String = SecurityContextHolder.getContext().authentication.name
         println("Creating note: $note with user: $username")
         note.user = username
     }
@@ -498,22 +505,31 @@ Restart your Spring Boot app, navigate to `http://localhost:8080/user`, and you'
 
 === CORS Integration
 
-In order for your Angular app (on port 4200) to communicate with your Spring Boot app (on port 8080), you have to enable CORS (cross-origin resource sharing). You can do this by giving your `DemoApplication` a body and defining a `corsFilter` bean inside it.
+In order for your Angular app (on port 4200) to communicate with your Spring Boot app (on port 8080), you have to enable CORS (cross-origin resource sharing). You can do this by updating your `SecurityConfiguration` to have `http.cors()` and defining a `corsConfigurationSource` bean.
 
 [source,kotlin]
 ----
-import org.springframework.boot.web.servlet.FilterRegistrationBean
-import org.springframework.context.annotation.Bean
-import org.springframework.core.Ordered
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import org.springframework.web.filter.CorsFilter
+package com.okta.developer.notes
 
-@SpringBootApplication
-class DemoApplication {
+...
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+
+@Configuration
+class SecurityConfiguration {
 
     @Bean
-    fun simpleCorsFilter(): FilterRegistrationBean<CorsFilter> {
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
+        ...
+
+        http.cors()
+
+        return http.build();
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration()
         config.allowCredentials = true
@@ -521,9 +537,7 @@ class DemoApplication {
         config.allowedMethods = listOf("*");
         config.allowedHeaders = listOf("*")
         source.registerCorsConfiguration("/**", config)
-        val bean = FilterRegistrationBean(CorsFilter(source))
-        bean.order = Ordered.HIGHEST_PRECEDENCE
-        return bean
+        return source
     }
 }
 ----
@@ -542,7 +556,7 @@ In your Angular `notes` app, install `angular-crud` using npm:
 
 [source,shell]
 ----
-npm i -D angular-crud@2
+npm i -D angular-crud@3
 ----
 
 Then create a `src/app/note` directory.
@@ -555,6 +569,7 @@ mkdir -p src/app/note
 Then, create a `model.json` file in it that defines metadata that's used when generating files.
 
 [source,json]
+.src/app/note/model.json
 ----
 {
   "title": "Notes",
@@ -602,14 +617,14 @@ CREATE src/app/note/note-filter.ts (42 bytes)
 CREATE src/app/note/note.module.ts (659 bytes)
 CREATE src/app/note/note.routes.ts (346 bytes)
 CREATE src/app/note/note.service.spec.ts (607 bytes)
-CREATE src/app/note/note.service.ts (1752 bytes)
+CREATE src/app/note/note.service.ts (1774 bytes)
 CREATE src/app/note/note.ts (72 bytes)
 CREATE src/app/note/note-edit/note-edit.component.html (1007 bytes)
 CREATE src/app/note/note-edit/note-edit.component.spec.ts (978 bytes)
-CREATE src/app/note/note-edit/note-edit.component.ts (1461 bytes)
+CREATE src/app/note/note-edit/note-edit.component.ts (1527 bytes)
 CREATE src/app/note/note-list/note-list.component.html (1601 bytes)
 CREATE src/app/note/note-list/note-list.component.spec.ts (978 bytes)
-CREATE src/app/note/note-list/note-list.component.ts (1092 bytes)
+CREATE src/app/note/note-list/note-list.component.ts (1116 bytes)
 UPDATE src/app/app.module.ts (540 bytes)
 ----
 
@@ -696,7 +711,7 @@ You still won't see notes in the list. You need to change the `NoteService` to c
 ----
 find(filter: NoteFilter): Observable<Note[]> {
   const params = {
-    title: filter.title,
+    'title': filter.title,
   };
   const userNotes = 'http://localhost:8080/user/notes';
   return this.http.get<Note[]>(userNotes, {params, headers});
@@ -749,16 +764,17 @@ export class NoteListComponent implements OnInit {
 
   delete(note: Note): void {
     if (confirm('Are you sure?')) {
-      this.noteService.delete(note).subscribe(() => {
+      this.noteService.delete(note).subscribe({
+        next: () => {
           this.feedback = {type: 'success', message: 'Delete was successful!'};
           setTimeout(() => {
             this.search();
           }, 1000);
         },
-        err => {
+        error: err => {
           this.feedback = {type: 'warning', message: 'Error deleting.'};
         }
-      );
+      });
     }
   }
 }
@@ -803,39 +819,40 @@ export class NoteEditComponent implements OnInit {
       .route
       .params
       .pipe(
-        map(p => p.id),
+        map(p => p['id']),
         switchMap(id => {
           if (id === 'new') { return of(new Note()); }
           return this.noteService.findById(id);
         })
       )
-      .subscribe(note => {
+      .subscribe({
+        next: note => {
           this.note = note;
           this.feedback = {};
         },
-        err => {
+        error: err => {
           this.feedback = {type: 'warning', message: 'Error loading'};
         }
-      );
+      });
   }
 
   save() {
-    this.noteService.save(this.note).subscribe(
-      note => {
+    this.noteService.save(this.note).subscribe({
+      next: note => {
         this.note = note;
         this.feedback = {type: 'success', message: 'Save was successful!'};
-        setTimeout(() => {
-          this.router.navigate(['/notes']);
+        setTimeout(async () => {
+          await this.router.navigate(['/notes']);
         }, 1000);
       },
-      err => {
+      error: err => {
         this.feedback = {type: 'warning', message: 'Error saving'};
       }
-    );
+    });
   }
 
-  cancel() {
-    this.router.navigate(['/notes']);
+  async cancel() {
+    await this.router.navigate(['/notes']);
   }
 }
 ----
@@ -871,30 +888,31 @@ Another option is to modify the Angular side of things. Since the ID is passed i
 
 [source,diff]
 ----
---- a/notes/src/app/note/note-edit/note-edit.component.ts
-+++ b/notes/src/app/note/note-edit/note-edit.component.ts
-@@ -30,11 +29,13 @@ export class NoteEditComponent implements OnInit {
-        map(p => p.id),
-        switchMap(id => {
-          if (id === 'new') { return of(new Note()); }
-+         this.id = id;
-          return this.noteService.findById(id);
-        })
-      )
-      .subscribe(note => {
-          this.note = note;
-+         this.note.id = +note.id;
-          this.feedback = {};
-        },
-        err => {
-@@ -47,6 +48,7 @@ export class NoteEditComponent implements OnInit {
-    this.noteService.save(this.note).subscribe(
-      note => {
-        this.note = note;
-+       this.note.id = +this.id;
-        this.feedback = {type: 'success', message: 'Save was successful!'};
-        setTimeout(() => {
-          this.router.navigate(['/notes']);
+--- a/note/note-edit/note-edit.component.ts
++++ b/note/note-edit/note-edit.component.ts
+@@ -29,12 +29,14 @@ export class NoteEditComponent implements OnInit {
+         map(p => p['id']),
+         switchMap(id => {
+           if (id === 'new') { return of(new Note()); }
++          this.id = id;
+           return this.noteService.findById(id);
+         })
+       )
+       .subscribe({
+         next: note => {
+           this.note = note;
++          this.note.id = +note.id
+           this.feedback = {};
+         },
+         error: err => {
+@@ -47,6 +49,7 @@ export class NoteEditComponent implements OnInit {
+     this.noteService.save(this.note).subscribe({
+       next: note => {
+         this.note = note;
++        this.note.id = +this.id;
+         this.feedback = {type: 'success', message: 'Save was successful!'};
+         setTimeout(async () => {
+           await this.router.navigate(['/notes']);
 ----
 
 In this example, you might notice `this.note.id = +note.id`. The `+` converts the string parameter to a number.
@@ -988,8 +1006,9 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest(classes = [DemoApplication::class, MockSecurityConfiguration::class])
 class DemoApplicationTests {
 
-	@Test
-	fun contextLoads() {}
+    @Test
+    fun contextLoads() {
+    }
 
 }
 ----
@@ -1020,28 +1039,29 @@ Modify your `SecurityConfiguration` class with these security enhancements.
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.util.matcher.RequestMatcher
 
-class SecurityConfiguration : WebSecurityConfigurerAdapter() {
-    override fun configure(http: HttpSecurity) {
-        //@formatter:off
-        http
-            .authorizeRequests().anyRequest().authenticated()
-                .and()
-            .oauth2Login()
-                .and()
-            .oauth2ResourceServer().jwt()
+@Configuration
+class SecurityConfiguration {
 
-        http.requiresChannel()
-            .requestMatchers(RequestMatcher {
-                r -> r.getHeader("X-Forwarded-Proto") != null
-            }).requiresSecure() // <.>
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
+        ...
+
+        http.cors()
+
+        http.requiresChannel().requestMatchers(RequestMatcher { r ->
+            r.getHeader("X-Forwarded-Proto") != null
+        }).requiresSecure() // (1)
 
         http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <.>
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // (2)
 
         http.headers()
-            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
-       //@formatter:on
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // (3)
+
+        return http.build();
     }
+
+    ...
 }
 ----
 <.> Force HTTPS in production
