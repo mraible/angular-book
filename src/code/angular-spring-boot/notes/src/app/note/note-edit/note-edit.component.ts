@@ -28,9 +28,7 @@ export class NoteEditComponent implements OnInit {
       .pipe(
         map(p => p['id']),
         switchMap(id => {
-          if (id === 'new') {
-            return of(new Note());
-          }
+          if (id === 'new') { return of(new Note()); }
           return this.noteService.findById(id);
         })
       )
