@@ -58,7 +58,7 @@ export OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET_WEB
 
 [NOTE]
 ====
-If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install-win10[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
+If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
 ====
 
 Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and running `./gradlew bootRun`.
