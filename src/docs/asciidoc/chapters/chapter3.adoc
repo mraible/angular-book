@@ -257,12 +257,19 @@ You can see from the screenshots above that `angular-crud` generates screens wit
 </div>
 ----
 
+Download the `angular.svg` file from https://angular.io/presskit[angular.io/presskit] and add it to your project. You can do this quickly by running the following command from the `notes` directory.
+
+[source,shell]
+----
+wget https://angular.io/assets/images/logos/angular/angular.svg -P src/assets/images/
+----
+
 Add `OktaAuth` and `OktaAuthStateService` as dependencies to `AppComponent`:
 
 [source,typescript]
 ----
-import { Component } from '@angular/core';
-import { OktaAuthStateService } from '@okta/okta-angular';
+import { Component, Inject } from '@angular/core';
+import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
@@ -273,7 +280,8 @@ import { OktaAuth } from '@okta/okta-auth-js';
 export class AppComponent {
   title = 'notes';
 
-  constructor(public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
+  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
+              public authService: OktaAuthStateService) {
   }
 }
 ----
@@ -337,6 +345,7 @@ image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600
 You changed some elements and values that will cause tests in `app.component.spec.ts` to fail. Update the tests to look for uppercase "`Note`" and import `NgbModule`.
 
 [source,typescript]
+.src/app/app.component.spec.ts
 ----
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -364,7 +373,7 @@ describe('AppComponent', () => {
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
+    const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('nav')?.textContent).toContain('Notes');
   });
 });
@@ -436,7 +445,6 @@ The following HTML will add floating labels to your form using the `form-floatin
     <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
   </div>
 </form>
-
 ----
 
 That's an improvement!
@@ -475,6 +483,8 @@ image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title valida
 
 At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples#complete[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
 
+// todo: ng-bootstrap link above fails to load website from IDEA, check PDF
+
 === Add Search by Title with Spring Data JPA
 
 Adding search functionality requires the fewest code modifications. Change the `UserController#notes()` method in your Spring Boot app to accept a title parameter and return notes with the parameter's value in their title.
@@ -497,7 +507,7 @@ fun notes(principal: Principal, title: String?): List<Note> {
 Add the new repository method to the `NotesRepository` in `DemoApplication.kt`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoController.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
 ----
 @RepositoryRestResource
 interface NotesRepository : JpaRepository<Note, Long> {
@@ -832,6 +842,7 @@ export class NoteListComponent implements OnInit {
   onPageChange(page: number) {
     this.filter.page = page - 1;
     this.search();
+    this.filter.page = page;
   }
 
   onSort({column, direction}: SortEvent) {

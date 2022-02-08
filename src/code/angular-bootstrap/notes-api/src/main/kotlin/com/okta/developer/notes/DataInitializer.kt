@@ -10,7 +10,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
         for (x in 0..1000) {
-            repository.save(Note(title = "Note ${x}", user = "matt.raible@okta.com"))
+            repository.save(Note(title = "Note ${x}", user = "mraible@gmail.com"))
         }
         repository.findAll().forEach { println(it) }
     }

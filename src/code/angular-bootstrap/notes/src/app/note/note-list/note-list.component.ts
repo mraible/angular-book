@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
   templateUrl: 'note-list.component.html'
 })
 export class NoteListComponent implements OnInit {
-
   @ViewChildren(SortableHeaderDirective) headers!: QueryList<SortableHeaderDirective>;
   filter = new NoteFilter();
   selectedNote!: Note;
@@ -31,25 +30,6 @@ export class NoteListComponent implements OnInit {
   search(): void {
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
-  }
-
-  select(selected: Note): void {
-    this.selectedNote = selected;
-  }
-
-  delete(note: Note): void {
-    if (confirm('Are you sure?')) {
-      this.noteService.delete(note).subscribe(() => {
-          this.feedback = {type: 'success', message: 'Delete was successful!'};
-          setTimeout(() => {
-            this.search();
-          }, 1000);
-        },
-        err => {
-          this.feedback = {type: 'warning', message: 'Error deleting.'};
-        }
-      );
-    }
   }
 
   onChange(pageSize: number) {
@@ -76,5 +56,25 @@ export class NoteListComponent implements OnInit {
     this.filter.direction = direction;
     this.filter.page = 0;
     this.search();
+  }
+
+  select(selected: Note): void {
+    this.selectedNote = selected;
+  }
+
+  delete(note: Note): void {
+    if (confirm('Are you sure?')) {
+      this.noteService.delete(note).subscribe({
+        next: () => {
+          this.feedback = {type: 'success', message: 'Delete was successful!'};
+          setTimeout(() => {
+            this.search();
+          }, 1000);
+        },
+        error: err => {
+          this.feedback = {type: 'warning', message: 'Error deleting.'};
+        }
+      });
+    }
   }
 }
