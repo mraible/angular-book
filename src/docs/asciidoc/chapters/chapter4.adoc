@@ -72,7 +72,7 @@ source .okta.env
 [TIP]
 .Environment Variables in IntelliJ IDEA
 ====
-If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration and click on the **Browse** icon on the right-side of **Environment variables**.
+If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration, go to **Modify options** > **Environment variables**. Then, click on the **Browse** icon on the right-side of **Environment variables**.
 
 .Edit DemoApplication Configuration
 image::../images/angular-deployment/idea-edit-configuration.png[Edit DemoApplication Configuration, 800, scaledwidth="100%", align=center]
@@ -135,7 +135,7 @@ There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradl
 plugins {
     ...
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 ----
 
@@ -155,22 +155,10 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 [source,shell]
 ----
 npm i -g npm-check-updates
-ncu -u
+ncu
 ----
 
-At the time of this writing, this will upgrade Angular from version ~12.2.0 to ~12.2.12 and TypeScript to version ~4.4.4. Angular 12 supports TypeScript versions >=4.2.3 and <4.4, so you'll need to change `package.json` to specify TypeScript version `~4.3.5`.
-
-[source,json]
-----
-"typescript": "~4.3.5"
-----
-
-While you're in there, change RxJS back to its original `~6.6.0` version.
-
-[source,json]
-----
-"rxjs": "~6.6.0"
-----
+At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.2 and TypeScript to version ~4.5.5.
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
@@ -179,7 +167,6 @@ Then run the following commands in the `notes` directory:
 [source,shell]
 ----
 npm i
-npm audit fix
 ng serve
 ----
 
@@ -195,31 +182,26 @@ There are a few places where `localhost` is hard-coded:
 
 You need to change Spring Boot's code so other origins can make CORS requests too. Angular's code needs updating so access tokens will be sent to production URLs while API requests are sent to the correct endpoint.
 
-Open the root directory in your favorite IDE and configure it so it loads `notes-api` as a Gradle project. Open `DemoApplication.kt` and change the `simpleCorsFilter` bean so it configures the allowed origins from your Spring environment.
+Open the root directory in your favorite IDE and configure it so it loads `notes-api` as a Gradle project. Open `SecurityConfiguration.kt` and change the `corsConfigurationSource` bean so it configures the allowed origins from your Spring environment.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
 import org.springframework.beans.factory.annotation.Value
 
-@SpringBootApplication
-class DemoApplication {
+@Configuration
+class SecurityConfiguration {
 
     @Value("#{ @environment['allowed.origins'] ?: {} }")
     private lateinit var allowedOrigins: List<String>
 
+    ...
+
     @Bean
-    fun simpleCorsFilter(): FilterRegistrationBean<CorsFilter> {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.allowCredentials = true
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        ...
         config.allowedOrigins = allowedOrigins
-        config.allowedMethods = listOf("*");
-        config.allowedHeaders = listOf("*")
-        source.registerCorsConfiguration("/**", config)
-        val bean = FilterRegistrationBean(CorsFilter(source))
-        bean.order = Ordered.HIGHEST_PRECEDENCE
-        return bean
+        ...
     }
 }
 ----
@@ -267,7 +249,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   ...
 
-  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const allowedOrigins = [environment.apiUrl];
     ...
   }
@@ -328,7 +310,7 @@ tasks.processResources {
 }
 ----
 
-Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it will persist to disk, which retains data through restarts.
+Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it persists to disk, which retains data through restarts.
 
 [source,properties]
 ----
@@ -344,12 +326,14 @@ Create a `notes-api/src/main/docker/postgresql.yml` so you can test your `prod` 
 version: '3.8'
 services:
   notes-postgresql:
-    image: postgres:14.0
+    image: postgres:14.1
     environment:
       - POSTGRES_USER=notes
       - POSTGRES_PASSWORD=@-xYcoZn2
+    # If you want to expose these ports outside your computer,
+    # remove the "127.0.0.1:" prefix
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
 ----
 
 Create an `application-prod.properties` file in the same directory as `application-dev.properties`. You'll override these properties with environment variables when you deploy to Heroku.

@@ -25,10 +25,10 @@
       </ul>
       <form class="d-flex">
         <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signInWithRedirect()"
+                (click)="oktaAuth.signInWithRedirect()" type="button"
                 class="btn btn-outline-primary">Login</button>
         <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signOut()"
+                (click)="oktaAuth.signOut()" type="button"
                 class="btn btn-outline-secondary">Logout</button>
       </form>
     </div>
