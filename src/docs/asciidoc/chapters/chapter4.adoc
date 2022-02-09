@@ -370,7 +370,7 @@ endif::[]
 [source,diff]
 ----
 diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-index 387e332..506d761 100644
+index 9e2e823..81a0378 100644
 --- a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
 +++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
 @@ -10,7 +10,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
@@ -383,28 +383,29 @@ index 387e332..506d761 100644
          repository.findAll().forEach { println(it) }
      }
 diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-index 6f1292c..22a5130 100644
+index b28d64b..3a1fd3e 100644
 --- a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
 +++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-@@ -26,12 +26,12 @@ fun main(args: Array<String>) {
- data class Note(@Id @GeneratedValue var id: Long? = null,
-                 var title: String? = null,
-                 var text: String? = null,
--                @JsonIgnore var user: String? = null)
-+                @JsonIgnore var username: String? = null)
+@@ -27,13 +27,13 @@ data class Note(
+     @Id @GeneratedValue var id: Long? = null,
+     var title: String? = null,
+     var text: String? = null,
+-    @JsonIgnore var user: String? = null
++    @JsonIgnore var username: String? = null
+ )
 
  @RepositoryRestResource
  interface NotesRepository : JpaRepository<Note, Long> {
 -    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
--    fun findAllByUserAndTitleContainingIgnoreCase(name: String, title: String, pageable: Pageable): Page<Note>
+-    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
 +    fun findAllByUsername(name: String, pageable: Pageable): Page<Note>
-+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, title: String, pageable: Pageable): Page<Note>
++    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
  }
 
  @Component
-@@ -42,6 +42,6 @@ class AddUserToNote {
+@@ -44,6 +44,6 @@ class AddUserToNote {
      fun handleCreate(note: Note) {
-         val username: String = SecurityContextHolder.getContext().getAuthentication().name
+         val username: String = SecurityContextHolder.getContext().authentication.name
          println("Creating note: $note with user: $username")
 -        note.user = username
 +        note.username = username
@@ -436,6 +437,7 @@ You won't want to pre-populate your production database with a bunch of notes, s
 import org.springframework.context.annotation.Profile
 ...
 
+@Component
 @Profile("dev")
 class DataInitializer(val repository: NotesRepository) : ApplicationRunner {...}
 ----
@@ -444,7 +446,7 @@ To test your profiles, start PostgreSQL using Docker Compose.
 
 [source,shell]
 ----
-docker-compose -f src/main/docker/postgresql.yml up
+docker compose -f src/main/docker/postgresql.yml up
 ----
 
 CAUTION: If you have PostgreSQL installed and running locally, you'll need to stop the process for Docker Compose to work.

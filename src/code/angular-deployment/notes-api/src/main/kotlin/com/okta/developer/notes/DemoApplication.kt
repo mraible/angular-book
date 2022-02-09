@@ -27,13 +27,13 @@ data class Note(
     @Id @GeneratedValue var id: Long? = null,
     var title: String? = null,
     var text: String? = null,
-    @JsonIgnore var user: String? = null
+    @JsonIgnore var username: String? = null
 )
 
 @RepositoryRestResource
 interface NotesRepository : JpaRepository<Note, Long> {
-    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
-    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
+    fun findAllByUsername(name: String, pageable: Pageable): Page<Note>
+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
 }
 
 @Component
@@ -44,6 +44,6 @@ class AddUserToNote {
     fun handleCreate(note: Note) {
         val username: String = SecurityContextHolder.getContext().authentication.name
         println("Creating note: $note with user: $username")
-        note.user = username
+        note.username = username
     }
 }

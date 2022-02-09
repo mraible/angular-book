@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  notes-postgresql:
+    image: postgres:14.1
+    environment:
+      - POSTGRES_USER=notes
+      - POSTGRES_PASSWORD=@-xYcoZn2
+    # If you want to expose these ports outside your computer,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:5432:5432
