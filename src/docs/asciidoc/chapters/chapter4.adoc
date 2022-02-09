@@ -26,12 +26,12 @@ image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with s
 To begin, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log in to it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
 
 .Create Heroku app
-image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%", align=center]
+image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="80%", align=center]
 
 After creating your app, click on the **Resources** tab and add the **Okta** add-on.
 
 .Okta Add-On
-image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="100%", align=center]
+image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="55%", align=center]
 
 CAUTION: If you haven't entered a credit card for your Heroku account, you will receive an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even for free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Simply add a credit card to continue.
 
@@ -486,7 +486,7 @@ You should already have a Heroku app that you added Okta to. Let's use it for ho
 [source,shell]
 ----
 $ heroku apps
-=== mraible@gmail.com Apps
+=== matt@raibledesigns.com Apps
 bootiful-angular
 ----
 
@@ -550,6 +550,14 @@ Tell Heroku to use Java 11 by creating a `notes-api/system.properties` and speci
 java.runtime.version=11
 ----
 
+Commit this file so it's included in your deployment.
+
+[source,shell]
+----
+git add system.properties
+git commit -m "Use Java 11 on Heroku"
+----
+
 Now you're ready to deploy! Take a deep breath and witness how Heroku can deploy your Spring Boot + Kotlin app with a simple `git push`.
 
 [source,shell]
@@ -575,23 +583,23 @@ remote: -----> Spring Boot detected
 remote: -----> Installing JDK 11... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.2-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.3.3-bin.zip
 remote:        ........................................................................
+remote:        > Task :processResources
 remote:        > Task :compileKotlin
 remote:        > Task :compileJava NO-SOURCE
-remote:        > Task :processResources
 remote:        > Task :classes
 remote:        > Task :bootJarMainClassName
 remote:        > Task :bootJar
 remote:
-remote:        BUILD SUCCESSFUL in 2m 12s
+remote:        BUILD SUCCESSFUL in 1m 31s
 remote:        4 actionable tasks: 4 executed
 remote: -----> Discovering process types
 remote:        Procfile declares types     -> (none)
 remote:        Default types for buildpack -> web
 remote:
 remote: -----> Compressing...
-remote:        Done: 93.7M
+remote:        Done: 101.1M
 remote: -----> Launching...
 remote:        Released v9
 remote:        https://bootiful-angular.herokuapp.com/ deployed to Heroku
@@ -599,7 +607,7 @@ remote:
 remote: Verifying deploy... done.
 To https://git.heroku.com/bootiful-angular.git
  * [new branch]      main -> main
-Execution time: 3 min. 2 s.
+Execution time: 2 min. 15 s.
 ----
 
 Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code:
@@ -703,7 +711,7 @@ heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote heroku
 
 === Secure Angular Apps on Heroku
 
-You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get a blank page and an error from the Okta Angular SDK in your browser's console.
+You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Okta Angular SDK in your browser's console.
 
 The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
 
@@ -751,7 +759,7 @@ Commit your changes to Git, add the static buildpack, and redeploy your Angular 
 [source,shell]
 ----
 git add .
-git commit -am "Configure secure headers and static buildpack"
+git commit -m "Configure secure headers and static buildpack"
 heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git --remote angular
 git push angular main
 ----
