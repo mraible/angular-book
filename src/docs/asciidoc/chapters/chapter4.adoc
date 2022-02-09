@@ -1087,8 +1087,6 @@ Add the `@jefiozie/ngx-aws-deploy` package to deploy to S3:
 ng add @jefiozie/ngx-aws-deploy
 ----
 
-TODO: Proceed when https://github.com/Jefiozie/ngx-aws-deploy/issues/401[this issue is fixed].
-
 You won't be prompted for your AWS settings because of the authors have realized it's not a good idea to add secrets to `angular.json`.
 
 Run `ng deploy` with your AWS setting to deploy your Angular app to your AWS S3 bucket.
@@ -1108,7 +1106,7 @@ image::../images/angular-deployment/aws-static-website.png[AWS static website, 6
 
 By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save changes**.
 
-The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
+The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
 
 [source,json]
 ----
@@ -1119,12 +1117,8 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
             "Sid": "PublicReadGetObject",
             "Effect": "Allow",
             "Principal": "*",
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{your-bucket-name}/*"
-            ]
+            "Action": ["s3:GetObject"],
+            "Resource": ["arn:aws:s3:::{your-bucket-name}/*"]
         }
     ]
 }
@@ -1132,13 +1126,13 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
 
 Click **Save changes** to continue.
 
-At this point, you could navigate to `\https://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTP to HTTPS redirect by default. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve these issues].
+At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve these issues].
 
 Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Click in the **Origin Domain Name** field and select your S3 bucket.
 
 Set the **Viewer Protocol Policy** to `Redirect HTTP to HTTPS` and allow all HTTP methods. Under the **Response headers policy**, click **Create Policy**. Name it something you'll remember and enable all the security headers.
 
-Set the values to the defaults unless specified below:
+In the **Security headers** section, set the values to the defaults unless specified below:
 
 * X-Frame-Options: `DENY`
 * X-XSS-Protection: `Enabled` and select `block`
@@ -1168,10 +1162,10 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='...,https://d1xnzbdvvkfkyn.cloudfront.net'
+ALLOWED_ORIGINS='...,https://d3uxowqxrueu13.cloudfront.net'
 ----
 
-Update your Okta SPA app to whitelist the URL as a redirect, too.
+Update your Okta SPA app to allow the URL as a redirect, too.
 
 If you try to log in, you'll get a 403 when redirecting back to the site. To fix this, edit your distribution > **Error pages**. Create two custom error responses for `404` and `403`. Return a path of `/index.html` and a `200: OK` response code.
 
