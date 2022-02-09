@@ -1050,13 +1050,13 @@ class SecurityConfiguration {
 
         http.requiresChannel().requestMatchers(RequestMatcher { r ->
             r.getHeader("X-Forwarded-Proto") != null
-        }).requiresSecure() // (1)
+        }).requiresSecure() // <.>
 
         http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // (2)
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <.>
 
         http.headers()
-            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // (3)
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
 
         return http.build();
     }
