@@ -80,7 +80,7 @@ image::../images/angular-deployment/idea-edit-configuration.png[Edit DemoApplica
 Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Okta from IDEA!
 
 .IntelliJ Environment Variables
-image::../images/angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="100%", align=center]
+image::../images/angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="60%", align=center]
 ====
 
 Next, configure Angular for OIDC authentication by modifying its `auth-routing.module.ts` to use the generated issuer, client ID, and update the callback URL.
@@ -776,7 +776,7 @@ In Angular CLI v8.3.0, an `ng deploy` command was introduced that allows you to 
 Below are the https://angular.io/guide/deployment[current providers and packages] supported by this command.
 
 |===
-|Hosting provider |npm package
+|Hosting provider | Package
 
 |Azure
 |https://npmjs.org/package/@azure/ng-deploy[`@azure/ng-deploy`]
@@ -797,7 +797,7 @@ Below are the https://angular.io/guide/deployment[current providers and packages
 |https://npmjs.org/package/ngx-deploy-npm[`ngx-deploy-npm`]
 
 |Vercel
-|https://www.npmjs.com/package/@zeit/ng-deploy[`@zeit/ng-deploy`]
+|https://github.com/vercel/vercel/tree/main/examples/angular[`vercel init angular`]
 
 |===
 
@@ -818,17 +818,20 @@ Install the Firebase CLI and authenticate from your terminal:
 
 [source,shell]
 ----
-npm install -g firebase-tools
+npm install -g firebase-tools@10.0.1
 firebase login --reauth
 ----
+
+CAUTION: The reason I recommend installing v10.0.1 of Firebase Tools is because newer versions https://github.com/angular/angularfire/issues/3121[cause the terminal to hang on a Mac].
 
 Run `ng add @angular/fire` in the `notes` directory and your new project should show up in the list. When prompted for features to set up, select **ng deploy -- hosting**.
 
 [source,shell]
 ----
 ? Please select a project: notes-1337
+? Please select a hosting site: https://notes-1337-d8605.web.app
 CREATE .firebaserc (194 bytes)
-UPDATE .gitignore (658 bytes)
+UPDATE .gitignore (602 bytes)
 UPDATE angular.json (3363 bytes)
 UPDATE firebase.json (783 bytes)
 ----
@@ -846,13 +849,13 @@ Add the new URL after your existing Heroku one, separating them with a comma. Fo
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='https://arcane-beach-51361.herokuapp.com,https://notes-1337-fe10c.web.app'
+ALLOWED_ORIGINS='https://polar-everglades-67173.herokuapp.com,https://notes-1337-d8605.web.app'
 ----
 
 You'll also need to modify your Okta SPA app to add your Firebase URL as a Sign-in redirect URI and Sign-out redirect URI. For mine, I added:
 
-* Sign-in redirect URI: `\https://notes-1337-fe10c.web.app/callback`
-* Sign-out redirect URI: `\https://notes-1337-fe10c.web.app`
+* Sign-in redirect URI: `\https://notes-1337-d8605.web.app/callback`
+* Sign-out redirect URI: `\https://notes-1337-d8605.web.app`
 
 Open your Firebase URL in your browser, log in, and you should be able to see the note you added on Heroku.
 
@@ -920,7 +923,7 @@ Commit your changes to your `firebase` branch.
 [source,shell]
 ----
 git add .
-git commit -am "Add Firebase deployment"
+git commit -m "Add Firebase deployment"
 ----
 
 === Angular Deployment to Netlify
@@ -935,10 +938,10 @@ git checkout main
 git checkout -b netlify
 ----
 
-Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
+Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site by selecting **Add new site** > **Deploy Manually**. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
 
 .Netlify create site
-image::../images/angular-deployment/netlify-create-site.png[Netlify create site, 650, scaledwidth="100%", align=center]
+image::../images/angular-deployment/netlify-create-site.png[Netlify create site, 750, scaledwidth="90%", align=center]
 
 Click on your new site > **Site Settings** to copy your **API ID** to a text editor. You'll also need a personal access token. To create one, click on your avatar in the top right > **User settings** > **Applications** and click **New access token**. Copy the generated token to your text editor.
 
@@ -962,7 +965,7 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='...,https://keen-ramanujan-ca0c92.netlify.app'
+ALLOWED_ORIGINS='...,https://modest-hopper-bc1197.netlify.app'
 ----
 
 You'll also need to update your Okta SPA app to allow the URL as a sign-in and sign-out redirect.
@@ -991,7 +994,7 @@ Run `ng deploy` again and you should be able to log in successfully.
 
 === Better Security Headers on Netlify
 
-If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
+If you test your new Netlify site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
 
 Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "`all paths under `/``".
 
@@ -1083,6 +1086,8 @@ Add the `@jefiozie/ngx-aws-deploy` package to deploy to S3:
 ----
 ng add @jefiozie/ngx-aws-deploy
 ----
+
+TODO: Proceed when https://github.com/Jefiozie/ngx-aws-deploy/issues/401[this issue is fixed].
 
 You won't be prompted for your AWS settings because of the authors have realized it's not a good idea to add secrets to `angular.json`.
 
