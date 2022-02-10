@@ -7,15 +7,15 @@ buildscript {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.39.0'
         classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.6.1'
         classpath 'org.asciidoctor:asciidoctorj-epub3:1.5.1'
-        classpath 'org.asciidoctor:asciidoctorj-pdf:1.6.0'
-        classpath 'org.jruby:jruby-complete:9.3.2.0'
+        classpath 'org.asciidoctor:asciidoctorj-pdf:1.6.2'
+        classpath 'org.jruby:jruby-complete:9.3.3.0'
     }
 }
 
 plugins {
-    id 'de.undercouch.download' version '4.1.2'
+    id 'de.undercouch.download' version '5.0.1'
     id 'se.patrikerdes.use-latest-versions' version '0.2.18'
-    id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'com.github.ben-manes.versions' version '0.42.0'
 }
 
 apply plugin: 'java'
