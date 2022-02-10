@@ -820,11 +820,9 @@ Install the Firebase CLI and authenticate from your terminal:
 
 [source,shell]
 ----
-npm install -g firebase-tools@10.0.1
+npm install -g firebase-tools
 firebase login --reauth
 ----
-
-CAUTION: The reason I recommend installing v10.0.1 of Firebase Tools is because newer versions https://github.com/angular/angularfire/issues/3121[cause the terminal to hang on a Mac].
 
 Run `ng add @angular/fire` in the `notes` directory and your new project should show up in the list. When prompted for features to set up, select **ng deploy -- hosting**.
 
