@@ -41,8 +41,10 @@ In a terminal, navigate into this new directory and its `notes` folder. Then ins
 [source,shell]
 ----
 cd angular-bootstrap/notes
-npm i
+npm install
 ----
+
+CAUTION: If you get an error when running `npm install`, delete `node_modules` and `package-lock.json` and try again.
 
 Add Bootstrap and NG Bootstrap:
 

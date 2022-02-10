@@ -1,42 +1,56 @@
 package com.okta.developer.notes
 
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
-import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.util.matcher.RequestMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
-@EnableWebSecurity
-class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+@Configuration
+class SecurityConfiguration {
 
-    override fun configure(http: HttpSecurity) {
-        //@formatter:off
+    @Value("#{ @environment['allowed.origins'] ?: {} }")
+    private lateinit var allowedOrigins: List<String>
+
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeRequests()
-                .antMatchers("/**/*.{js,html,css}").permitAll()
-                .antMatchers("/", "/user").permitAll()
-                .anyRequest().authenticated()
-                .and()
+            .authorizeHttpRequests { authorize ->
+                authorize.anyRequest().authenticated()
+            }
             .oauth2Login()
-                .and()
+            .and()
             .oauth2ResourceServer().jwt()
 
-        http.requiresChannel()
-            .requestMatchers(RequestMatcher {
-                    r -> r.getHeader("X-Forwarded-Proto") != null
-            }).requiresSecure()
+        http.cors()
+
+        http.requiresChannel().requestMatchers(RequestMatcher { r ->
+            r.getHeader("X-Forwarded-Proto") != null
+        }).requiresSecure() // (1)
 
         http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // (2)
 
         http.headers()
-            .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
-                .and()
-            .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-                .and()
-            .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // (3)
 
-        //@formatter:on
+        return http.build();
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+        config.allowCredentials = true
+        config.allowedOrigins = allowedOrigins
+        config.allowedMethods = listOf("*");
+        config.allowedHeaders = listOf("*")
+        source.registerCorsConfiguration("/**", config)
+        return source
     }
 }

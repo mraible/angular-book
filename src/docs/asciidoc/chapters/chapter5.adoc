@@ -17,7 +17,7 @@ If you'd rather start from this point, download the examples for this book from 
 **Prerequisites:**
 
 * https://docs.docker.com/install/[Docker]
-* https://nodejs.org/[Node.js] 14+
+* https://nodejs.org/[Node.js] 16+
 * https://adoptium.net/[Java] 11+
 
 == Dockerize an Angular App
@@ -26,7 +26,7 @@ Create a `notes/Dockerfile` that uses Node.js as a base image and Nginx as a web
 
 [source,docker]
 ----
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -79,6 +79,8 @@ Make sure your Docker daemon is running with `docker ps`. Then run the following
 ----
 docker build -t ng-notes .
 ----
+
+CAUTION: If you get an error when running `docker build`, delete `node_modules` and `package-lock.json` and try again.
 
 If it builds successfully, you'll see messages like the following:
 
@@ -188,7 +190,7 @@ You'll also need to update your `Dockerfile` so it uses the aforementioned `envs
 [source,docker]
 .notes/Dockerfile
 ----
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -292,10 +294,11 @@ Now you should get an **A**!
 .Nginx in Docker score from securityheaders.com
 image::../images/angular-docker/angular-docker-securityheaders.png[Nginx in Docker score from securityheaders.com, 800, scaledwidth="100%", align=center]
 
-Commit your changes to Git.
+You might want to commit your changes to Git like you did for the previous deployment options.
 
 [source,shell]
 ----
+git checkout -b docker
 git add .
 git commit -m "Add Docker for Angular"
 ----

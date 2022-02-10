@@ -104,6 +104,8 @@ npm i
 ng serve
 ----
 
+CAUTION: If you get an error when running `npm i`, delete `node_modules` and `package-lock.json` and try again.
+
 Open `http://localhost:4200` in your browser.
 
 .Angular Home

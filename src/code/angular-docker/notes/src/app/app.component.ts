@@ -1,23 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from './shared/auth.service';
+import { Component, Inject } from '@angular/core';
+import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
+import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'Notes';
-  isAuthenticated: boolean = false;
   isCollapsed = true;
 
-  constructor(public auth: AuthService) {
-  }
-
-  async ngOnInit() {
-    this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe(
-      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
-    );
+  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
+              public authService: OktaAuthStateService) {
   }
 }

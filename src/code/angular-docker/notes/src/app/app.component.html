@@ -24,16 +24,18 @@
         </li>
       </ul>
       <form class="d-flex">
-        <button *ngIf="!isAuthenticated" (click)="auth.login()"
-                type="button" class="btn btn-outline-primary" id="login">Login</button>
-        <button *ngIf="isAuthenticated" (click)="auth.logout()"
-                type="button" class="btn btn-outline-secondary" id="logout">Logout</button>
+        <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
+                (click)="oktaAuth.signInWithRedirect()" type="button"
+                class="btn btn-outline-primary">Login</button>
+        <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
+                (click)="oktaAuth.signOut()" type="button"
+                class="btn btn-outline-secondary">Logout</button>
       </form>
     </div>
   </div>
 </nav>
 
 <div class="container-fluid pt-3">
-  <a *ngIf="!isAuthenticated">Please log in to manage your notes.</a>
-  <router-outlet *ngIf="isAuthenticated"></router-outlet>
+  <a *ngIf="!(authService.authState$ | async)?.isAuthenticated">Please log in to manage your notes.</a>
+  <router-outlet></router-outlet>
 </div>

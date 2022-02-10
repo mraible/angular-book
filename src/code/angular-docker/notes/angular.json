@@ -71,8 +71,7 @@
               "browserTarget": "notes:build:production"
             },
             "development": {
-              "browserTarget": "notes:build:development",
-              "proxyConfig": "src/proxy.conf.js"
+              "browserTarget": "notes:build:development"
             }
           },
           "defaultConfiguration": "development"
