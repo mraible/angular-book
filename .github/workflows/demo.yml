@@ -31,6 +31,10 @@ jobs:
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
         uses: cypress-io/github-action@v2
+        if: ${{ matrix.app == 'ng-demo-auth0' }}
+        env:
+          CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          CYPRESS_E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
         with:
           build: npm run build
           start: npm start
