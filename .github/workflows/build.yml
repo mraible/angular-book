@@ -17,6 +17,5 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-        cache: 'gradle'
     - name: Build book
       run: npm run setup
