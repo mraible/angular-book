@@ -1,7 +1,7 @@
 runtime:
   cache_dir: ./.cache/antora
 site:
-  title: Angular Mini Book
+  title: The Angular Mini Book
 content:
   sources:
     - url: '.'
