@@ -14,7 +14,6 @@ I think building web and mobile applications with Angular, Bootstrap, and Spring
 
 Table of Contents:
 
-The Angular Mini-Book
 Dedication
 Acknowledgments
 Preface
@@ -35,12 +34,12 @@ Build an Angular App
     Add Auth with OpenID Connect
     Summary
 Integrate Angular with Spring Boot
-    What’s New in Angular?
-    What’s New in Spring Boot?
+    What's New in Angular?
+    What's New in Spring Boot?
     Create an Angular App
     Create a Spring Boot App
     CRUD in Angular
-    Mocking Spring Security’s OIDC Configuration
+    Mocking Spring Security's OIDC Configuration
     Security Patterns for Spring Boot
     Summary
 Beautiful Angular Apps with Bootstrap
@@ -53,9 +52,9 @@ Beautiful Angular Apps with Bootstrap
 Angular Deployment
     Create an Angular + Spring Boot App
     Deploy Angular to Heroku with Secure Headers
-    Use ng deploy with Firebase, Netlify, and AWS
-Summary
-    Angular and Docker
+    Use `ng deploy` with Firebase, Netlify, and AWS
+    Summary
+Angular and Docker
     Dockerize an Angular App
     Combine Angular and Spring Boot in a Single Artifact
     Build a Docker Image with Jib
