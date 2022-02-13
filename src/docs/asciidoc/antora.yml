@@ -1,14 +1,15 @@
 name: ROOT
 title: The Angular-Mini Book
-version: 2.0
+version: master
 nav:
   - nav.adoc
 asciidoc:
   attributes:
+    page-pagination: '@'
     book-title: The Angular-Mini Book
     author: Matt Raible
     revnumber: 2.0
     revyear: 2022
     email: matt@raibledesigns.com
-    subject: Angular and Spring Boot
+    subject: Angular
     keywords: Angular, Angular CLI, TypeScript, Bootstrap, Spring Boot, Kotlin, OAuth, OpenID Connect

@@ -33,17 +33,17 @@ asciidoctorj {
 
 import org.asciidoctor.gradle.AsciidoctorTask
 
-def attrs = ['sourcedir'         : '../../../main/webapp',
-             'source-highlighter': 'rouge',
-             'epub3-stylesdir'   : './styles/epub',
-             // NOTE don't include leading ./ because it messes up paths in the epub files
-             'imagesdir'         : 'images',
-             'toc'               : 'left',
-             'icons'             : 'font',
-             'sectanchors'       : '',
-             'idprefix'          : '',
-             'idseparator'       : '-',
-             'listing-caption'   : 'Listing']
+def attrs = [
+    'source-highlighter': 'rouge',
+    'epub3-stylesdir'   : './styles/epub',
+    // NOTE don't include leading ./ because it messes up paths in the epub files
+    'imagesdir'         : 'images',
+    'toc'               : 'left',
+    'icons'             : 'font',
+    'sectanchors'       : '',
+    'idprefix'          : '',
+    'idseparator'       : '-',
+    'listing-caption'   : 'Listing']
 
 tasks.withType(AsciidoctorTask) { task ->
     attributes attrs

@@ -105,7 +105,6 @@ Desktop.ini
 /bin/**
 /deploy/**
 dist/
-/public/
 
 ######################
 # Logs
@@ -127,3 +126,6 @@ dist/
 # Gradle Wrapper
 ######################
 !gradle/wrapper/gradle-wrapper.jar
+
+.cache
+/public/
