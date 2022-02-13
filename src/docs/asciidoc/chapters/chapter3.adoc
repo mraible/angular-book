@@ -26,7 +26,7 @@ You might think that Angular Material is more popular than Bootstrap these days.
 
 .What's your preferred CSS framework with Angular?
 [link=https://twitter.com/mraible/status/1196894737870938113]
-image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%", align=center]
+image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
 
 == Integrate Bootstrap with Angular
 
@@ -307,7 +307,7 @@ image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 
 If you reduce the width of your browser window, you'll see the menu collapse to take up less real estate.
 
 .Navbar squished
-image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="70%", align=center]
 
 However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
@@ -340,7 +340,7 @@ export class AppComponent {
 Now, you'll be able to toggle the menu!
 
 .Squished navbar with menu
-image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="70%", align=center]
 
 === Refactor Unit Tests to Pass
 

@@ -1102,7 +1102,7 @@ Next, you need to https://docs.aws.amazon.com/AmazonS3/latest/user-guide/static-
 Type `index.html` for the index and error document and click **Save changes**.
 
 .AWS static website
-image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="100%", align=center]
+image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="80%", align=center]
 
 By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save changes**.
 

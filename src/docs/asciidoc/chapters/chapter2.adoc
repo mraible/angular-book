@@ -222,7 +222,7 @@ image::../images/angular-spring-boot/angular-login-button.png[Login button, 800,
 Click on it and you'll be redirected to Okta to log in.
 
 .Okta Login form
-image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="100%", align=center]
+image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="50%", align=center]
 
 Enter valid credentials and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
