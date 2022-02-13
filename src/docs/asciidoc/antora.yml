@@ -5,6 +5,7 @@ nav:
   - nav.adoc
 asciidoc:
   attributes:
+    page-og-image: https://pbs.twimg.com/media/FEbVC0UXsAgU5ck?format=jpg&name=4096x4096
     page-pagination: '@'
     book-title: The Angular-Mini Book
     author: Matt Raible

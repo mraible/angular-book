@@ -1,5 +1,5 @@
-//* xref:colophon.adoc[]
 * xref:dedication.adoc[]
+* xref:colophon.adoc[Colophon]
 * xref:acknowledgments.adoc[]
 * xref:preface.adoc[]
 * xref:introduction.adoc[]
