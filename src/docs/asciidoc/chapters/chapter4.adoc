@@ -1106,7 +1106,7 @@ image::../images/angular-deployment/aws-static-website.png[AWS static website, 6
 
 By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save changes**.
 
-The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
+The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `\{your-bucket-name}` with your bucket's name.
 
 [source,json]
 ----
@@ -1118,7 +1118,7 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
             "Effect": "Allow",
             "Principal": "*",
             "Action": ["s3:GetObject"],
-            "Resource": ["arn:aws:s3:::{your-bucket-name}/*"]
+            "Resource": ["arn:aws:s3:::\{your-bucket-name}/*"]
         }
     ]
 }

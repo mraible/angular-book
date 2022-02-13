@@ -24,6 +24,10 @@ npm run build
 * Open _build/asciidoc/pdf-screen/index.pdf_ to see the downloadable 8.5x11" PDF file.
 * Open _build/asciidoc/epub3/index.epub_ in iBooks to see the generated EPUB file.
 
+To generate a static site using Antora, run the following command:
+
+ npm run build:site
+
 == Sweet Authoring Experience
 
 If you'd like a very pleasant authoring experience, the project provides build files that make it possible. First,
@@ -53,6 +57,12 @@ This will start two daemons:
 
 Thanks to this, you'll have a constantly up to date HTML version available in your browser while editing.
 
+Similarly, you can run the following command to continuously watch the file system and rebuild the static site:
+
+----
+npm run watch:site
+----
+
 == Update Dependencies
 
 To update the dependencies in `build.gradle`, run:
@@ -67,3 +77,8 @@ To update the dependencies in `package.json`, install https://www.npmjs.com/pack
 npm i -g npm-check-updates
 ncu
 ----
+
+== Netlify Preview
+
+This repository is using a `netlify.toml` configuration file to build and publish the static site using https://www.netlify.com/[Netlify].
+You can see the result at https://angular-mini-book.netlify.app.
