@@ -1,0 +1,18 @@
+= Angular Mini-Book Changelog
+:uri-angular: https://angular.io
+:uri-angular-book-download: https://www.infoq.com/minibooks/angular-mini-book
+:uri-repo: https://github.com/mraible/angular-book
+:icons: font
+:star: icon:star[role=red]
+ifndef::icons[]
+:star: &#9733;
+endif::[]
+
+https://angular.io/[Angular] is an open source, popular web framework. It allows you to create highly testable, performant web applications with TypeScript. https://www.infoq.com/minibooks/angular-mini-book[The Angular Mini-Book] is a guide to getting started with Angular.
+
+This document provides a high-level view of the changes introduced in the Angular Mini-Book by release.
+For a detailed view of what has changed, refer to the https://github.com/mraible/angular-book/commits/main[commit history] on GitHub.
+
+== 1.0.0 (2021-11-16) - @mraible
+
+* Initial Release
