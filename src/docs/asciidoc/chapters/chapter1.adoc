@@ -58,7 +58,7 @@ $ ng version
                 |___/
 
 
-Angular CLI: 13.2.2
+Angular CLI: 13.2.3
 Node: 16.13.2
 Package Manager: npm 8.1.2
 OS: darwin x64
@@ -68,33 +68,33 @@ Angular:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1302.2 (cli-only)
-@angular-devkit/core         13.2.2 (cli-only)
-@angular-devkit/schematics   13.2.2 (cli-only)
-@schematics/angular          13.2.2 (cli-only)
+@angular-devkit/architect    0.1302.3 (cli-only)
+@angular-devkit/core         13.2.3 (cli-only)
+@angular-devkit/schematics   13.2.3 (cli-only)
+@schematics/angular          13.2.3 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
 
 ----
-Angular CLI: 13.2.2
+Angular CLI: 13.2.3
 Node: 16.13.2
 Package Manager: npm 8.1.2
 OS: darwin x64
 
-Angular: 13.2.1
+Angular: 13.2.2
 ... animations, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1302.2
-@angular-devkit/build-angular   13.2.2
-@angular-devkit/core            13.2.2
-@angular-devkit/schematics      13.2.2
-@angular/cli                    13.2.2
-@schematics/angular             13.2.2
-rxjs                            7.5.2
+@angular-devkit/architect       0.1302.3
+@angular-devkit/build-angular   13.2.3
+@angular-devkit/core            13.2.3
+@angular-devkit/schematics      13.2.3
+@angular/cli                    13.2.3
+@schematics/angular             13.2.3
+rxjs                            7.5.4
 typescript                      4.5.5
 ----
 
@@ -1485,18 +1485,7 @@ To integrate Bootstrap 5 and Bootstrap widgets into your Angular CLI-generated a
 ng add @ng-bootstrap/ng-bootstrap
 ----
 
-[CAUTION]
-====
-The current release (v11.0.0) doesn't install Bootstrap 5 by default, so install it:
-
-----
-npm i bootstrap@5
-----
-
-If NG Bootstrap v12 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], you don't need to do this step.
-====
-
-This will install Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
+This will install Bootstrap, NG Bootstrap, `@angular/localize` and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
 Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
