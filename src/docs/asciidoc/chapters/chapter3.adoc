@@ -472,9 +472,7 @@ image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title valida
 
 == Add a Data Table with Searching, Sorting, and Pagination
 
-At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples#complete[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
-
-// todo: ng-bootstrap link above fails to load website from IDEA, check PDF
+At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
 
 === Add Search by Title with Spring Data JPA
 
