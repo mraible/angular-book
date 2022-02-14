@@ -585,7 +585,7 @@ remote: -----> Spring Boot detected
 remote: -----> Installing JDK 11... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.3.3-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.4-bin.zip
 remote:        ........................................................................
 remote:        > Task :processResources
 remote:        > Task :compileKotlin
@@ -1126,7 +1126,7 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
 
 Click **Save changes** to continue.
 
-At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve these issues].
+At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve this].
 
 Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Click in the **Origin Domain Name** field and select your S3 bucket.
 

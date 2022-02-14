@@ -11,7 +11,7 @@ In October 2014, the AngularJS team announced they were building http://www.info
 
 In March 2015, the Angular team http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns], announced they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "`Angular`" instead of Angular 2.0].
 
-Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project tried to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 13 on November 3, 2021.
+Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project tries to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 13 on November 3, 2021.
 
 You can find the Angular project at https://angular.io[angular.io].
 
@@ -1485,7 +1485,7 @@ To integrate Bootstrap 5 and Bootstrap widgets into your Angular CLI-generated a
 ng add @ng-bootstrap/ng-bootstrap
 ----
 
-This will install Bootstrap, NG Bootstrap, `@angular/localize` and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
+This will install Bootstrap, NG Bootstrap, `@angular/localize`, and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
 Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
