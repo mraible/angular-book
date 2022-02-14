@@ -53,17 +53,6 @@ Add Bootstrap and NG Bootstrap:
 ng add @ng-bootstrap/ng-bootstrap
 ----
 
-[CAUTION]
-====
-The current release (v11.0.0) doesn't install Bootstrap 5 by default, so install it:
-
-----
-npm i bootstrap@5
-----
-
-If NG Bootstrap v12 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], you don't need to do this step.
-====
-
 This process will import `NgbModule` in `app.module.ts` and configure your app to use Bootstrap by adding a reference to `bootstrap.min.css` in `angular.json`.
 
 If you run `ng serve -o`, you'll see it's pretty simple. And kinda ugly.
