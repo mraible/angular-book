@@ -160,7 +160,7 @@ npm i -g npm-check-updates
 ncu
 ----
 
-At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.2 and TypeScript to version ~4.5.5.
+At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.3 and TypeScript to version ~4.5.5.
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
