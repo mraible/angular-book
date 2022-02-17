@@ -16,6 +16,10 @@ describe('SearchService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
+  afterEach(() => {
+    httpMock.verify();
+  });
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
@@ -63,9 +67,5 @@ describe('SearchService', () => {
     const req = httpMock.expectOne('assets/data/people.json');
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
   });
 });

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { User } from './user';
@@ -18,7 +18,7 @@ export class AuthService {
   }
 
   getUser(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <1>
+    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <.>
       map((response: User) => {
         if (response !== null) {
           this.$authenticationState.next(true);
@@ -28,19 +28,16 @@ export class AuthService {
     );
   }
 
-  isAuthenticated(): Promise<boolean> {
-    return this.getUser().toPromise().then((user: User) => {
-      return user !== undefined;
-    }).catch(() => {
-      return false;
-    })
+  async isAuthenticated(): Promise<boolean> {
+    const user = await lastValueFrom(this.getUser());
+    return user !== undefined;
   }
 
-  login(): void { // <2>
+  login(): void { // <.>
     location.href = `${location.origin}${this.location.prepareExternalUrl('oauth2/authorization/okta')}`;
   }
 
-  logout(): void { // <3>
+  logout(): void { // <.>
     const redirectUri = `${location.origin}${this.location.prepareExternalUrl('/')}`;
 
     this.http.post(`${environment.apiUrl}/api/logout`, {}).subscribe((response: any) => {

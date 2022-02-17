@@ -11,7 +11,7 @@ In October 2014, the AngularJS team announced they were building http://www.info
 
 In March 2015, the Angular team http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns], announced they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "`Angular`" instead of Angular 2.0].
 
-Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project tried to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 12 on May 12, 2021.
+Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project tries to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 13 on November 3, 2021.
 
 You can find the Angular project at https://angular.io[angular.io].
 
@@ -29,7 +29,7 @@ endif::[]
 [.text-left]
 * A favorite text editor or IDE. I recommend https://www.jetbrains.com/idea/[IntelliJ IDEA].
 * http://nodejs.org/[Node.js] and npm installed.
-* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@12`.
+* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@13`.
 
 NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, checkout https://code.visualstudio.com/[Visual Studio Code].
 
@@ -57,8 +57,9 @@ $ ng version
  /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
                 |___/
 
-Angular CLI: 12.2.12
-Node: 14.18.1
+
+Angular CLI: 13.2.3
+Node: 16.13.2
 Package Manager: npm 8.1.2
 OS: darwin x64
 
@@ -67,40 +68,34 @@ Angular:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1202.12 (cli-only)
-@angular-devkit/core         12.2.12 (cli-only)
-@angular-devkit/schematics   12.2.12 (cli-only)
-@schematics/angular          12.2.12 (cli-only)
+@angular-devkit/architect    0.1302.3 (cli-only)
+@angular-devkit/core         13.2.3 (cli-only)
+@angular-devkit/schematics   13.2.3 (cli-only)
+@schematics/angular          13.2.3 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
 
 ----
-     _                      _                 ____ _     ___
-    / \   _ __   __ _ _   _| | __ _ _ __     / ___| |   |_ _|
-   / △ \ | '_ \ / _` | | | | |/ _` | '__|   | |   | |    | |
-  / ___ \| | | | (_| | |_| | | (_| | |      | |___| |___ | |
- /_/   \_\_| |_|\__, |\__,_|_|\__,_|_|       \____|_____|___|
-                |___/
-
-Angular CLI: 12.2.12
-Node: 14.18.1
+Angular CLI: 13.2.3
+Node: 16.13.2
 Package Manager: npm 8.1.2
 OS: darwin x64
 
-Angular: 12.2.12
-... animations, cli, common, compiler, compiler-cli, core, forms
+Angular: 13.2.2
+... animations, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
-Package                     	Version
+Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect   	0.1202.12
-@angular-devkit/build-angular   12.2.12
-@angular-devkit/core        	12.2.12
-@angular-devkit/schematics  	12.2.12
-@schematics/angular         	12.2.12
-rxjs                        	6.6.7
-typescript                  	4.3.5
+@angular-devkit/architect       0.1302.3
+@angular-devkit/build-angular   13.2.3
+@angular-devkit/core            13.2.3
+@angular-devkit/schematics      13.2.3
+@angular/cli                    13.2.3
+@schematics/angular             13.2.3
+rxjs                            7.5.4
+typescript                      4.5.5
 ----
 
 === Run the application
@@ -121,7 +116,7 @@ You can make sure your new project's tests pass, run `ng test`:
 ----
 $ ng test
 ...
-Chrome 95.0.4638.69 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.131 secs / 0.121 secs)
+Chrome 97.0.4692.99 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.128 secs / 0.115 secs)
 ----
 
 === Add a search feature
@@ -150,11 +145,22 @@ Open `src/app/search/search.component.html` and replace its default HTML with th
 <pre>{{searchResults | json}}</pre>
 ----
 
-If you try to start your app at this point, you'll receive a compilation error.
+If you try to start your app at this point, you'll receive several errors. The first is a compilation error.
 
 ----
-ERROR in src/app/search/search.component.html:3:50 - error TS2339:
+Error: src/app/search/search.component.html:3:37 - error NG8002:
+ Can't bind to 'ngModel' since it isn't a known property of 'input'.
+
+ <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
+----
+
+This happens because you haven't imported Angular's `FormsModule` in to your project. We'll get to that in a minute. If you scroll down a bit, you'll see another error:
+
+----
+Error: src/app/search/search.component.html:3:50 - error TS2339:
  Property 'query' does not exist on type 'SearchComponent'.
+
+ <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
 ----
 
 To fix this, add a `query` property to `src/app/search/search.component.ts`. While you're there, add a `searchResults` property and an empty `search()` method.
@@ -166,9 +172,7 @@ export class SearchComponent implements OnInit {
   query: string | undefined;
   searchResults: any;
 
-  constructor() { }
-
-  ngOnInit(): void { }
+  ...
 
   search(): void { }
 
@@ -390,10 +394,10 @@ Then update the `search()` method to call the service's `getAll()` method.
 .src/app/search/search.component.ts
 ----
 search(): void {
-  this.searchService.getAll().subscribe(
-    (data: Person[]) => { this.searchResults = data; },
-    error => console.log(error)
-  );
+  this.searchService.getAll().subscribe({
+    next: (data: Person[]) => { this.searchResults = data },
+    error: (e) => console.log(e)
+  });
 }
 ----
 
@@ -537,7 +541,7 @@ This won't compile right away.
 
 [source,shell]
 ----
-Error: src/app/search/search.component.ts:18:31 - error TS2345:
+Error: src/app/search/search.component.ts:19:31 - error TS2345:
  Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
 ----
 
@@ -585,7 +589,7 @@ const routes: Routes = [
 ];
 ----
 
-Update `src/app/edit/edit.component.html` to display an editable form. You might have noticed I've added `id` attributes to most elements. This is to make it easier to locate elements when writing integration tests.
+Update `src/app/edit/edit.component.html` to display an editable form. You might notice I've added `id` attributes to most elements. This is to make it easier to locate elements when writing integration tests.
 
 [source,html]
 .src/app/edit/edit.component.html
@@ -644,7 +648,7 @@ export class EditComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.sub = this.route.params.subscribe(params => {
-      const id = + params.id; // (+) converts string 'id' to a number
+      const id = +params['id']; // (+) converts string 'id' to a number
       this.service.get(id).subscribe(person => {
         if (person) {
           this.person = person;
@@ -762,8 +766,8 @@ constructor(private searchService: SearchService, private route: ActivatedRoute)
 
 ngOnInit(): void {
   this.sub = this.route.params.subscribe(params => {
-    if (params.term) {
-      this.query = decodeURIComponent(params.term);
+    if (params['term']) {
+      this.query = decodeURIComponent(params['term']);
       this.search();
     }
   });
@@ -845,7 +849,7 @@ To fix this, add a `name` attribute to all the address fields. For example:
 </address>
 ----
 
-Now values display in all fields, `name` is required, and save is enabled.
+Now values display in all fields, `name` is required, and save is disabled when the form is invalid.
 
 .Edit form with names and validation
 image::../images/ng-demo/edit-form-names.png[Edit form with names and validation, 800, scaledwidth="100%", align=center]
@@ -912,7 +916,7 @@ describe('SearchService', () => {
 });
 ----
 
-If you run `ng test`, you will likely see some errors about the test stubs that Angular CLI created for you. You can ignore these for now.
+Now, you will likely see some errors about the test stubs that Angular CLI created for you. You can ignore these for now.
 
 [%autofit]
 ----
@@ -1001,11 +1005,10 @@ Create `src/app/shared/search/mocks/routes.ts` to mock Angular's `Router` and `A
 [source,typescript]
 .src/app/shared/search/mocks/routes.ts
 ----
-import { ActivatedRoute, Params } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 export class MockActivatedRoute extends ActivatedRoute {
-  params: Observable<Params>;
 
   constructor(parameters?: { [key: string]: any; }) {
     super();
@@ -1026,7 +1029,7 @@ With this mock in place, you can `TestBed.configureTestingModule()` to setup `Se
 ----
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchComponent } from './search.component';
-import { MockActivatedRoute } from '../shared/search/mocks/routes';
+import { MockActivatedRoute } from './mocks/routes';
 import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -1095,7 +1098,7 @@ Update the test for `EditComponent`, verifying fetching a single record works. N
 import { EditComponent } from './edit.component';
 import { TestBed } from '@angular/core/testing';
 import { Address, Person, SearchService } from '../shared';
-import { MockActivatedRoute, MockRouter } from '../shared/search/mocks/routes';
+import { MockActivatedRoute, MockRouter } from '../search/mocks/routes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -1148,7 +1151,7 @@ describe('EditComponent', () => {
 });
 ----
 
-You should see "`Executed 11 of 11 [green]#SUCCESS# (0.224 secs / 0.164 secs)`" in the shell window that's running `ng test`. If you don't, try canceling the command and restarting.
+You should see "`Executed 11 of 11 [green]#SUCCESS# (0.117 secs / 0.101 secs)`" in the shell window that's running `ng test`. If you don't, try canceling the command and restarting.
 
 === Integration test the search UI
 
@@ -1217,7 +1220,7 @@ TIP: You might notice Cypress creates a video. You can disable this by adding `"
 
 The `npm run cypress:run` command will run a headless browser, so you won't see anything happening on your screen.
 
-If you want to see the tests run, append `--browser chrome` to the command. Add this to your `package.json` if you want to make it the default. See Cypress' https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
+If you want to see the tests run, append `--browser chrome --headed` to the command. Add this to your `package.json` if you want to make it the default. See Cypress' https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
 
 You can also install https://www.npmjs.com/package/concurrently[concurrently] so you can run multiple tasks with one command.
 
@@ -1308,10 +1311,10 @@ You'll see a printout of code coverage in your terminal window.
 
 ----
 =============================== Coverage summary ===============================
-Statements   : 80.28% ( 57/71 )
-Branches     : 69.69% ( 46/66 )
-Functions    : 75.75% ( 25/33 )
-Lines        : 78.46% ( 51/65 )
+Statements   : 82.81% ( 53/64 )
+Branches     : 72.58% ( 45/62 )
+Functions    : 82.75% ( 24/29 )
+Lines        : 81.03% ( 47/58 )
 ================================================================================
 ----
 
@@ -1324,7 +1327,7 @@ image::../images/ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%
 
 == Continuous Integration
 
-At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to setup continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
+At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to set up continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
 
 [CAUTION]
 ====
@@ -1355,10 +1358,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node 14.x
+      - name: Use Node 16
         uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: '16'
       - name: Install latest Chrome
         run: |
           sudo apt update
@@ -1387,7 +1390,7 @@ If you've checked your project into source control, you can use Jenkins to autom
 [source,groovy]
 ----
 node {
-    def nodeHome = tool name: 'node-14.x', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+    def nodeHome = tool name: 'node-16', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
     env.PATH = "${nodeHome}/bin:${env.PATH}"
 
     stage('check tools') {
@@ -1479,21 +1482,10 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 To integrate Bootstrap 5 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[NG Bootstrap].
 
 ----
-ng add @ng-bootstrap/ng-bootstrap@next
+ng add @ng-bootstrap/ng-bootstrap
 ----
 
-[CAUTION]
-====
-If NG Bootstrap v11 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], use `ng add @ng-bootstrap/ng-bootstrap@11` for the command above.
-
-The current release (v11.0.0-beta.2) doesn't install Bootstrap 5 by default, so install it:
-
-----
-npm i bootstrap@5
-----
-====
-
-This will install Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
+This will install Bootstrap, NG Bootstrap, `@angular/localize`, and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
 Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
@@ -1552,7 +1544,6 @@ Update `search.component.html` to add a top margin to the H2, put the form in a 
   </tr>
   </tbody>
 </table>
-
 ----
 
 Make similar changes to `edit.component.html`:
@@ -1689,7 +1680,8 @@ Update `search.component.html` to use Material components.
 <h2>Search</h2>
 <form>
   <mat-form-field>
-    <input matInput type="search" name="query" placeholder="Search" [(ngModel)]="query" (keyup.enter)="search()">
+    <input matInput type="search" name="query" placeholder="Search"
+           [(ngModel)]="query" (keyup.enter)="search()">
   </mat-form-field>
   <button mat-mini-fab (click)="search()"><mat-icon>search</mat-icon></button>
 </form>
@@ -1841,9 +1833,9 @@ You'll be prompted for an issuer and client ID. You should have these from the O
 
 This process will perform the following steps for you:
 
-1. Install the https://github.com/auth0/auth0-angular[Auth0 Angular SDK] using `npm install @auth0/auth0-angular`.
-2. Add `src/app/auth-routing.module.ts` with OIDC configuration and initialization logic.
-3. Configure an `AuthHttpInterceptor` that adds an Authorization header with an access token to outbound requests.
+1. Install the https://github.com/auth0/auth0-angular[Auth0 Angular SDK].
+2. Add `src/app/auth-routing.module.ts` with your OIDC configuration and initialization logic.
+3. Configure an `AuthHttpInterceptor` that adds an `Authorization` header with an access token to outbound requests.
 4. Create a `HomeComponent` and configure it with authentication logic.
 5. Update unit tests for `AppComponent` and `HomeComponent` to mock Auth0.
 
@@ -1856,7 +1848,7 @@ import { AuthGuard } from '@auth0/auth0-angular';
 
 const routes: Routes = [
   { path: 'search', component: SearchComponent, canActivate: [AuthGuard] },
-  { path: 'edit/:id', component: EditComponent, canActivate: [AuthGuard] },
+  { path: 'edit/:id', component: EditComponent, canActivate: [AuthGuard] }
 ];
 ----
 

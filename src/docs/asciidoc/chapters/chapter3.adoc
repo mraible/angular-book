@@ -26,7 +26,7 @@ You might think that Angular Material is more popular than Bootstrap these days.
 
 .What's your preferred CSS framework with Angular?
 [link=https://twitter.com/mraible/status/1196894737870938113]
-image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%", align=center]
+image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
 
 == Integrate Bootstrap with Angular
 
@@ -41,26 +41,17 @@ In a terminal, navigate into this new directory and its `notes` folder. Then ins
 [source,shell]
 ----
 cd angular-bootstrap/notes
-npm i
+npm install
 ----
+
+CAUTION: If you get an error when running `npm install`, delete `node_modules` and `package-lock.json` and try again.
 
 Add Bootstrap and NG Bootstrap:
 
 [source,shell]
 ----
-ng add @ng-bootstrap/ng-bootstrap@next
+ng add @ng-bootstrap/ng-bootstrap
 ----
-
-[CAUTION]
-====
-If NG Bootstrap v11 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], use `ng add @ng-bootstrap/ng-bootstrap@11` for the command above.
-
-The current release (v11.0.0-beta.2) doesn't install Bootstrap 5 by default, so install it:
-
-----
-npm i bootstrap@5
-----
-====
 
 This process will import `NgbModule` in `app.module.ts` and configure your app to use Bootstrap by adding a reference to `bootstrap.min.css` in `angular.json`.
 
@@ -241,10 +232,10 @@ You can see from the screenshots above that `angular-crud` generates screens wit
       </ul>
       <form class="d-flex">
         <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signInWithRedirect()"
+                (click)="oktaAuth.signInWithRedirect()" type="button"
                 class="btn btn-outline-primary">Login</button>
         <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signOut()"
+                (click)="oktaAuth.signOut()" type="button"
                 class="btn btn-outline-secondary">Logout</button>
       </form>
     </div>
@@ -257,12 +248,19 @@ You can see from the screenshots above that `angular-crud` generates screens wit
 </div>
 ----
 
+Download the `angular.svg` file from https://angular.io/presskit[angular.io/presskit] and add it to your project. You can do this quickly by running the following command from the `notes` directory.
+
+[source,shell]
+----
+wget https://angular.io/assets/images/logos/angular/angular.svg -P src/assets/images/
+----
+
 Add `OktaAuth` and `OktaAuthStateService` as dependencies to `AppComponent`:
 
 [source,typescript]
 ----
-import { Component } from '@angular/core';
-import { OktaAuthStateService } from '@okta/okta-angular';
+import { Component, Inject } from '@angular/core';
+import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
@@ -273,7 +271,8 @@ import { OktaAuth } from '@okta/okta-auth-js';
 export class AppComponent {
   title = 'notes';
 
-  constructor(public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
+  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
+              public authService: OktaAuthStateService) {
   }
 }
 ----
@@ -297,7 +296,7 @@ image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 
 If you reduce the width of your browser window, you'll see the menu collapse to take up less real estate.
 
 .Navbar squished
-image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="70%", align=center]
 
 However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
@@ -330,13 +329,14 @@ export class AppComponent {
 Now, you'll be able to toggle the menu!
 
 .Squished navbar with menu
-image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="70%", align=center]
 
 === Refactor Unit Tests to Pass
 
 You changed some elements and values that will cause tests in `app.component.spec.ts` to fail. Update the tests to look for uppercase "`Note`" and import `NgbModule`.
 
 [source,typescript]
+.src/app/app.component.spec.ts
 ----
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -364,7 +364,7 @@ describe('AppComponent', () => {
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
+    const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('nav')?.textContent).toContain('Notes');
   });
 });
@@ -436,7 +436,6 @@ The following HTML will add floating labels to your form using the `form-floatin
     <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
   </div>
 </form>
-
 ----
 
 That's an improvement!
@@ -473,7 +472,7 @@ image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title valida
 
 == Add a Data Table with Searching, Sorting, and Pagination
 
-At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples#complete[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
+At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
 
 === Add Search by Title with Spring Data JPA
 
@@ -497,7 +496,7 @@ fun notes(principal: Principal, title: String?): List<Note> {
 Add the new repository method to the `NotesRepository` in `DemoApplication.kt`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoController.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
 ----
 @RepositoryRestResource
 interface NotesRepository : JpaRepository<Note, Long> {
@@ -832,6 +831,7 @@ export class NoteListComponent implements OnInit {
   onPageChange(page: number) {
     this.filter.page = page - 1;
     this.search();
+    this.filter.page = page;
   }
 
   onSort({column, direction}: SortEvent) {

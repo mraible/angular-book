@@ -17,18 +17,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.sub = this.route.params.subscribe(params => {
-      if (params.term) {
-        this.query = decodeURIComponent(params.term);
+      if (params['term']) {
+        this.query = decodeURIComponent(params['term']);
         this.search();
       }
     });
-  }
-
-  search(): void {
-    this.searchService.search(this.query).subscribe(
-      (data: Person[]) => { this.searchResults = data; },
-      error => console.log(error)
-    );
   }
 
   ngOnDestroy(): void {
@@ -36,5 +29,11 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.sub.unsubscribe();
     }
   }
-}
 
+  search(): void {
+    this.searchService.search(this.query).subscribe({
+      next: (data: Person[]) => { this.searchResults = data },
+      error: (e) => console.log(e)
+    });
+  }
+}

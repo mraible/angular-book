@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { OktaAuthStateService } from '@okta/okta-angular';
+import { Component, Inject } from '@angular/core';
+import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
 import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
@@ -11,6 +11,7 @@ export class AppComponent {
   title = 'Notes';
   isCollapsed = true;
 
-  constructor(public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
+  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
+              public authService: OktaAuthStateService) {
   }
 }

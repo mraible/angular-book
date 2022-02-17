@@ -6,12 +6,12 @@
 </nav>
 <h2>Notes List</h2>
 <form #f="ngForm">
-
+  
   <div class="form-group">
     <label for="title">Title:</label>
     <input [(ngModel)]="filter.title" id="title" name="title" class="form-control ml-2 mr-2">
   </div>
-
+  
   <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
   <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
 </form>

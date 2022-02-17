@@ -1,7 +1,8 @@
 <h2>Search</h2>
 <form>
   <mat-form-field>
-    <input matInput type="search" name="query" placeholder="Search" [(ngModel)]="query" (keyup.enter)="search()">
+    <input matInput type="search" name="query" placeholder="Search"
+           [(ngModel)]="query" (keyup.enter)="search()">
   </mat-form-field>
   <button mat-mini-fab (click)="search()"><mat-icon>search</mat-icon></button>
 </form>

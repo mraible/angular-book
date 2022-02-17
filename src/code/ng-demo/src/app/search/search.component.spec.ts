@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchComponent } from './search.component';
-import { MockActivatedRoute } from '../shared/search/mocks/routes';
+import { MockActivatedRoute } from './mocks/routes';
 import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';

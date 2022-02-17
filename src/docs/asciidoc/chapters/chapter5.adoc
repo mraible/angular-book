@@ -17,7 +17,7 @@ If you'd rather start from this point, download the examples for this book from 
 **Prerequisites:**
 
 * https://docs.docker.com/install/[Docker]
-* https://nodejs.org/[Node.js] 14+
+* https://nodejs.org/[Node.js] 16+
 * https://adoptium.net/[Java] 11+
 
 == Dockerize an Angular App
@@ -26,7 +26,7 @@ Create a `notes/Dockerfile` that uses Node.js as a base image and Nginx as a web
 
 [source,docker]
 ----
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -79,6 +79,8 @@ Make sure your Docker daemon is running with `docker ps`. Then run the following
 ----
 docker build -t ng-notes .
 ----
+
+CAUTION: If you get an error when running `docker build`, delete `node_modules` and `package-lock.json` and try again.
 
 If it builds successfully, you'll see messages like the following:
 
@@ -188,7 +190,7 @@ You'll also need to update your `Dockerfile` so it uses the aforementioned `envs
 [source,docker]
 .notes/Dockerfile
 ----
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -292,10 +294,11 @@ Now you should get an **A**!
 .Nginx in Docker score from securityheaders.com
 image::../images/angular-docker/angular-docker-securityheaders.png[Nginx in Docker score from securityheaders.com, 800, scaledwidth="100%", align=center]
 
-Commit your changes to Git.
+You might want to commit your changes to Git like you did for the previous deployment options.
 
 [source,shell]
 ----
+git checkout -b docker
 git add .
 git commit -m "Add Docker for Angular"
 ----
@@ -316,7 +319,7 @@ Create a new `AuthService` service that will communicate with your Spring Boot A
 ----
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { User } from './user';
@@ -334,7 +337,7 @@ export class AuthService {
   }
 
   getUser(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <1>
+    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <.>
       map((response: User) => {
         if (response !== null) {
           this.$authenticationState.next(true);
@@ -344,19 +347,16 @@ export class AuthService {
     );
   }
 
-  isAuthenticated(): Promise<boolean> {
-    return this.getUser().toPromise().then((user: User) => {
-      return user !== undefined;
-    }).catch(() => {
-      return false;
-    })
+  async isAuthenticated(): Promise<boolean> {
+    const user = await lastValueFrom(this.getUser());
+    return user !== undefined;
   }
 
-  login(): void { // <2>
+  login(): void { // <.>
     location.href = `${location.origin}${this.location.prepareExternalUrl('oauth2/authorization/okta')}`;
   }
 
-  logout(): void { // <3>
+  logout(): void { // <.>
     const redirectUri = `${location.origin}${this.location.prepareExternalUrl('/')}`;
 
     this.http.post(`${environment.apiUrl}/api/logout`, {}).subscribe((response: any) => {
@@ -473,8 +473,8 @@ Modify `app.module.ts` to remove the `AuthRoutingModule` import, add `HomeCompon
 [source,typescript]
 .notes/src/app/app.module.ts
 ----
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -607,32 +607,41 @@ Modify `SecurityConfiguration.kt` to allow anonymous access to static web files,
 ----
 package com.okta.developer.notes
 
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.util.matcher.RequestMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
-@EnableWebSecurity
-class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+@Configuration
+class SecurityConfiguration {
 
-    override fun configure(http: HttpSecurity) {
-        //@formatter:off
+    @Value("#{ @environment['allowed.origins'] ?: {} }")
+    private lateinit var allowedOrigins: List<String>
+
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeRequests()
-                .antMatchers("/**/*.{js,html,css}").permitAll()
-                .antMatchers("/", "/user").permitAll()
-                .anyRequest().authenticated()
-                .and()
+            .authorizeHttpRequests { authorize ->
+                authorize.antMatchers("/**/*.{js,html,css}").permitAll()
+                authorize.antMatchers("/", "/user").permitAll()
+                authorize.anyRequest().authenticated()
+            }
             .oauth2Login()
-                .and()
+            .and()
             .oauth2ResourceServer().jwt()
 
-        http.requiresChannel()
-            .requestMatchers(RequestMatcher {
-                r -> r.getHeader("X-Forwarded-Proto") != null
-            }).requiresSecure()
+        http.cors()
+
+        http.requiresChannel().requestMatchers(RequestMatcher { r ->
+            r.getHeader("X-Forwarded-Proto") != null
+        }).requiresSecure()
 
         http.csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -644,10 +653,20 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
                 .and()
             .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
-        //@formatter:on
+        return http.build();
     }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource { ... }
 }
+
 ----
+
+////
+unsafe-line required for app to load CSS
+Content Security Policy blocks inline execution of scripts and stylesheets
+Console error: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present.
+////
 
 TIP: See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#headers[Spring Security's headers] documentation to see default security headers and other options.
 
@@ -714,7 +733,7 @@ Add a `server.port` property to `application-prod.properties` that uses a `PORT`
 server.port=${PORT:8080}
 ----
 
-Because there won't be any cross-domain requests, you can remove the `simpleCorsFilter` bean and `allowedOrigins` variable in `DemoApplication.kt`, too.
+Because there won't be any cross-domain requests, you can remove the `corsConfigurationSource` bean and `allowedOrigins` variable in `SecurityConfigurationZ.kt`, too.
 
 === Modify Gradle to Build a JAR with Angular Included
 
@@ -729,7 +748,7 @@ import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     ...
-    id("com.github.node-gradle.node") version "3.1.1"
+    id("com.github.node-gradle.node") version "3.2.0"
     ...
 }
 ----
@@ -741,7 +760,7 @@ Then, define the location of your Angular app and configuration for the Node plu
 val spa = "${projectDir}/../notes";
 
 node {
-    version.set("14.18.1")
+    version.set("16")
     nodeProjectDir.set(file(spa))
 }
 ----
@@ -775,7 +794,7 @@ tasks.processResources {
 }
 ----
 
-Now you should be able to combine both apps using `./gradlew bootJar -Pprod`. Once it's built, run it with the following commands to ensure everything works.
+Now you should be able to combine both apps when running `./gradlew bootJar -Pprod` in the `notes-api` directory. Once it's built, run it with the following commands to ensure everything works.
 
 [source,shell]
 ----
@@ -797,7 +816,7 @@ To add Jib support, add its Gradle plugin.
 ----
 plugins {
     ...
-    id("com.google.cloud.tools.jib") version "3.1.4"
+    id("com.google.cloud.tools.jib") version "3.2.0"
 }
 ----
 
@@ -837,7 +856,7 @@ However, Spring Boot won't start because you haven't configured the Okta environ
 
 You can https://docs.docker.com/compose/compose-file/#env_file[use Docker Compose and its `env_file` option] to specify environment variables.
 
-Copy `notes-api/okta.env` to `src/main/docker/.env`.
+Copy `notes-api/.okta.env` to `src/main/docker/.env`.
 
 Remove `export` at the beginning of each line. It should resemble something like the following after this change:
 
@@ -952,7 +971,7 @@ To see your database and Okta environment variables, run:
 heroku config --remote jib
 ----
 
-Modify the Okta environment variables to remove the `_WEB` on the two keys that have it.
+You might have to wait 30 seconds or more for the Okta variables to be added. Modify the Okta environment variables to remove the `_WEB` on the two keys that have it.
 
 [source,shell]
 ----
@@ -972,8 +991,8 @@ For example, I used:
 
 [source,shell]
 ----
-docker tag mraible/bootiful-angular registry.heroku.com/quiet-shelf-06130/web
-docker push registry.heroku.com/quiet-shelf-06130/web
+docker tag mraible/bootiful-angular registry.heroku.com/rocky-fortress-74038/web
+docker push registry.heroku.com/rocky-fortress-74038/web
 heroku container:release web --remote jib
 ----
 
@@ -997,6 +1016,8 @@ Since the Okta Add-on for Heroku configures everything for you, you should be ab
 ----
 heroku open --remote jib
 ----
+
+TIP: You can see your Okta credentials by running `heroku config --remote jib`.
 
 If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A+**!
 
@@ -1063,10 +1084,10 @@ Now, you should be able to install Knative!
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-crds.yaml
+ https://github.com/knative/serving/releases/download/knative-v1.2.0/serving-crds.yaml
 
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-core.yaml
+ https://github.com/knative/serving/releases/download/knative-v1.2.0/serving-core.yaml
 ----
 
 Then, install Istio:
@@ -1074,16 +1095,16 @@ Then, install Istio:
 [source,shell]
 ----
 kubectl apply -l knative.dev/crd-install=true -f \
- https://github.com/knative/net-istio/releases/download/knative-v1.0.0/istio.yaml
+ https://github.com/knative/net-istio/releases/download/knative-v1.2.0/istio.yaml
 kubectl apply -f \
- https://github.com/knative/net-istio/releases/download/knative-v1.0.0/istio.yaml
+ https://github.com/knative/net-istio/releases/download/knative-v1.2.0/istio.yaml
 
 while [[ $(kubectl get crd gateways.networking.istio.io -o jsonpath='{.status.conditions[?(@.type=="Established")].status}') != 'True' ]]; do
   echo "Waiting on Istio CRDs"; sleep 1
 done
 
 kubectl apply -f \
- https://github.com/knative/net-istio/releases/download/knative-v1.0.0/net-istio.yaml
+ https://github.com/knative/net-istio/releases/download/knative-v1.2.0/net-istio.yaml
 ----
 
 You'll need a domain to enable HTTPS, so set up a default domain name.
@@ -1091,7 +1112,7 @@ You'll need a domain to enable HTTPS, so set up a default domain name.
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/knative-v1.0.0/serving-default-domain.yaml
+ https://github.com/knative/serving/releases/download/knative-v1.2.0/serving-default-domain.yaml
 ----
 
 Install https://cert-manager.io/[cert-manager] to automatically provision and manage TLS certificates in Kubernetes.
@@ -1099,7 +1120,7 @@ Install https://cert-manager.io/[cert-manager] to automatically provision and ma
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
+ https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
 
 kubectl wait --for=condition=Available -n cert-manager deployments/cert-manager-webhook
 ----
@@ -1109,7 +1130,7 @@ Connect Knative with `cert-manager`:
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/knative/net-certmanager/releases/download/knative-v1.0.0/release.yaml
+ https://github.com/knative/net-certmanager/releases/download/knative-v1.2.0/release.yaml
 ----
 
 And configure free TLS certificate issuing with https://letsencrypt.org/[Let's Encrypt].
@@ -1141,7 +1162,7 @@ metadata:
   name: config-certmanager
   namespace: knative-serving
   labels:
-    serving.knative.dev/release: v1.0.0
+    serving.knative.dev/release: v1.2.0
     networking.knative.dev/certificate-provider: cert-manager
 data:
   issuerRef: |
@@ -1208,7 +1229,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:14.0
+          image: postgres:14.1
           ports:
             - containerPort: 5432
           env:
@@ -1308,13 +1329,13 @@ The result should look similar to this:
 [source,shell]
 ----
 NAME               URL
-bootiful-angular   https://bootiful-angular.default.35.232.41.220.sslip.io
+bootiful-angular   https://bootiful-angular.default.34.70.153.132.sslip.io
 ----
 
 You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redirect URI** to the `Web` app in the Okta Admin Console in order to log in.
 
-- Sign-in: `\https://bootiful-angular.default.35.232.41.220.sslip.io/login/oauth2/code/okta`
-- Sign-out: `\https://bootiful-angular.default.35.232.41.220.sslip.io`
+- Sign-in: `\https://bootiful-angular.default.34.70.153.132.sslip.io/login/oauth2/code/okta`
+- Sign-out: `\https://bootiful-angular.default.34.70.153.132.sslip.io`
 
 Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
 
@@ -1361,8 +1382,8 @@ docker-compose -f src/main/docker/app.yml up
 
 You should be able to navigate to `http://localhost:8080`, log in, and add notes.
 
-.Spring Boot 2.5 app running
-image::../images/angular-docker/spring-boot-2.5-notes.png[Spring Boot 2.5 app running, 800, scaledwidth="100%", align=center]
+.Spring Boot 2.6 app running
+image::../images/angular-docker/spring-boot-2.6-notes.png[Spring Boot 2.6 app running, 800, scaledwidth="100%", align=center]
 
 Pretty neat, don't you think!?
 

@@ -1,42 +1,44 @@
 package com.okta.developer.notes
 
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.util.matcher.RequestMatcher
 
-@EnableWebSecurity
-class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+@Configuration
+class SecurityConfiguration {
 
-    override fun configure(http: HttpSecurity) {
-        //@formatter:off
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeRequests()
-                .antMatchers("/**/*.{js,html,css}").permitAll()
-                .antMatchers("/", "/user").permitAll()
-                .anyRequest().authenticated()
-                .and()
+            .authorizeHttpRequests { authorize ->
+                authorize.antMatchers("/**/*.{js,html,css}").permitAll()
+                authorize.antMatchers("/", "/user").permitAll()
+                authorize.anyRequest().authenticated()
+            }
             .oauth2Login()
-                .and()
+            .and()
             .oauth2ResourceServer().jwt()
 
-        http.requiresChannel()
-            .requestMatchers(RequestMatcher {
-                    r -> r.getHeader("X-Forwarded-Proto") != null
-            }).requiresSecure()
+        http.cors()
+
+        http.requiresChannel().requestMatchers(RequestMatcher { r ->
+            r.getHeader("X-Forwarded-Proto") != null
+        }).requiresSecure()
 
         http.csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 
         http.headers()
             .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
-                .and()
+            .and()
             .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-                .and()
+            .and()
             .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
-        //@formatter:on
+        return http.build();
     }
 }

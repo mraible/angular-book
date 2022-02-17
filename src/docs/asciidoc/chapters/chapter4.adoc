@@ -26,12 +26,12 @@ image::../images/angular-bootstrap/notes-list-with-sorting.png[Notes list with s
 To begin, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log in to it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
 
 .Create Heroku app
-image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="100%", align=center]
+image::../images/angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="80%", align=center]
 
 After creating your app, click on the **Resources** tab and add the **Okta** add-on.
 
 .Okta Add-On
-image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="100%", align=center]
+image::../images/angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="55%", align=center]
 
 CAUTION: If you haven't entered a credit card for your Heroku account, you will receive an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even for free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Simply add a credit card to continue.
 
@@ -58,7 +58,7 @@ export OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET_WEB
 
 [NOTE]
 ====
-If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install-win10[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
+If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
 ====
 
 Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and running `./gradlew bootRun`.
@@ -72,7 +72,7 @@ source .okta.env
 [TIP]
 .Environment Variables in IntelliJ IDEA
 ====
-If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration and click on the **Browse** icon on the right-side of **Environment variables**.
+If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration, go to **Modify options** > **Environment variables**. Then, click on the **Browse** icon on the right-side of **Environment variables**.
 
 .Edit DemoApplication Configuration
 image::../images/angular-deployment/idea-edit-configuration.png[Edit DemoApplication Configuration, 800, scaledwidth="100%", align=center]
@@ -80,7 +80,7 @@ image::../images/angular-deployment/idea-edit-configuration.png[Edit DemoApplica
 Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Okta from IDEA!
 
 .IntelliJ Environment Variables
-image::../images/angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="100%", align=center]
+image::../images/angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="60%", align=center]
 ====
 
 Next, configure Angular for OIDC authentication by modifying its `auth-routing.module.ts` to use the generated issuer, client ID, and update the callback URL.
@@ -103,6 +103,8 @@ Install your Angular app's dependencies if you haven't already and start the app
 npm i
 ng serve
 ----
+
+CAUTION: If you get an error when running `npm i`, delete `node_modules` and `package-lock.json` and try again.
 
 Open `http://localhost:4200` in your browser.
 
@@ -135,7 +137,7 @@ There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradl
 plugins {
     ...
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 ----
 
@@ -155,22 +157,10 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 [source,shell]
 ----
 npm i -g npm-check-updates
-ncu -u
+ncu
 ----
 
-At the time of this writing, this will upgrade Angular from version ~12.2.0 to ~12.2.12 and TypeScript to version ~4.4.4. Angular 12 supports TypeScript versions >=4.2.3 and <4.4, so you'll need to change `package.json` to specify TypeScript version `~4.3.5`.
-
-[source,json]
-----
-"typescript": "~4.3.5"
-----
-
-While you're in there, change RxJS back to its original `~6.6.0` version.
-
-[source,json]
-----
-"rxjs": "~6.6.0"
-----
+At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.3 and TypeScript to version ~4.5.5.
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
@@ -179,7 +169,6 @@ Then run the following commands in the `notes` directory:
 [source,shell]
 ----
 npm i
-npm audit fix
 ng serve
 ----
 
@@ -195,31 +184,26 @@ There are a few places where `localhost` is hard-coded:
 
 You need to change Spring Boot's code so other origins can make CORS requests too. Angular's code needs updating so access tokens will be sent to production URLs while API requests are sent to the correct endpoint.
 
-Open the root directory in your favorite IDE and configure it so it loads `notes-api` as a Gradle project. Open `DemoApplication.kt` and change the `simpleCorsFilter` bean so it configures the allowed origins from your Spring environment.
+Open the root directory in your favorite IDE and configure it so it loads `notes-api` as a Gradle project. Open `SecurityConfiguration.kt` and change the `corsConfigurationSource` bean so it configures the allowed origins from your Spring environment.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
 import org.springframework.beans.factory.annotation.Value
 
-@SpringBootApplication
-class DemoApplication {
+@Configuration
+class SecurityConfiguration {
 
     @Value("#{ @environment['allowed.origins'] ?: {} }")
     private lateinit var allowedOrigins: List<String>
 
+    ...
+
     @Bean
-    fun simpleCorsFilter(): FilterRegistrationBean<CorsFilter> {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.allowCredentials = true
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        ...
         config.allowedOrigins = allowedOrigins
-        config.allowedMethods = listOf("*");
-        config.allowedHeaders = listOf("*")
-        source.registerCorsConfiguration("/**", config)
-        val bean = FilterRegistrationBean(CorsFilter(source))
-        bean.order = Ordered.HIGHEST_PRECEDENCE
-        return bean
+        ...
     }
 }
 ----
@@ -267,7 +251,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   ...
 
-  private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const allowedOrigins = [environment.apiUrl];
     ...
   }
@@ -328,7 +312,7 @@ tasks.processResources {
 }
 ----
 
-Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it will persist to disk, which retains data through restarts.
+Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it persists to disk, which retains data through restarts.
 
 [source,properties]
 ----
@@ -344,12 +328,14 @@ Create a `notes-api/src/main/docker/postgresql.yml` so you can test your `prod` 
 version: '3.8'
 services:
   notes-postgresql:
-    image: postgres:14.0
+    image: postgres:14.1
     environment:
       - POSTGRES_USER=notes
       - POSTGRES_PASSWORD=@-xYcoZn2
+    # If you want to expose these ports outside your computer,
+    # remove the "127.0.0.1:" prefix
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
 ----
 
 Create an `application-prod.properties` file in the same directory as `application-dev.properties`. You'll override these properties with environment variables when you deploy to Heroku.
@@ -386,7 +372,7 @@ endif::[]
 [source,diff]
 ----
 diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-index 387e332..506d761 100644
+index 9e2e823..81a0378 100644
 --- a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
 +++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
 @@ -10,7 +10,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
@@ -399,28 +385,29 @@ index 387e332..506d761 100644
          repository.findAll().forEach { println(it) }
      }
 diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-index 6f1292c..22a5130 100644
+index b28d64b..3a1fd3e 100644
 --- a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
 +++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-@@ -26,12 +26,12 @@ fun main(args: Array<String>) {
- data class Note(@Id @GeneratedValue var id: Long? = null,
-                 var title: String? = null,
-                 var text: String? = null,
--                @JsonIgnore var user: String? = null)
-+                @JsonIgnore var username: String? = null)
+@@ -27,13 +27,13 @@ data class Note(
+     @Id @GeneratedValue var id: Long? = null,
+     var title: String? = null,
+     var text: String? = null,
+-    @JsonIgnore var user: String? = null
++    @JsonIgnore var username: String? = null
+ )
 
  @RepositoryRestResource
  interface NotesRepository : JpaRepository<Note, Long> {
 -    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
--    fun findAllByUserAndTitleContainingIgnoreCase(name: String, title: String, pageable: Pageable): Page<Note>
+-    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
 +    fun findAllByUsername(name: String, pageable: Pageable): Page<Note>
-+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, title: String, pageable: Pageable): Page<Note>
++    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
  }
 
  @Component
-@@ -42,6 +42,6 @@ class AddUserToNote {
+@@ -44,6 +44,6 @@ class AddUserToNote {
      fun handleCreate(note: Note) {
-         val username: String = SecurityContextHolder.getContext().getAuthentication().name
+         val username: String = SecurityContextHolder.getContext().authentication.name
          println("Creating note: $note with user: $username")
 -        note.user = username
 +        note.username = username
@@ -452,6 +439,7 @@ You won't want to pre-populate your production database with a bunch of notes, s
 import org.springframework.context.annotation.Profile
 ...
 
+@Component
 @Profile("dev")
 class DataInitializer(val repository: NotesRepository) : ApplicationRunner {...}
 ----
@@ -460,7 +448,7 @@ To test your profiles, start PostgreSQL using Docker Compose.
 
 [source,shell]
 ----
-docker-compose -f src/main/docker/postgresql.yml up
+docker compose -f src/main/docker/postgresql.yml up
 ----
 
 CAUTION: If you have PostgreSQL installed and running locally, you'll need to stop the process for Docker Compose to work.
@@ -500,7 +488,7 @@ You should already have a Heroku app that you added Okta to. Let's use it for ho
 [source,shell]
 ----
 $ heroku apps
-=== mraible@gmail.com Apps
+=== matt@raibledesigns.com Apps
 bootiful-angular
 ----
 
@@ -564,6 +552,14 @@ Tell Heroku to use Java 11 by creating a `notes-api/system.properties` and speci
 java.runtime.version=11
 ----
 
+Commit this file so it's included in your deployment.
+
+[source,shell]
+----
+git add system.properties
+git commit -m "Use Java 11 on Heroku"
+----
+
 Now you're ready to deploy! Take a deep breath and witness how Heroku can deploy your Spring Boot + Kotlin app with a simple `git push`.
 
 [source,shell]
@@ -589,23 +585,23 @@ remote: -----> Spring Boot detected
 remote: -----> Installing JDK 11... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.2-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.4-bin.zip
 remote:        ........................................................................
+remote:        > Task :processResources
 remote:        > Task :compileKotlin
 remote:        > Task :compileJava NO-SOURCE
-remote:        > Task :processResources
 remote:        > Task :classes
 remote:        > Task :bootJarMainClassName
 remote:        > Task :bootJar
 remote:
-remote:        BUILD SUCCESSFUL in 2m 12s
+remote:        BUILD SUCCESSFUL in 1m 31s
 remote:        4 actionable tasks: 4 executed
 remote: -----> Discovering process types
 remote:        Procfile declares types     -> (none)
 remote:        Default types for buildpack -> web
 remote:
 remote: -----> Compressing...
-remote:        Done: 93.7M
+remote:        Done: 101.1M
 remote: -----> Launching...
 remote:        Released v9
 remote:        https://bootiful-angular.herokuapp.com/ deployed to Heroku
@@ -613,7 +609,7 @@ remote:
 remote: Verifying deploy... done.
 To https://git.heroku.com/bootiful-angular.git
  * [new branch]      main -> main
-Execution time: 3 min. 2 s.
+Execution time: 2 min. 15 s.
 ----
 
 Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code:
@@ -717,7 +713,7 @@ heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote heroku
 
 === Secure Angular Apps on Heroku
 
-You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get a blank page and an error from the Okta Angular SDK in your browser's console.
+You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Okta Angular SDK in your browser's console.
 
 The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
 
@@ -765,7 +761,7 @@ Commit your changes to Git, add the static buildpack, and redeploy your Angular 
 [source,shell]
 ----
 git add .
-git commit -am "Configure secure headers and static buildpack"
+git commit -m "Configure secure headers and static buildpack"
 heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git --remote angular
 git push angular main
 ----
@@ -782,7 +778,7 @@ In Angular CLI v8.3.0, an `ng deploy` command was introduced that allows you to 
 Below are the https://angular.io/guide/deployment[current providers and packages] supported by this command.
 
 |===
-|Hosting provider |npm package
+|Hosting provider | Package
 
 |Azure
 |https://npmjs.org/package/@azure/ng-deploy[`@azure/ng-deploy`]
@@ -803,7 +799,7 @@ Below are the https://angular.io/guide/deployment[current providers and packages
 |https://npmjs.org/package/ngx-deploy-npm[`ngx-deploy-npm`]
 
 |Vercel
-|https://www.npmjs.com/package/@zeit/ng-deploy[`@zeit/ng-deploy`]
+|https://github.com/vercel/vercel/tree/main/examples/angular[`vercel init angular`]
 
 |===
 
@@ -833,8 +829,9 @@ Run `ng add @angular/fire` in the `notes` directory and your new project should 
 [source,shell]
 ----
 ? Please select a project: notes-1337
+? Please select a hosting site: https://notes-1337-d8605.web.app
 CREATE .firebaserc (194 bytes)
-UPDATE .gitignore (658 bytes)
+UPDATE .gitignore (602 bytes)
 UPDATE angular.json (3363 bytes)
 UPDATE firebase.json (783 bytes)
 ----
@@ -852,13 +849,13 @@ Add the new URL after your existing Heroku one, separating them with a comma. Fo
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='https://arcane-beach-51361.herokuapp.com,https://notes-1337-fe10c.web.app'
+ALLOWED_ORIGINS='https://polar-everglades-67173.herokuapp.com,https://notes-1337-d8605.web.app'
 ----
 
 You'll also need to modify your Okta SPA app to add your Firebase URL as a Sign-in redirect URI and Sign-out redirect URI. For mine, I added:
 
-* Sign-in redirect URI: `\https://notes-1337-fe10c.web.app/callback`
-* Sign-out redirect URI: `\https://notes-1337-fe10c.web.app`
+* Sign-in redirect URI: `\https://notes-1337-d8605.web.app/callback`
+* Sign-out redirect URI: `\https://notes-1337-d8605.web.app`
 
 Open your Firebase URL in your browser, log in, and you should be able to see the note you added on Heroku.
 
@@ -926,7 +923,7 @@ Commit your changes to your `firebase` branch.
 [source,shell]
 ----
 git add .
-git commit -am "Add Firebase deployment"
+git commit -m "Add Firebase deployment"
 ----
 
 === Angular Deployment to Netlify
@@ -941,10 +938,10 @@ git checkout main
 git checkout -b netlify
 ----
 
-Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
+Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site by selecting **Add new site** > **Deploy Manually**. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
 
 .Netlify create site
-image::../images/angular-deployment/netlify-create-site.png[Netlify create site, 650, scaledwidth="100%", align=center]
+image::../images/angular-deployment/netlify-create-site.png[Netlify create site, 750, scaledwidth="90%", align=center]
 
 Click on your new site > **Site Settings** to copy your **API ID** to a text editor. You'll also need a personal access token. To create one, click on your avatar in the top right > **User settings** > **Applications** and click **New access token**. Copy the generated token to your text editor.
 
@@ -968,7 +965,7 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='...,https://keen-ramanujan-ca0c92.netlify.app'
+ALLOWED_ORIGINS='...,https://modest-hopper-bc1197.netlify.app'
 ----
 
 You'll also need to update your Okta SPA app to allow the URL as a sign-in and sign-out redirect.
@@ -997,7 +994,7 @@ Run `ng deploy` again and you should be able to log in successfully.
 
 === Better Security Headers on Netlify
 
-If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
+If you test your new Netlify site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
 
 Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "`all paths under `/``".
 
@@ -1105,11 +1102,11 @@ Next, you need to https://docs.aws.amazon.com/AmazonS3/latest/user-guide/static-
 Type `index.html` for the index and error document and click **Save changes**.
 
 .AWS static website
-image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="100%", align=center]
+image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="80%", align=center]
 
 By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save changes**.
 
-The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
+The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
 
 [source,json]
 ----
@@ -1120,12 +1117,8 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
             "Sid": "PublicReadGetObject",
             "Effect": "Allow",
             "Principal": "*",
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{your-bucket-name}/*"
-            ]
+            "Action": ["s3:GetObject"],
+            "Resource": ["arn:aws:s3:::{your-bucket-name}/*"]
         }
     ]
 }
@@ -1133,13 +1126,13 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
 
 Click **Save changes** to continue.
 
-At this point, you could navigate to `\https://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTP to HTTPS redirect by default. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve these issues].
+At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve this].
 
 Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Click in the **Origin Domain Name** field and select your S3 bucket.
 
 Set the **Viewer Protocol Policy** to `Redirect HTTP to HTTPS` and allow all HTTP methods. Under the **Response headers policy**, click **Create Policy**. Name it something you'll remember and enable all the security headers.
 
-Set the values to the defaults unless specified below:
+In the **Security headers** section, set the values to the defaults unless specified below:
 
 * X-Frame-Options: `DENY`
 * X-XSS-Protection: `Enabled` and select `block`
@@ -1169,10 +1162,10 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='...,https://d1xnzbdvvkfkyn.cloudfront.net'
+ALLOWED_ORIGINS='...,https://d3uxowqxrueu13.cloudfront.net'
 ----
 
-Update your Okta SPA app to whitelist the URL as a redirect, too.
+Update your Okta SPA app to allow the URL as a redirect, too.
 
 If you try to log in, you'll get a 403 when redirecting back to the site. To fix this, edit your distribution > **Error pages**. Create two custom error responses for `404` and `403`. Return a path of `/index.html` and a `200: OK` response code.
 
