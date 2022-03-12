@@ -15,9 +15,9 @@ jobs:
         working-directory: ./src/code/${{ matrix.app }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Use Node 16
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
       - name: Install latest Chrome
@@ -30,7 +30,7 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v3
         if: ${{ matrix.app == 'ng-demo-auth0' }}
         env:
           CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}

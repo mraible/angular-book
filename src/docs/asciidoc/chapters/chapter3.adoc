@@ -26,7 +26,7 @@ You might think that Angular Material is more popular than Bootstrap these days.
 
 .What's your preferred CSS framework with Angular?
 [link=https://twitter.com/mraible/status/1196894737870938113]
-image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="100%", align=center]
+image::../images/angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
 
 == Integrate Bootstrap with Angular
 
@@ -52,17 +52,6 @@ Add Bootstrap and NG Bootstrap:
 ----
 ng add @ng-bootstrap/ng-bootstrap
 ----
-
-[CAUTION]
-====
-The current release (v11.0.0) doesn't install Bootstrap 5 by default, so install it:
-
-----
-npm i bootstrap@5
-----
-
-If NG Bootstrap v12 has been https://github.com/ng-bootstrap/ng-bootstrap/releases[released], you don't need to do this step.
-====
 
 This process will import `NgbModule` in `app.module.ts` and configure your app to use Bootstrap by adding a reference to `bootstrap.min.css` in `angular.json`.
 
@@ -307,7 +296,7 @@ image::../images/angular-bootstrap/notes-with-navbar.png[Notes app with navbar, 
 If you reduce the width of your browser window, you'll see the menu collapse to take up less real estate.
 
 .Navbar squished
-image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="70%", align=center]
 
 However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
@@ -340,7 +329,7 @@ export class AppComponent {
 Now, you'll be able to toggle the menu!
 
 .Squished navbar with menu
-image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="100%", align=center]
+image::../images/angular-bootstrap/notes-menu.png[Squished navbar with menu, 600, scaledwidth="70%", align=center]
 
 === Refactor Unit Tests to Pass
 
@@ -483,9 +472,7 @@ image::../images/angular-bootstrap/notes-edit-red-outline.png[Dirty title valida
 
 == Add a Data Table with Searching, Sorting, and Pagination
 
-At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples#complete[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
-
-// todo: ng-bootstrap link above fails to load website from IDEA, check PDF
+At the beginning of this section, I said I'd show you how to develop a searchable, sortable, and pageable data table. NG Bootstrap has a https://ng-bootstrap.github.io/#/components/table/examples[complete example] I used to build the section below. The major difference is you'll be using a real server, not a simulated one. Spring Data JPA has some slick features that make this possible, namely its query methods and paging/sorting.
 
 === Add Search by Title with Spring Data JPA
 

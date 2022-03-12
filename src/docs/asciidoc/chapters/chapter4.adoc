@@ -160,7 +160,7 @@ npm i -g npm-check-updates
 ncu
 ----
 
-At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.2 and TypeScript to version ~4.5.5.
+At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.3 and TypeScript to version ~4.5.5.
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
@@ -585,7 +585,7 @@ remote: -----> Spring Boot detected
 remote: -----> Installing JDK 11... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.3.3-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.4-bin.zip
 remote:        ........................................................................
 remote:        > Task :processResources
 remote:        > Task :compileKotlin
@@ -1102,11 +1102,11 @@ Next, you need to https://docs.aws.amazon.com/AmazonS3/latest/user-guide/static-
 Type `index.html` for the index and error document and click **Save changes**.
 
 .AWS static website
-image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="100%", align=center]
+image::../images/angular-deployment/aws-static-website.png[AWS static website, 684, scaledwidth="80%", align=center]
 
 By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save changes**.
 
-The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `\{your-bucket-name}` with your bucket's name.
+The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `{your-bucket-name}` with your bucket's name.
 
 [source,json]
 ----
@@ -1118,7 +1118,7 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
             "Effect": "Allow",
             "Principal": "*",
             "Action": ["s3:GetObject"],
-            "Resource": ["arn:aws:s3:::\{your-bucket-name}/*"]
+            "Resource": ["arn:aws:s3:::{your-bucket-name}/*"]
         }
     ]
 }
@@ -1126,7 +1126,7 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
 
 Click **Save changes** to continue.
 
-At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve these issues].
+At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve this].
 
 Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Click in the **Origin Domain Name** field and select your S3 bucket.
 

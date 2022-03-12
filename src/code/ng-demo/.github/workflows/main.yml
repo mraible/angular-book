@@ -10,7 +10,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Use Node 16
+<<<<<<< HEAD
         uses: actions/setup-node@v2
+=======
+        uses: actions/setup-node@v3
+>>>>>>> main
         with:
           node-version: '16'
       - name: Install latest Chrome

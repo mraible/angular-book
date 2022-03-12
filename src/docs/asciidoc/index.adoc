@@ -2,9 +2,9 @@
 :book-title: {doctitle}
 :author: Matt Raible
 :email: matt@raibledesigns.com
-:revnumber: 1.0.0
+:revnumber: 2.0.0
 :revdate: {docdate}
-:revyear: 2021
+:revyear: 2022
 :subject: Angular
 :keywords: Angular, TypeScript, Bootstrap, Spring Boot
 :doctype: book

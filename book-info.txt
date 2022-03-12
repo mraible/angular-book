@@ -2,9 +2,11 @@ This is information that InfoQ will request from you for your book's landing pag
 
 Book Abstract:
 
-The Angular Mini-Book is a guide to getting started with Angular. You'll learn how to develop a bare-bones application, test it, and deploy it. Then you'll move on to adding Bootstrap, Angular Material, continuous integration, and authentication. Spring Boot is a popular framework for building REST APIs. You'll learn how to integrate Angular with Spring Boot and use security best practices like HTTPS and a content security policy.
+The Angular Mini-Book is a guide to getting started with Angular. You'll learn how to develop a bare-bones application, test it, and deploy it. Then you'll move on to adding Bootstrap, Angular Material, continuous integration, and authentication.
 
-This initial edition (v1.0) uses Angular 12 and Spring Boot 2.5. I do plan on updating it for Angular 13 and Spring Boot 2.6. If you have any tips for upgrading, please let me know!
+Spring Boot is a popular framework for building REST APIs. You'll learn how to integrate Angular with Spring Boot and use security best practices like HTTPS and a content security policy. What about deploying your Angular app to the cloud? Yep, it covers that too!
+
+This second edition (v2.0) uses Angular 13 and Spring Boot 2.6.
 
 Follow @mraible on Twitter for book updates.
 

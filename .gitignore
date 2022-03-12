@@ -105,6 +105,7 @@ Desktop.ini
 /bin/**
 /deploy/**
 dist/
+/.angular/cache/
 
 ######################
 # Logs
