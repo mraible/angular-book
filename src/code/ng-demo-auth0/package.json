@@ -28,19 +28,11 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "@angular-devkit/build-angular": "~13.2.2",
-    "@angular/cli": "~13.2.2",
-    "@angular/compiler-cli": "~13.2.0",
-    "@cypress/schematic": "^1.6.0",
-    "@oktadev/schematics": "^5.2.0",
-=======
     "@angular-devkit/build-angular": "~13.2.3",
     "@angular/cli": "~13.2.3",
     "@angular/compiler-cli": "~13.2.0",
     "@cypress/schematic": "^1.6.0",
     "@oktadev/schematics": "^5.2.2",
->>>>>>> main
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "concurrently": "^7.0.0",
