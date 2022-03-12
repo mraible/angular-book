@@ -2,14 +2,15 @@
   "name": "angular-mini-book",
   "version": "2.0.0",
   "description": "Angular Mini-Book",
+  "author": "Matt Raible (@mraible)",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:mraible/angular-book.git"
   },
-  "author": "Matt Raible (@mraible)",
-  "license": "Apache-2.0",
   "keywords": [
     "angular",
+    "spring-boot",
     "mini-book",
     "infoq",
     "asciidoctor"
