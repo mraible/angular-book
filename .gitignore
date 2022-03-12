@@ -127,3 +127,6 @@ dist/
 # Gradle Wrapper
 ######################
 !gradle/wrapper/gradle-wrapper.jar
+
+.cache
+/public/
