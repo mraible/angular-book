@@ -7,7 +7,7 @@ I encourage you to follow the https://blog.angular.io[Angular Blog] and https://
 
 Now that you've learned how to use Angular, Bootstrap, Spring Boot, and a bit of Kotlin, go forth and develop amazing applications!
 
-image::../images/action/angular-rocket.png[Go forth and develop amazing applications!, 400, scaledwidth="50%", align=center]
+image::action/angular-rocket.png[Go forth and develop amazing applications!, 400, scaledwidth="50%", align=center]
 
 == Additional reading
 
