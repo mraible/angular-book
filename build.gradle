@@ -53,7 +53,7 @@ def attrs = [
 
 tasks.withType(AsciidoctorTask) { task ->
     attributes attrs
-    sourceDir 'src/docs/asciidoc'
+    sourceDir 'src/docs/asciidoc/modules/ROOT'
     baseDirFollowsSourceDir()
     sources {
         include 'index.adoc'

@@ -14,7 +14,7 @@ Spring Boot 1.0 was released on April 1, 2014, and revolutionized the way Java d
 Long story short, Angular, Kotlin, and Spring Boot are a match made in heaven!
 
 .Bootiful Angular
-image::../images/angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwidth="100%", align=center]
 
 == What's New in Angular?
 
@@ -98,7 +98,7 @@ ng serve
 Open your browser to `http://localhost:4200`, and you'll see the default homepage.
 
 .Angular default homepage
-image::../images/angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%", align=center]
 
 Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
@@ -140,7 +140,7 @@ ng add @oktadev/schematics --issuer=$issuer --clientId=$clientId
 This command adds Okta's Angular SDK and configures OIDC authentication for your app.
 
 .OktaDev Schematics in Action
-image::../images/angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%", align=center]
 
 It creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
 
@@ -217,17 +217,17 @@ NOTE: You might notice that tokens are only added for `\http://localhost`. You'l
 Start your app again using the `ng serve` command, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
 .Login button
-image::../images/angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%", align=center]
 
 Click on it and you'll be redirected to Okta to log in.
 
 .Okta Login form
-image::../images/angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="50%", align=center]
+image::angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="50%", align=center]
 
 Enter valid credentials and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
 .Logout button
-image::../images/angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%", align=center]
 
 Now that you've created a secure Angular app let's create a Spring Boot app to serve up data with a REST API.
 
@@ -258,7 +258,7 @@ unzip notes-api.zip -d angular-spring-boot/notes-api
 You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.6.3&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
 .Create app with start.spring.io
-image::../images/angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
 
 === Secure Spring Boot with Spring Security
 
@@ -680,22 +680,22 @@ TIP: If you want `npm test` to pass after modifying this template, you'll need t
 Run `ng serve` (and make sure your Spring Boot app is running too).
 
 .Notes App Login
-image::../images/angular-spring-boot/notes-login.png[Notes App Login, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/notes-login.png[Notes App Login, 800, scaledwidth="100%", align=center]
 
 Log in, and you should see a **View Notes** link.
 
 .Notes Link
-image::../images/angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth="100%", align=center]
 
 Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
 
 .Notes List
-image::../images/angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%", align=center]
 
 Click on the **New** link to add a new note.
 
 .Notes Detail
-image::../images/angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%", align=center]
 
 Add a new note, and you'll see a message like this in your backend console.
 
@@ -721,7 +721,7 @@ find(filter: NoteFilter): Observable<Note[]> {
 Now you'll see your notes listed. Nice work!
 
 .Notes User List
-image::../images/angular-spring-boot/notes-user-list.png[Notes User List, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/notes-user-list.png[Notes User List, 800, scaledwidth="100%", align=center]
 
 You might be wondering how the `NoteListComponent` works. It loads the user's notes from the `NoteService` when the component initializes, and also contains `select()` and `delete()` methods. The reason it's able to talk to your secured Spring Boot API is that the aforementioned `AuthInterceptor` adds an access token to the request.
 
