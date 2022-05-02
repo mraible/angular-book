@@ -40,7 +40,7 @@
     "cypress-dotenv": "^2.0.0",
     "dotenv": "^16.0.0",
     "jasmine-core": "~4.0.0",
-    "karma": "~6.3.0",
+    "karma": "~6.3.19",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
