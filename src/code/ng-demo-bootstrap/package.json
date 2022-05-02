@@ -37,7 +37,7 @@
     "@cypress/schematic": "^1.6.0",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
-    "concurrently": "^7.0.0",
+    "concurrently": "^7.1.0",
     "cypress": "latest",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",
