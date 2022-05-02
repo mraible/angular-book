@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.2.3",
-    "@angular/cli": "~13.2.3",
+    "@angular/cli": "~13.3.4",
     "@angular/compiler-cli": "~13.2.0",
     "@cypress/schematic": "^1.6.0",
     "@oktadev/schematics": "^5.2.2",
