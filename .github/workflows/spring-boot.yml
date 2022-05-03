@@ -1,6 +1,6 @@
 name: Angular + Spring Boot CI
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   changes:
@@ -9,19 +9,20 @@ jobs:
       # Expose matched filters as job 'app' output variable
       app: ${{ steps.filter.outputs.changes }}
     steps:
-      # For pull requests it's not necessary to checkout the code
+      - name: Checkout
+        uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
             spring-boot:
-              - ./src/code/angular-spring-boot/**
+              - src/code/angular-spring-boot/**
             bootstrap:
-              - ./src/code/angular-bootstrap/**
+              - src/code/angular-bootstrap/**
             deployment:
-              - ./src/code/angular-deployment/**
+              - src/code/angular-deployment/**
             docker:
-              - ./src/code/angular-docker/**
+              - src/code/angular-docker/**
 
   build:
     needs: changes
@@ -36,8 +37,6 @@ jobs:
       run:
         working-directory: ./src/code/angular-${{ matrix.app }}/notes
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Use Node 16
         uses: actions/setup-node@v3
         with:
