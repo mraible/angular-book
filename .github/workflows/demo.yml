@@ -9,20 +9,15 @@ jobs:
     outputs:
       app: ${{ steps.filter.outputs.changes }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
-            ng-demo:
-              - src/code/ng-demo/**
-            ng-demo-bootstrap:
-              - src/code/ng-demo-bootstrap/**
-            ng-demo-material:
-              - src/code/ng-demo-material/**
-            ng-demo-auth0:
-              - src/code/ng-demo-auth0/**
+            ng-demo: src/code/ng-demo
+            ng-demo-bootstrap: src/code/ng-demo-bootstrap
+            ng-demo-material: src/code/ng-demo-material
+            ng-demo-auth0: src/code/ng-demo-auth0
 
   build:
     name: Build and test
@@ -35,13 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/code/${{ matrix.app }}
+        working-directory: ./src/code/${{ matrix.app }}
     steps:
-      - name: Echo app
-        run: |
-          echo "matrix.app: ${{ matrix.app }}"
-      - name: Use Node 16
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
       - name: Install latest Chrome
