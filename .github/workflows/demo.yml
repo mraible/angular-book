@@ -29,12 +29,13 @@ jobs:
         run: npm ci
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
-      - name: Run integration tests
-        uses: cypress-io/github-action@v3
+      - name: Sets Cypress credentials for Auth0
         if: ${{ matrix.app == 'ng-demo-auth0' }}
         env:
           CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           CYPRESS_E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      - name: Run integration tests
+        uses: cypress-io/github-action@v3
         with:
           build: npm run build
           start: npm start
