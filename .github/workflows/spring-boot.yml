@@ -4,6 +4,7 @@ on: [ push, pull_request ]
 
 jobs:
   changes:
+    name: Check for changes
     runs-on: ubuntu-latest
     outputs:
       # Expose matched filters as job 'app' output variable
@@ -25,13 +26,13 @@ jobs:
               - src/code/angular-docker/**
 
   build:
+    name: Build and test
     needs: changes
     if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       fail-fast: false
       matrix:
         app: ${{ fromJson(needs.changes.outputs.app) }}
-    name: Build and Test
     runs-on: ubuntu-latest
     defaults:
       run:
