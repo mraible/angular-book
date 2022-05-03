@@ -3,42 +3,53 @@ name: Angular Demo CI
 on: [push, pull_request]
 
 jobs:
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    outputs:
+      # Expose matched filters as job 'app' output variable
+      app: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            demo:
+              - src/code/ng-demo/**
+            demo-bootstrap:
+              - src/code/ng-demo-bootstrap/**
+            demo-material:
+              - src/code/ng-demo-material/**
+            demo-auth0:
+              - src/code/ng-demo-auth0/**
+
   build:
+    name: Build and test
+    needs: changes
+    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
     strategy:
       fail-fast: false
       matrix:
-        app: [ ng-demo, ng-demo-bootstrap, ng-demo-material, ng-demo-auth0 ]
-    name: Build and Test
+        app: ng-${{ fromJson(needs.changes.outputs.app) }}
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./src/code/${{ matrix.app }}
     steps:
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            src:
-              - 'src/code/${{ matrix.app }}/**'
-      - name: Checkout
-        if: steps.changes.outputs.src == 'true'
-        uses: actions/checkout@v3
       - name: Use Node 16
-        if: steps.changes.outputs.src == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: '16'
       - name: Install latest Chrome
-        if: steps.changes.outputs.src == 'true'
         run: |
           sudo apt update
           sudo apt --only-upgrade install google-chrome-stable
           google-chrome --version
       - name: Install dependencies
-        if: steps.changes.outputs.src == 'true'
         run: npm ci
       - name: Run unit tests
-        if: steps.changes.outputs.src == 'true'
         run: xvfb-run npm test -- --watch=false
       - name: Sets Cypress credentials for Auth0
         if: ${{ matrix.app == 'ng-demo-auth0' }}
@@ -46,7 +57,6 @@ jobs:
           CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           CYPRESS_E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       - name: Run integration tests
-        if: steps.changes.outputs.src == 'true'
         uses: cypress-io/github-action@v3
         with:
           build: npm run build

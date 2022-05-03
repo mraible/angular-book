@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: ${{ fromJson(needs.changes.outputs.app) }}
+        app: angular-${{ fromJson(needs.changes.outputs.app) }}
     runs-on: ubuntu-latest
     defaults:
       run:
