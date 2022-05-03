@@ -7,7 +7,6 @@ jobs:
     name: Check for changes
     runs-on: ubuntu-latest
     outputs:
-      # Expose matched filters as job 'app' output variable
       app: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout
@@ -16,27 +15,27 @@ jobs:
         id: filter
         with:
           filters: |
-            spring-boot:
+            angular-spring-boot:
               - src/code/angular-spring-boot/**
-            bootstrap:
+            angular-bootstrap:
               - src/code/angular-bootstrap/**
-            deployment:
+            angular-deployment:
               - src/code/angular-deployment/**
-            docker:
+            angular-docker:
               - src/code/angular-docker/**
 
   build:
     name: Build and test
     needs: changes
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
+    if: ${{ needs.changes.outputs.app != '[]' && needs.changes.outputs.app != '' }}
     strategy:
       fail-fast: false
       matrix:
-        app: angular-${{ fromJson(needs.changes.outputs.app) }}
+        app: ${{ fromJson(needs.changes.outputs.app) }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/code/angular-${{ matrix.app }}/notes
+        working-directory: ./src/code/${{ matrix.app }}/notes
     steps:
       - name: Use Node 16
         uses: actions/setup-node@v3
@@ -57,5 +56,5 @@ jobs:
       - name: Run Angular tests
         run: xvfb-run npm test -- --watch=false
       - name: Run Spring Boot tests
-        working-directory: ./src/code/angular-${{ matrix.app }}/notes-api
+        working-directory: ./src/code/${{ matrix.app }}/notes-api
         run: ./gradlew test
