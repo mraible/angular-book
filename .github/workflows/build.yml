@@ -1,11 +1,39 @@
 name: Book CI
+
 on:
   push:
     branches: # build any changes to main
       - main
   pull_request: # build all PRs
+
 jobs:
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    outputs:
+      src: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check if source changed
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'src/docs/**'
+              - 'src/main/**'
+              - 'supplemental-ui/**'
+              - '*.gradle'
+              - 'gradle*'
+              - '*.js'
+              - '*.json'
+              - '*.toml'
+              - '*.yml'
+
   gradle:
+    needs: changes
+    if: ${{ needs.changes.outputs.src != '[]' && needs.changes.outputs.src != '' }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
