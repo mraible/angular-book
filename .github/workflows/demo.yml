@@ -14,10 +14,10 @@ jobs:
         id: filter
         with:
           filters: |
-            ng-demo: src/code/ng-demo
-            ng-demo-bootstrap: src/code/ng-demo-bootstrap
-            ng-demo-material: src/code/ng-demo-material
-            ng-demo-auth0: src/code/ng-demo-auth0
+            ng-demo: src/code/ng-demo/**
+            ng-demo-bootstrap: src/code/ng-demo-bootstrap/**
+            ng-demo-material: src/code/ng-demo-material/**
+            ng-demo-auth0: src/code/ng-demo-auth0/**
 
   build:
     name: Build and test
