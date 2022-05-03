@@ -35,8 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/code/${{ matrix.app }}
+        working-directory: src/code/${{ matrix.app }}
     steps:
+      - name: Echo app
+        run: |
+          echo "matrix.app: ${{ matrix.app }}"
       - name: Use Node 16
         uses: actions/setup-node@v3
         with:
@@ -58,6 +61,6 @@ jobs:
         with:
           build: npm run build
           start: npm start
-          working-directory: ./src/code/${{ matrix.app }}
+          working-directory: src/code/${{ matrix.app }}
           wait-on: http://localhost:4200
           browser: chrome
