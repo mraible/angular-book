@@ -14,20 +14,31 @@ jobs:
       run:
         working-directory: ./src/code/${{ matrix.app }}
     steps:
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'src/code/${{ matrix.app }}/**'
       - name: Checkout
+        if: steps.changes.outputs.src == 'true'
         uses: actions/checkout@v3
       - name: Use Node 16
+        if: steps.changes.outputs.src == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: '16'
       - name: Install latest Chrome
+        if: steps.changes.outputs.src == 'true'
         run: |
           sudo apt update
           sudo apt --only-upgrade install google-chrome-stable
           google-chrome --version
       - name: Install dependencies
+        if: steps.changes.outputs.src == 'true'
         run: npm ci
       - name: Run unit tests
+        if: steps.changes.outputs.src == 'true'
         run: xvfb-run npm test -- --watch=false
       - name: Sets Cypress credentials for Auth0
         if: ${{ matrix.app == 'ng-demo-auth0' }}
@@ -35,6 +46,7 @@ jobs:
           CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           CYPRESS_E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       - name: Run integration tests
+        if: steps.changes.outputs.src == 'true'
         uses: cypress-io/github-action@v3
         with:
           build: npm run build
