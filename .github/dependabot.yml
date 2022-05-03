@@ -18,28 +18,28 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "angular*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "npm"
     directory: "/src/code/ng-demo-auth0"
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "npm"
     directory: "/src/code/ng-demo-bootstrap"
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "npm"
     directory: "/src/code/ng-demo-material"
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   # angular + spring-boot examples
   - package-ecosystem: "npm"
@@ -47,7 +47,7 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "gradle"
     directory: "/src/code/angular-spring-boot/notes-api"
@@ -58,7 +58,7 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "gradle"
     directory: "/src/code/angular-bootstrap/notes-api"
@@ -69,7 +69,7 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "gradle"
     directory: "/src/code/angular-deployment/notes-api"
@@ -80,7 +80,7 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "angular*",
+      - dependency-name: "*"
         update-types: ["version-update:semver-minor","version-update:semver-patch"]
   - package-ecosystem: "gradle"
     directory: "/src/code/angular-docker/notes-api"
