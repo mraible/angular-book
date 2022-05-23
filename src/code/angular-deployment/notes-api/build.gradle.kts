@@ -5,7 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
     id("com.github.ben-manes.versions") version "0.42.0"
-    kotlin("jvm") version "1.6.20-M1"
+    kotlin("jvm") version "1.7.0-RC"
     kotlin("plugin.spring") version "1.6.20-M1"
     kotlin("plugin.jpa") version "1.6.20-M1"
 }
