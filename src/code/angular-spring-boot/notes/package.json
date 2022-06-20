@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.2.3",
-    "@angular/cli": "~13.2.3",
+    "@angular/cli": "~14.0.2",
     "@angular/compiler-cli": "~13.2.0",
     "@oktadev/schematics": "^5.2.2",
     "@types/jasmine": "~3.10.0",
