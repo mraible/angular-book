@@ -34,7 +34,7 @@
     "@angular/compiler-cli": "~13.2.0",
     "@cypress/schematic": "^1.6.0",
     "@types/jasmine": "~3.10.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^18.6.3",
     "concurrently": "^7.0.0",
     "cypress": "latest",
     "jasmine-core": "~4.0.0",
