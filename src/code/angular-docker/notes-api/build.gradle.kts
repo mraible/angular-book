@@ -8,7 +8,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.42.0"
     id("com.github.node-gradle.node") version "3.2.0"
     id("com.google.cloud.tools.jib") version "3.2.0"
-    kotlin("jvm") version "1.6.20-M1"
+    kotlin("jvm") version "1.7.20-Beta"
     kotlin("plugin.spring") version "1.6.20-M1"
     kotlin("plugin.jpa") version "1.6.20-M1"
 }
