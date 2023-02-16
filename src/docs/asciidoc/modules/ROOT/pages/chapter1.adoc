@@ -366,7 +366,7 @@ You can now add a proper type to the `searchResults` variable. While you're ther
 ----
 export class SearchComponent implements OnInit {
   query: string = '';
-  searchResults: Array<Person> = [];
+  searchResults: Person[] = [];
 
   constructor(private searchService: SearchService) { }
 ----
@@ -887,8 +887,8 @@ describe('SearchService', () => {
   let service: SearchService;
   let httpMock: HttpTestingController;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [SearchService]
     });
@@ -1096,11 +1096,11 @@ describe('EditComponent', () => {
   let mockActivatedRoute: MockActivatedRoute;
   let mockRouter: MockRouter;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockActivatedRoute = new MockActivatedRoute({id: 1});
     mockRouter = new MockRouter();
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [EditComponent],
       providers: [
         {provide: ActivatedRoute, useValue: mockActivatedRoute},
@@ -1830,10 +1830,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('EditComponent', () => {
   ...
-  beforeEach(() => {
+  beforeEach(async () => {
     ...
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       ...
       imports: [FormsModule, HttpClientTestingModule, MatInputModule, NoopAnimationsModule]
     }).compileComponents();

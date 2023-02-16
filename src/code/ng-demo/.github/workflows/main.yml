@@ -9,10 +9,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Use Node 16
+      - name: Use Node 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 18
       - name: Install latest Chrome
         run: |
           sudo apt update
@@ -23,8 +23,8 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v5
         with:
-          build: npm run build
           start: npm start
-          wait-on: http://localhost:4200
+          install: false
+          wait-on: http://[::1]:4200
