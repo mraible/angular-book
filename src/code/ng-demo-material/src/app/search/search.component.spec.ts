@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchComponent } from './search.component';
-import { MockActivatedRoute } from './mocks/routes';
 import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { MockActivatedRoute } from '../shared/search/mocks/routes';
 import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';

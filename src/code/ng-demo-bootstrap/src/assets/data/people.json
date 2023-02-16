@@ -18,18 +18,18 @@
       "street": "2654 Washington Street",
       "city": "Lakewood",
       "state": "CO",
-      "zip": "80123"
+      "zip": "80568"
     }
   },
   {
     "id": 3,
-    "name": "Michael Porter Jr.",
-    "phone": "(303) 623-1337",
+    "name": "Aaron Gordon",
+    "phone": "(303) 323-1233",
     "address": {
-      "street": "99 Fluid Way",
-      "city": "Breckenridge",
+      "street": "46 Creekside Way",
+      "city": "Winter Park",
       "state": "CO",
-      "zip": "80424"
+      "zip": "80482"
     }
   }
 ]
