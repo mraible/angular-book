@@ -1,4 +1,4 @@
-name: Angular
+name: Demo CI
 
 on: [push, pull_request]
 
