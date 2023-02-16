@@ -29,7 +29,13 @@ endif::[]
 [.text-left]
 * A favorite text editor or IDE. I recommend https://www.jetbrains.com/idea/[IntelliJ IDEA].
 * http://nodejs.org/[Node.js] and npm installed.
-* https://angular.io/cli[Angular CLI] installed. If you don't have the Angular CLI installed, install it using `npm install -g @angular/cli@13`.
+* https://angular.io/cli[Angular CLI] installed.
+
+If you don't have the Angular CLI installed, install it:
+
+----
+npm install -g @angular/cli@15
+----
 
 NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, checkout https://code.visualstudio.com/[Visual Studio Code].
 
@@ -58,44 +64,41 @@ $ ng version
                 |___/
 
 
-Angular CLI: 13.2.3
-Node: 16.13.2
-Package Manager: npm 8.1.2
-OS: darwin x64
+Angular CLI: 15.1.6
+Node: 18.14.0
+Package Manager: npm 9.3.1
+OS: darwin arm64
 
 Angular:
 ...
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1302.3 (cli-only)
-@angular-devkit/core         13.2.3 (cli-only)
-@angular-devkit/schematics   13.2.3 (cli-only)
-@schematics/angular          13.2.3 (cli-only)
+@angular-devkit/architect    0.1501.6 (cli-only)
+@angular-devkit/core         15.1.6 (cli-only)
+@angular-devkit/schematics   15.1.6 (cli-only)
+@schematics/angular          15.1.6 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
 
 ----
-Angular CLI: 13.2.3
-Node: 16.13.2
-Package Manager: npm 8.1.2
-OS: darwin x64
+....
 
-Angular: 13.2.2
+Angular: 15.1.2
 ... animations, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1302.3
-@angular-devkit/build-angular   13.2.3
-@angular-devkit/core            13.2.3
-@angular-devkit/schematics      13.2.3
-@angular/cli                    13.2.3
-@schematics/angular             13.2.3
-rxjs                            7.5.4
-typescript                      4.5.5
+@angular-devkit/architect       0.1501.3
+@angular-devkit/build-angular   15.1.3
+@angular-devkit/core            15.1.3
+@angular-devkit/schematics      15.1.3
+@angular/cli                    15.1.3
+@schematics/angular             15.1.3
+rxjs                            7.8.0
+typescript                      4.9.4
 ----
 
 === Run the application
@@ -116,7 +119,7 @@ You can make sure your new project's tests pass, run `ng test`:
 ----
 $ ng test
 ...
-Chrome 97.0.4692.99 (Mac OS 10.15.7): Executed 3 of 3 SUCCESS (0.128 secs / 0.115 secs)
+...: Executed 3 of 3 SUCCESS (0.061 secs / 0.055 secs)
 ----
 
 === Add a search feature
@@ -145,25 +148,7 @@ Open `src/app/search/search.component.html` and replace its default HTML with th
 <pre>{{searchResults | json}}</pre>
 ----
 
-If you try to start your app at this point, you'll receive several errors. The first is a compilation error.
-
-----
-Error: src/app/search/search.component.html:3:37 - error NG8002:
- Can't bind to 'ngModel' since it isn't a known property of 'input'.
-
- <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
-----
-
-This happens because you haven't imported Angular's `FormsModule` in to your project. We'll get to that in a minute. If you scroll down a bit, you'll see another error:
-
-----
-Error: src/app/search/search.component.html:3:50 - error TS2339:
- Property 'query' does not exist on type 'SearchComponent'.
-
- <input type="search" name="query" [(ngModel)]="query" (keyup.enter)="search()">
-----
-
-To fix this, add a `query` property to `src/app/search/search.component.ts`. While you're there, add a `searchResults` property and an empty `search()` method.
+Add a `query` property to `src/app/search/search.component.ts`. While you're there, add a `searchResults` property and an empty `search()` method.
 
 [source,typescript]
 .src/app/search/search.component.ts
@@ -172,16 +157,14 @@ export class SearchComponent implements OnInit {
   query: string | undefined;
   searchResults: any;
 
-  ...
+  constructor() { }
+
+  ngOnInit(): void { }
 
   search(): void { }
 
 }
 ----
-
-=== Adding a Search Route
-
-The https://angular.io/guide/router[Router and navigation docs] for Angular provides the information you need to set up a route to the `SearchComponent` you just generated. Here's a quick summary:
 
 In `src/app/app-routing.module.ts`, modify the `routes` constant to add `SearchComponent` as the default:
 
@@ -237,7 +220,7 @@ If yours looks different, it's because I trimmed my `app.component.html` to the 
 <router-outlet></router-outlet>
 ----
 
-I also added a bit of CSS to `src/app/search/search.component.css`:
+If you want to add styling for this component, open `src/app/search/search.component.css` and add some CSS. For example:
 
 [source,css]
 .src/app/search/search.component.css
@@ -289,18 +272,18 @@ mkdir -p src/assets/data
       "street": "2654 Washington Street",
       "city": "Lakewood",
       "state": "CO",
-      "zip": "80123"
+      "zip": "80568"
     }
   },
   {
     "id": 3,
-    "name": "Michael Porter Jr.",
-    "phone": "(303) 623-1337",
+    "name": "Aaron Gordon",
+    "phone": "(303) 323-1233",
     "address": {
-      "street": "99 Fluid Way",
-      "city": "Breckenridge",
+      "street": "46 Creekside Way",
+      "city": "Winter Park",
       "state": "CO",
-      "zip": "80424"
+      "zip": "80482"
     }
   }
 ]
@@ -308,7 +291,7 @@ mkdir -p src/assets/data
 
 Modify `src/app/shared/search/search.service.ts` and provide `HttpClient` as a dependency in its constructor.
 
-In this same file, create a `getAll()` method to gather all the people. Also, define the `Address` and `Person` classes that JSON will be marshaled to.
+In this same file, create a `getAll()` method to gather all the people. Also, define the `Address` and `Person` classes that JSON will be marshalled to.
 
 [source,typescript]
 .src/app/shared/search/search.service.ts
@@ -382,8 +365,8 @@ You can now add a proper type to the `searchResults` variable. While you're ther
 .src/app/search/search.component.ts
 ----
 export class SearchComponent implements OnInit {
-  query: string | undefined;
-  searchResults: Person[] = [];
+  query: string = '';
+  searchResults: Array<Person> = [];
 
   constructor(private searchService: SearchService) { }
 ----
@@ -395,8 +378,10 @@ Then update the `search()` method to call the service's `getAll()` method.
 ----
 search(): void {
   this.searchService.getAll().subscribe({
-    next: (data: Person[]) => { this.searchResults = data },
-    error: (e) => console.log(e)
+    next: (data: any) => {
+      this.searchResults = data;
+    },
+    error: error => console.log(error)
   });
 }
 ----
@@ -430,7 +415,7 @@ Now clicking the search button should work. To make the results look better, rem
 [source,xml]
 .src/app/search/search.component.html
 ----
-<table *ngIf="searchResults?.length">
+<table *ngIf="searchResults.length">
   <thead>
   <tr>
     <th>Name</th>
@@ -508,7 +493,7 @@ But wait, you still don't have search functionality! To add a search feature, ad
 [source,typescript]
 .src/app/shared/search/search.service.ts
 ----
-import { map } from 'rxjs/operators';
+import { map, Observable } from 'rxjs';
 ...
 
   search(q: string): Observable<Person[]> {
@@ -530,10 +515,12 @@ Then refactor `SearchComponent` to call this method with its `query` variable.
 .src/app/search/search.component.ts
 ----
 search(): void {
-  this.searchService.search(this.query).subscribe(
-    (data: Person[]) => { this.searchResults = data; },
-    error => console.log(error)
-  );
+  this.searchService.search(this.query).subscribe({
+    next: (data: Person[]) => {
+      this.searchResults = data;
+    },
+    error: error => console.log(error)
+  });
 }
 ----
 
@@ -760,18 +747,18 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 ...
 
-sub!: Subscription;
+  sub!: Subscription;
 
-constructor(private searchService: SearchService, private route: ActivatedRoute) { }
+  constructor(private searchService: SearchService, private route: ActivatedRoute) { }
 
-ngOnInit(): void {
-  this.sub = this.route.params.subscribe(params => {
-    if (params['term']) {
-      this.query = decodeURIComponent(params['term']);
-      this.search();
-    }
-  });
-}
+  ngOnInit(): void {
+    this.sub = this.route.params.subscribe(params => {
+      if (params['term']) {
+        this.query = decodeURIComponent(params['term']);
+        this.search();
+      }
+    });
+  }
 ----
 
 You'll want to implement `OnDestroy` and define the `ngOnDestroy` method to clean up this subscription.
@@ -873,7 +860,7 @@ TIP: You can use `x` and `f` prefixes in front of `describe` and `it` functions 
 If you changed the `app.component.html` template as I did, you'll need to modify `app.component.spec.ts` to account for the change in HTML. Change its last test to look for an `<h1>` element and the welcome message inside it.
 
 [source,typescript]
-.src/app/app/app.component.spec.ts
+.src/app/app.component.spec.ts
 ----
 it('should render title', () => {
   const fixture = TestBed.createComponent(AppComponent);
@@ -1022,20 +1009,20 @@ export class MockRouter {
 }
 ----
 
-With this mock in place, you can `TestBed.configureTestingModule()` to setup `SearchComponent` to use it as a provider. In the second `beforeEach()`, you can see that the `search()` method is spied on and its results are mocked. The response isn't important in this case because you're just unit testing the `SearchComponent`.
+With this mock in place, you can `TestBed.configureTestingModule()` to set up `SearchComponent` to use it as a provider. In the second `beforeEach()`, you can see that the `search()` method is spied on and its results are mocked. The response isn't important in this case because you're just unit testing the `SearchComponent`.
 
 [source,typescript]
 .src/app/search/search.component.spec.ts
 ----
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchComponent } from './search.component';
-import { MockActivatedRoute } from './mocks/routes';
 import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
+import { MockActivatedRoute } from '../shared/search/mocks/routes';
 import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
@@ -1098,11 +1085,11 @@ Update the test for `EditComponent`, verifying fetching a single record works. N
 import { EditComponent } from './edit.component';
 import { TestBed } from '@angular/core/testing';
 import { Address, Person, SearchService } from '../shared';
-import { MockActivatedRoute, MockRouter } from '../search/mocks/routes';
+import { MockActivatedRoute, MockRouter } from '../shared/search/mocks/routes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('EditComponent', () => {
   let mockSearchService: SearchService;
@@ -1151,7 +1138,7 @@ describe('EditComponent', () => {
 });
 ----
 
-You should see "`Executed 11 of 11 [green]#SUCCESS# (0.117 secs / 0.101 secs)`" in the shell window that's running `ng test`. If you don't, try canceling the command and restarting.
+You should see "`Executed 11 of 11 [green]#SUCCESS#" in the shell window that's running `ng test`. If you don't, try canceling the command and restarting.
 
 === Integration test the search UI
 
@@ -1169,7 +1156,7 @@ ng add @cypress/schematic
 
 When prompted to proceed and use Cypress for `ng e2e`, answer "`Yes`".
 
-This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Rename `cypress/integration/spec.ts` to `home.spec.ts` and change it to look for the title of your app.
+This will add Cypress as a dependency and create configuration files to work with Angular and TypeScript. Rename `cypress/e2e/spec.cy.ts` to `home.cy.ts` and change it to look for the title of your app.
 
 [source,typescript]
 .cypress/integration/home.spec.ts
@@ -1183,10 +1170,10 @@ describe('Home', () => {
 })
 ----
 
-Then, run `ng e2e`. This will compile your app, start in on `http://localhost:4200`, and launch the Cypress app.
+Then, run `ng e2e`. This will compile your app, start in on `http://localhost:4200`, and launch the Cypress Electron app.
 
-.Cypress App
-image::ng-demo/cypress-app.png[Cypress App, 800, scaledwidth="100%", align=center]
+.Cypress Electron App
+image::ng-demo/cypress-electron-app.png[Cypress Electron App, 800, scaledwidth="100%", align=center]
 
 If you click on the file name, it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more. You can learn more about Cypress' features at https://armno.in.th/2020/02/26/cypress-angular-integration-testing/[Setting up Cypress for an Angular Project].
 
@@ -1216,11 +1203,23 @@ Then, run the Cypress tests for it in another window:
 npm run cypress:run
 ----
 
-TIP: You might notice Cypress creates a video. You can disable this by adding `"video": false` to your `cypress.json` file.
+[TIP]
+====
+You might notice Cypress creates a video. You can disable this by adding `video: false` to your `cypress.config.ts` file.
+
+[source,typescript]
+----
+export default defineConfig({
+  e2e: { ... },
+  video: false,
+  component: { ... }
+})
+----
+====
 
 The `npm run cypress:run` command will run a headless browser, so you won't see anything happening on your screen.
 
-If you want to see the tests run, append `--browser chrome --headed` to the command. Add this to your `package.json` if you want to make it the default. See Cypress' https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
+If you want to see the tests run, append `-- --browser chrome --headed` to the command. Add this to your `package.json` if you want to make it the default. See Cypress' https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
 
 You can also install https://www.npmjs.com/package/concurrently[concurrently] so you can run multiple tasks with one command.
 
@@ -1243,10 +1242,10 @@ Then, you can run `npm run cy:run` to start your app and continuously run end-to
 
 === Testing the search feature
 
-Create another end-to-end test in `cypress/integration/search.spec.ts` to verify the search feature works. Populate it with the following code:
+Create another end-to-end test in `cypress/e2e/search.cy.ts` to verify the search feature works. Populate it with the following code:
 
 [source,typescript]
-.cypress/integration/search.spec.ts
+.cypress/e2e/search.cy.ts
 ----
 describe('Search', () => {
 
@@ -1270,10 +1269,10 @@ describe('Search', () => {
 
 === Testing the edit feature
 
-Create a `cypress/integration/edit.spec.ts` test to verify the `EditComponent` renders a person's information and that their information can be updated.
+Create a `cypress/e2e/edit.cy.ts` test to verify the `EditComponent` renders a person's information and that their information can be updated.
 
 [source,typescript]
-.cypress/integration/edit.spec.ts
+.cypress/e2e/edit.cy.ts
 ----
 describe('Edit', () => {
 
@@ -1305,16 +1304,16 @@ image::ng-demo/cypress-success.png[Cypress success, 800, scaledwidth="100%", ali
 
 If you made it this far and have all your specs passing—congratulations! You're well on your way to writing quality code with Angular and verifying it works.
 
-You can see the test coverage of your project by running `ng test --codeCoverage=true`.
+You can see the test coverage of your project by running `ng test --no-watch --code-coverage`.
 
-You'll see a printout of code coverage in your terminal window.
+You'll see a print out of code coverage in your terminal window.
 
 ----
 =============================== Coverage summary ===============================
-Statements   : 82.81% ( 53/64 )
-Branches     : 72.58% ( 45/62 )
-Functions    : 82.75% ( 24/29 )
-Lines        : 81.03% ( 47/58 )
+Statements   : 79.41% ( 54/68 )
+Branches     : 76.31% ( 29/38 )
+Functions    : 83.33% ( 25/30 )
+Lines        : 78.46% ( 51/65 )
 ================================================================================
 ----
 
@@ -1358,10 +1357,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Use Node 16
+      - name: Use Node 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 18
       - name: Install latest Chrome
         run: |
           sudo apt update
@@ -1372,12 +1371,14 @@ jobs:
       - name: Run unit tests
         run: xvfb-run npm test -- --watch=false
       - name: Run integration tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v5
         with:
-          build: npm run build
           start: npm start
-          wait-on: http://localhost:4200
+          install: false
+          wait-on: http://[::1]:4200
 ----
+
+TIP: See https://github.com/cypress-io/github-action/issues/634[issue #634] for more information on the strange syntax for `wait-on`.
 
 Check it in on a branch, create a pull request for that branch, and you should see your tests running.
 
@@ -1390,7 +1391,7 @@ If you've checked your project into source control, you can use Jenkins to autom
 [source,groovy]
 ----
 node {
-    def nodeHome = tool name: 'node-16', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+    def nodeHome = tool name: 'node-18', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
     env.PATH = "${nodeHome}/bin:${env.PATH}"
 
     stage('check tools') {
@@ -1434,42 +1435,82 @@ https://signup.heroku.com/[Create a Heroku account], https://devcenter.heroku.co
 
 Run `heroku create` to create an app on Heroku.
 
-Create a `static.json` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
+Create a `config/nginx.conf.erb` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
 
-[source,json]
+[source,ruby]
 ----
-{
-  "headers": {
-    "/**": {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com",
-      "Referrer-Policy": "no-referrer, strict-origin-when-cross-origin",
-      "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
-      "X-Content-Type-Options": "nosniff",
-      "X-Frame-Options": "DENY",
-      "X-XSS-Protection": "1; mode=block",
-      "Permissions-Policy": "geolocation=(self), microphone=(), accelerometer=(), camera=()"
-    }
-  },
-  "https_only": true,
-  "root": "dist/ng-demo/",
-  "routes": {
-    "/**": "index.html"
-  }
+daemon off;
+# Heroku dynos have at least 4 cores.
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+	use epoll;
+	accept_mutex on;
+	worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+	gzip on;
+	gzip_comp_level 2;
+	gzip_min_length 512;
+	gzip_proxied any; # Heroku router sends Via header
+
+	server_tokens off;
+
+	log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+	access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+	error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+	include mime.types;
+	default_type application/octet-stream;
+	sendfile on;
+
+	# Must read the body in 5 seconds.
+	client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+
+	server {
+		listen <%= ENV["PORT"] %>;
+		server_name _;
+		keepalive_timeout 5;
+		client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
+
+		root dist/ng-demo;
+		index index.html;
+
+		location / {
+			try_files $uri /index.html;
+		}
+
+		add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com";
+		add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin";
+		add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
+		add_header X-Content-Type-Options nosniff;
+		add_header X-Frame-Options DENY;
+		add_header X-XSS-Protection "1; mode=block";
+		add_header Permissions-Policy "geolocation=(self), microphone=(), accelerometer=(), camera=()";
+	}
 }
 ----
 
-NOTE: In this code, you might notice that some https URLs are allowed in the content security policy. Those are there so this app can make XHR requests to those domains when that functionality is added.
+NOTE: In this code, you might notice that some https URLs are allowed in the content security policy. Those are there this app can make XHR requests to those domains when that functionality is added.
 
-For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack].
+For this file to be read, you have to use the https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx[Heroku NGINX buildpack].
 
-Commit your changes to Git, add the Node.js + static buildpack, and deploy your Angular app using `git push`.
+Add a `Procfile` to the root of your project.
+
+[source,shell]
+----
+web: bin/start-nginx-solo
+----
+
+Commit your changes to Git, add the Node.js + NGINX buildpack, and redeploy your Angular app using `git push`.
 
 [source,shell]
 ----
 git add .
-git commit -m "Configure secure headers and static buildpack"
+git commit -m "Configure secure headers and nginx buildpack"
 heroku buildpacks:add heroku/nodejs
-heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git
+heroku buildpacks:add heroku-community/nginx
 git push heroku main
 ----
 
@@ -1479,25 +1520,24 @@ TIP: You can watch your app's logs using `heroku logs --tail`.
 
 == Styling with Bootstrap
 
-To integrate Bootstrap 5 and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[NG Bootstrap].
+To integrate Bootstrap and Bootstrap widgets into your Angular CLI-generated app, install https://ng-bootstrap.github.io/[NG Bootstrap].
 
 ----
 ng add @ng-bootstrap/ng-bootstrap
 ----
 
-This will install Bootstrap, NG Bootstrap, `@angular/localize`, and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
+This will install Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
 Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
 [source,html]
 .src/app/app.component.html
 ----
-<nav class="navbar navbar-expand-lg bg-secondary">
+<nav class="navbar navbar-light bg-secondary">
   <div class="container-fluid">
     <a class="navbar-brand text-light" href="#">Welcome to {{ title }}!</a>
   </div>
 </nav>
-
 <div class="container-fluid">
   <router-outlet></router-outlet>
 </div>
@@ -1595,8 +1635,8 @@ Make similar changes to `edit.component.html`:
 
 After modifying your templates, the edit screen will look as follows:
 
-.Bootstrap 5
-image::ng-demo/bootstrap5.png[Bootstrap 5, 800, scaledwidth="100%", align=center]
+.Bootstrap
+image::ng-demo/bootstrap.png[Bootstrap, 800, scaledwidth="100%", align=center]
 
 == Styling with Angular Material
 
@@ -1928,13 +1968,13 @@ Cypress.Commands.add('signIn', (username, password) => {
 })
 ----
 
-Then, in `cypress/support/index.ts`, uncomment the import for `commands` and specify `before()` and `after()` functions that log in and log out before each test.
+Then, in `cypress/support/e2e.ts`, uncomment the import for `commands` and specify `before()` and `after()` functions that log in and log out before each test.
 
 [source,typescript]
 ----
 import './commands';
 
-before(() => {
+beforeEach(() => {
   cy.visit('/')
   cy.get('#login').click()
   cy.signIn(
@@ -1943,13 +1983,13 @@ before(() => {
   )
 })
 
-after(() => {
+afterEach(() => {
   cy.visit('/')
   cy.get('#logout').click()
 })
 ----
 
-Modify `cypress/integration/home.spec.ts` to remove the line with `cy.visit('/')`.
+Modify `cypress/e2e/home.cy.ts` to remove the line with `cy.visit('/')`.
 
 Next, configure your credentials in `cypress.json` and turn off Chrome's security.
 
@@ -1971,46 +2011,30 @@ npm run cypress:run
 
 === Don't Store Credentials in Source Control
 
-In this example, I recommended you store your username and password in `cypress.json`. This is convenient, but a bad practice.
+In this example, I recommended you store your username and password in `cypress.config.ts`. This is convenient, but a bad practice.
 
-You can solve it by using https://www.npmjs.com/package/cypress-dotenv[Cypress dotenv].
+You can solve it by using https://docs.cypress.io/guides/guides/environment-variables#Option-2-cypressenvjson[`cypress.env.json`].
 
-Install it:
+Create a `cypress.env.json` file in your project's root folder with your Auth0 credentials in it.
 
-[source,shell]
+[source,json]
 ----
-npm i -D dotenv cypress-dotenv
-----
-
-Add the plugin to `cypress/plugins/index.js`:
-
-[source,javascript]
-----
-const dotenvPlugin = require('cypress-dotenv');
-
-module.exports = (on, config) => {
-  config = dotenvPlugin(config)
-  return config
+{
+  "E2E_USERNAME": "<your username>",
+  "E2E_PASSWORD": "<your password>"
 }
+
 ----
 
-Create a `.env` file in your project's root folder with your Auth0 credentials in it.
+Add `*.env.json` to your `.gitignore` file to prevent this file from being checked in.
 
-[source,shell]
-----
-CYPRESS_E2E_USERNAME=<your username>
-CYPRESS_E2E_PASSWORD=<your password>
-----
-
-Add `*.env` to your `.gitignore` file to prevent this file from being checked in.
-
-Then, remove the `env` key from `cypress.json`.
+Then, remove the `env` key from `cypress.config.ts`.
 
 Now, `npm run cypress:run` should work the same as before.
 
 === Cypress Web Security
 
-You might've noticed I turned off Chrome's web security in `cypress.json`.
+You might've noticed I turned off Chrome's web security in `cypress.config.ts`.
 
 [source,json]
 ----
