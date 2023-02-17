@@ -415,7 +415,7 @@ Now clicking the search button should work. To make the results look better, rem
 [source,xml]
 .src/app/search/search.component.html
 ----
-<table *ngIf="searchResults.length">
+<table *ngIf="searchResults?.length">
   <thead>
   <tr>
     <th>Name</th>
@@ -589,7 +589,7 @@ Update `src/app/edit/edit.component.html` to display an editable form. You might
   </div>
   <div>
     <label>Name:</label>
-    <input [(ngModel)]="person.name" name="name" id="name" placeholder="name"/>
+    <input [(ngModel)]="person.name" name="name" id="name" placeholder="Name"/>
   </div>
   <div>
     <label>Phone:</label>
@@ -1527,7 +1527,7 @@ To integrate Bootstrap and Bootstrap widgets into your Angular CLI-generated app
 ng add @ng-bootstrap/ng-bootstrap
 ----
 
-This will install Bootstrap, NG Bootstrap, and `@angular/localize`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
+This will install Bootstrap, NG Bootstrap, `@angular/localize`, and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
 Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
