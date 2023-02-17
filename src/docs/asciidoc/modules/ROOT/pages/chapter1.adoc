@@ -2069,8 +2069,9 @@ You also might find it useful to upload screenshots of your test failures to Git
 
 [source,yaml]
 ----
-- uses: actions/upload-artifact@v3
+- name: Upload screenshots on failure
   if: failure()
+  uses: actions/upload-artifact@v3
   with:
     name: cypress-screenshots
     path: cypress/screenshots
