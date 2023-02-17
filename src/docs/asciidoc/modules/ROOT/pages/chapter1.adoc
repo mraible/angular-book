@@ -205,7 +205,7 @@ export class AppModule { }
 ----
 
 [.text-left]
-Run `ng serve` again and now you should be able to see the search form when you visit `http://localhost:4200/search`.
+Run `ng serve` again, and now you should be able to see the search form when you visit `http://localhost:4200/search`.
 
 .Search component
 image::ng-demo/search-without-css.png[Search component, 800, scaledwidth="100%", align=center]
@@ -365,7 +365,7 @@ You can now add a proper type to the `searchResults` variable. While you're ther
 .src/app/search/search.component.ts
 ----
 export class SearchComponent implements OnInit {
-  query: string = | undefined;
+  query: string | undefined;
   searchResults: Person[] = [];
 
   constructor(private searchService: SearchService) { }
@@ -790,7 +790,7 @@ To make name required, modify `edit.component.html` to add a `required` attribut
 [source,html]
 .src/app/edit/edit.component.html
 ----
-<input [(ngModel)]="person.name" name="name" id="name" placeholder="name" required #name="ngModel"/>
+<input [(ngModel)]="person.name" name="name" id="name" placeholder="Name" required #name="ngModel"/>
 <div [hidden]="name.valid || name.pristine" style="color: red">
   Name is required
 </div>
