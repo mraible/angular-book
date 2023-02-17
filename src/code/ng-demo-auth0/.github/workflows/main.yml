@@ -6,16 +6,13 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16, 18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Use Node ${{ matrix.node-version }}
+      - name: Use Node 18
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
       - name: Install latest Chrome
         run: |
           sudo apt update
@@ -31,7 +28,7 @@ jobs:
           browser: chrome
           start: npm start
           install: false
-          wait-on: ${{ matrix.node-version == 18 && 'http://[::1]:4200' || 'http://localhost:4200' }}
+          wait-on: http://[::1]:4200
         env:
           CYPRESS_E2E_DOMAIN: ${{ secrets.E2E_DOMAIN }}
           CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
