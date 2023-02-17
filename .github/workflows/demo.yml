@@ -36,10 +36,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Configure Node 16
+      - name: Configure Node 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 18
       - name: Install latest Chrome
         run: |
           sudo apt update
@@ -52,11 +52,11 @@ jobs:
       - name: Run integration tests
         uses: cypress-io/github-action@v5
         env:
+          CYPRESS_E2E_DOMAIN: ${{ secrets.E2E_DOMAIN }}
           CYPRESS_E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           CYPRESS_E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
         with:
-          build: npm run build
+          browser: chrome
           start: npm start
           working-directory: src/code/${{ matrix.app }}
-          wait-on: http://localhost:4200
-          browser: chrome
+          wait-on: http://[::1]:4200
