@@ -212,7 +212,7 @@ Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the nece
 [source,shell]
 ----
 https start.spring.io/starter.zip language==kotlin bootVersion==3.0.2 \
-artifactId==notes-api groupId==com.okta.dev packageName==com.okta.dev.notes \
+artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
 dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
 
@@ -225,7 +225,7 @@ Run this command in a terminal and a `notes-api.zip` file will be downloaded. Ex
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
-You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=3.0.2&packaging=jar&jvmVersion=17&groupId=com.okta.dev&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.dev.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=3.0.2&packaging=jar&jvmVersion=17&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
 .Create app with start.spring.io
 image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
