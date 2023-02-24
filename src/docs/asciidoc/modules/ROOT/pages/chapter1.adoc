@@ -64,7 +64,7 @@ $ ng version
                 |___/
 
 
-Angular CLI: 15.1.6
+Angular CLI: 15.2.0
 Node: 18.14.0
 Package Manager: npm 9.3.1
 OS: darwin arm64
@@ -74,10 +74,10 @@ Angular:
 
 Package                      Version
 ------------------------------------------------------
-@angular-devkit/architect    0.1501.6 (cli-only)
-@angular-devkit/core         15.1.6 (cli-only)
-@angular-devkit/schematics   15.1.6 (cli-only)
-@schematics/angular          15.1.6 (cli-only)
+@angular-devkit/architect    0.1502.0 (cli-only)
+@angular-devkit/core         15.2.0 (cli-only)
+@angular-devkit/schematics   15.2.0 (cli-only)
+@schematics/angular          15.2.0 (cli-only)
 ----
 
 If you run this command from the `ng-demo` directory, you'll see even more information.
@@ -85,18 +85,17 @@ If you run this command from the `ng-demo` directory, you'll see even more infor
 ----
 ....
 
-Angular: 15.1.5
-... animations, common, compiler, compiler-cli, core, forms
+Angular: 15.2.0
+... animations, cli, common, compiler, compiler-cli, core, forms
 ... platform-browser, platform-browser-dynamic, router
 
 Package                         Version
 ---------------------------------------------------------
-@angular-devkit/architect       0.1501.6
-@angular-devkit/build-angular   15.1.6
-@angular-devkit/core            15.1.6
-@angular-devkit/schematics      15.1.6
-@angular/cli                    15.1.6
-@schematics/angular             15.1.6
+@angular-devkit/architect       0.1502.0
+@angular-devkit/build-angular   15.2.0
+@angular-devkit/core            15.2.0
+@angular-devkit/schematics      15.2.0
+@schematics/angular             15.2.0
 rxjs                            7.8.0
 typescript                      4.9.5
 ----
@@ -528,7 +527,7 @@ This won't compile right away.
 
 [source,shell]
 ----
-Error: src/app/search/search.component.ts:19:31 - error TS2345:
+Error: src/app/search/search.component.ts:18:31 - error TS2345:
  Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
 ----
 
