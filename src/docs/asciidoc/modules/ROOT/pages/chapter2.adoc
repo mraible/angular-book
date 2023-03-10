@@ -196,9 +196,23 @@ const config = {
 };
 ----
 
+You'll need to update this configuration to add an `audience` parameter and so it'll add an access token when sending requests to your Spring Boot API.
+
+[source,typescript]
+.src/app/auth-routing.module.ts
+----
+const config = {
+  authorizationParams: {
+    audience: 'https://<your-auth0-domain>/api/v2/',
+  },
+  httpInterceptor: {
+    allowedList: ['http://localhost:8080/*']
+  },
+};
+----
+
 Start your app again using the `ng serve` command, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
-// todo: add pink arrow to new image
 .Login button
 image::angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%", align=center]
 
@@ -209,7 +223,6 @@ image::angular-spring-boot/auth0-login.png[Auth0 Login form, 425, scaledwidth="5
 
 Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
-// todo: add pink arrow to new image
 .Logout button
 image::angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%", align=center]
 
@@ -270,6 +283,7 @@ Copy the results of the previous command into an `.okta.env` file. You'll need t
 export OKTA_OAUTH2_ISSUER=https://<your-auth0-domain>/
 export OKTA_OAUTH2_CLIENT_ID=<your-client-id>
 export OKTA_OAUTH2_CLIENT_SECRET=<your-client-secret>
+export OKTA_OAUTH2_AUDIENCE=https://<your-auth0-domain>/api/v2/
 ----
 
 After replacing the `<...>` placeholders with your values, run `source .okta.env` to set these environment variables.
@@ -511,8 +525,6 @@ Restart your Spring Boot app after adding this bean.
 
 Now that your API is working, it's time to develop a UI for it with Angular!
 
-// todo: start from here
-
 == CRUD in Angular
 
 Angular Schematics is a workflow tool that allows you to manipulate any project that has a `package.json`. Angular CLI is based on Schematics. OktaDev Schematics uses Schematics to update and add new files to projects. There's even an https://github.com/manfredsteyer/angular-crud[Angular CRUD] schematic!
@@ -664,10 +676,9 @@ image::angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%
 
 Add a new note, and you'll see a message like this in your backend console.
 
-// todo: figure out why there's an audience issue here.
-[source,shell]
+[source%autofit,shell]
 ----
-Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: mraible@gmail.com
+Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: auth0|61bcbc76f64d4a0072af8a1d
 ----
 
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
@@ -990,7 +1001,7 @@ In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 E
 3. Use a Content Security Policy (CSP) to Prevent XSS Attacks
 4. Use OpenID Connect for Authentication
 
-You've already implemented #4 with Okta, but what about the others?
+You've already implemented #4 with Auth0, but what about the others?
 
 You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I prefer to do it in production, so I don't need to install certificates in development.
 
