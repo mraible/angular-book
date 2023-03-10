@@ -594,9 +594,7 @@ CREATE src/app/note/note-list/note-list.component.ts (1116 bytes)
 UPDATE src/app/app.module.ts (540 bytes)
 ----
 
-// todo: OktaAuthGuard is wrong for Auth0
-
-This schematic creates a `NotesModule`, routes a service to communicate with the API, and list/edit screens for viewing and editing notes. Open the generated `note.routes.ts` file, and protect the routes it creates with `OktaAuthGuard`.
+This schematic creates a `NotesModule`, routes a service to communicate with the API, and list/edit screens for viewing and editing notes. Open the generated `note.routes.ts` file, and protect the routes it creates with `AuthGuard`.
 
 [source,typescript]
 .src/app/note/note.routes.ts
@@ -604,18 +602,18 @@ This schematic creates a `NotesModule`, routes a service to communicate with the
 import { Routes } from '@angular/router';
 import { NoteListComponent } from './note-list/note-list.component';
 import { NoteEditComponent } from './note-edit/note-edit.component';
-import { OktaAuthGuard } from '@okta/okta-angular';
+import { AuthGuard } from '@auth0/auth0-angular';
 
 export const NOTE_ROUTES: Routes = [
   {
     path: 'notes',
     component: NoteListComponent,
-    canActivate: [OktaAuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'notes/:id',
     component: NoteEditComponent,
-    canActivate: [OktaAuthGuard]
+    canActivate: [AuthGuard]
   }
 ];
 ----
@@ -625,13 +623,11 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 [source,html]
 ----
 <div>
-  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-          (click)="oktaAuth.signInWithRedirect()">Login</button>
-  <p><a routerLink="/notes"
-        *ngIf="(authService.authState$ | async)?.isAuthenticated">View Notes</a></p>
-  <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-          (click)="oktaAuth.signOut()">Logout</button>
+  <button  *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()">Login</button>
+  <p><a routerLink="/notes" *ngIf="auth.isAuthenticated$ | async">View Notes</a></p>
+  <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()">Logout</button>
 </div>
+
 ----
 
 Change `src/app/app.component.html` to be as simple as it can be.
@@ -667,6 +663,7 @@ image::angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%
 
 Add a new note, and you'll see a message like this in your backend console.
 
+// todo: figure out why there's an audience issue here.
 [source,shell]
 ----
 Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: mraible@gmail.com
