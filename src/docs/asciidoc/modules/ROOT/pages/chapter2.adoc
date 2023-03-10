@@ -209,6 +209,7 @@ image::angular-spring-boot/auth0-login.png[Auth0 Login form, 425, scaledwidth="5
 
 Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
+// todo: add pink arrow to new image
 .Logout button
 image::angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%", align=center]
 
