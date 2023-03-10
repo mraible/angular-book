@@ -88,11 +88,13 @@ This process will take a minute or two to complete depending on your internet sp
 
 [source,shell]
 ----
+cd notes
 ng serve
 ----
 
 Open your browser to `http://localhost:4200`, and you'll see the default homepage.
 
+// todo: update because Angular Material icon is now orange
 .Angular default homepage
 image::angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%", align=center]
 
@@ -102,7 +104,10 @@ Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
 OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Let's continue that path because Auth0 is excellent, and one of the easiest identity providers to use.
 
-To add OIDC login support to your Angular app, you'll first need a https://auth0.com/signup[free developer account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to authorize your account.
+To add OIDC login support to your Angular app, you'll first need a https://auth0.com/signup[free Auth0 account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to authorize your device.
+
+// todo: copy from Deepu's command with arguments to create everything
+// todo: start from here.
 
 Then, run `auth0 apps create`. Specify a name like `Angular Rocks!`, or change it as you see fit. Choose **Single Page Web Application** and press kbd:[Return].
 
@@ -112,7 +117,7 @@ When you create Single Page Applications (SPAs) with the Auth0 CLI, authorizatio
 
 TIP: To learn more about PKCE (pronounced "`pixy`"), see link:https://developer.okta.com/blog/2019/08/22/okta-authjs-pkce[Implement the OAuth 2.0 Authorization Code with PKCE Flow].
 
-Copy your client ID and your issuer URI (from the Okta CLI's output) into the following command.
+Copy your client ID and your issuer URI (from the Auth0 CLI's output) into the following command.
 
 [source,shell]
 ----
@@ -207,13 +212,13 @@ The good folks at VMWare created https://start.spring.io[start.spring.io] to hel
 
 Kotlin is an intriguing language for Spring developers because it reduces boilerplate code and allows succinct, effective code. Kotlin is 100% interoperable with Java, so you can continue to use the Java libraries and frameworks you know and love. Not only that, but Spring has first-class support for Kotlin.
 
-Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
+Create a new Spring Boot app that uses Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
 
 [source,shell]
 ----
-https start.spring.io/starter.zip language==kotlin bootVersion==3.0.2 \
-artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
-dependencies==h2,data-jpa,data-rest,okta,web -d
+https start.spring.io/starter.zip type==gradle-project-kotlin language==kotlin \
+bootVersion==3.0.4 artifactId==notes-api groupId==com.okta.developer \
+packageName==com.okta.developer.notes dependencies==h2,data-jpa,data-rest,okta,web -d
 ----
 
 NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version, and it _should_ work. The value used here has been QA'd and is guaranteed to work.
@@ -225,7 +230,7 @@ Run this command in a terminal and a `notes-api.zip` file will be downloaded. Ex
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
-You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=3.0.2&packaging=jar&jvmVersion=17&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+You can also use https://start.spring.io/#!type=gradle-project-kotlin&language=kotlin&platformVersion=3.0.4&packaging=jar&jvmVersion=17&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
 
 .Create app with start.spring.io
 image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
@@ -242,12 +247,12 @@ Open a terminal and navigate to your Spring Boot app's directory. Run `auth0 app
 
 [source,shell]
 ----
-export OKTA_OAUTH2_ISSUER=https://{yourOktaDomain}/oauth2/default
-export OKTA_OAUTH2_CLIENT_ID={yourClientId}
-export OKTA_OAUTH2_CLIENT_SECRET={yourClientSecret}
+export OKTA_OAUTH2_ISSUER=https://<your-auth0-domain>/
+export OKTA_OAUTH2_CLIENT_ID=<your-client-id>
+export OKTA_OAUTH2_CLIENT_SECRET=<your-client-secret>
 ----
 
-After replacing the `{...}` placeholders with your values, run `source .okta.env` to set these environment variables. Make sure to remove the Okta-related properties from your `application.properties` file.
+After replacing the `<...>` placeholders with your values, run `source .okta.env` to set these environment variables. Make sure to remove the Okta-related properties from your `application.properties` file.
 
 Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Okta to sign in.
 
@@ -259,6 +264,7 @@ Your Spring Boot API is now secure, and it's configured to look for an `Authoriz
 
 To override the default configuration, create a `SecurityConfiguration.kt` class in the same directory as `DemoApplication.kt`:
 
+// todo: make sure this compiles
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
@@ -279,10 +285,9 @@ class SecurityConfiguration {
                 authorize.anyRequest().authenticated()
             }
             .oauth2Login()
-            .and()
             .oauth2ResourceServer().jwt()
 
-        return http.build();
+        return http.build()
     }
 }
 ----
@@ -301,9 +306,9 @@ package com.okta.developer.notes
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
 
 @SpringBootApplication
 class DemoApplication
@@ -421,7 +426,7 @@ class UserController(val repository: NotesRepository) {
 
     @GetMapping("/user")
     fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
-        return user;
+        return user
     }
 }
 ----
@@ -465,8 +470,7 @@ class SecurityConfiguration {
         ...
 
         http.cors()
-
-        return http.build();
+        return http.build()
     }
 
     @Bean
@@ -475,7 +479,7 @@ class SecurityConfiguration {
         val config = CorsConfiguration()
         config.allowCredentials = true
         config.allowedOrigins = listOf("http://localhost:4200")
-        config.allowedMethods = listOf("*");
+        config.allowedMethods = listOf("*")
         config.allowedHeaders = listOf("*")
         source.registerCorsConfiguration("/**", config)
         return source
@@ -568,6 +572,8 @@ CREATE src/app/note/note-list/note-list.component.spec.ts (978 bytes)
 CREATE src/app/note/note-list/note-list.component.ts (1116 bytes)
 UPDATE src/app/app.module.ts (540 bytes)
 ----
+
+// todo: OktaAuthGuard is wrong for Auth0
 
 This schematic creates a `NotesModule`, routes a service to communicate with the API, and list/edit screens for viewing and editing notes. Open the generated `note.routes.ts` file, and protect the routes it creates with `OktaAuthGuard`.
 
@@ -999,7 +1005,7 @@ class SecurityConfiguration {
         http.headers()
             .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
 
-        return http.build();
+        return http.build()
     }
 
     ...
