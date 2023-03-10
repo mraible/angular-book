@@ -59,9 +59,9 @@ You can also use https://sdkman.io[SDKMAN!] to install Java 17.
 
 [source,shell]
 ----
-sdk install java // currently installs 17.0.6-tem
+sdk install java
 ----
-
+// when last tested, this installs 17.0.6-tem
 If you like to live on the bleeding edge, the latest version of the JDK should work too.
 
 The previous section served as an intro to Angular and showed you how it works without a backend. In this section, you'll create a new app that's more of a _real-world_ application.
