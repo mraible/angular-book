@@ -94,7 +94,6 @@ ng serve
 
 Open your browser to `http://localhost:4200`, and you'll see the default homepage.
 
-// todo: update because Angular Material icon is now orange
 .Angular default homepage
 image::angular-spring-boot/angular-homepage.png[Angular default homepage, 800, scaledwidth="100%", align=center]
 
@@ -106,12 +105,19 @@ OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 sp
 
 To add OIDC login support to your Angular app, you'll first need a https://auth0.com/signup[free Auth0 account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to authorize your device.
 
-// todo: copy from Deepu's command with arguments to create everything
-// todo: start from here.
+Then, create a new OIDC app with `auth0 apps create`. Specify the name, type, callback URls, and logout redirect URL.
 
-Then, run `auth0 apps create`. Specify a name like `Angular Rocks!`, or change it as you see fit. Choose **Single Page Web Application** and press kbd:[Return].
-
-Use `\http://localhost:4200/home` for the Callback URIs and specify an Allowed Logout Redirect URL of `\http://localhost:4200/`.
+[source,shell]
+----
+auth0 apps create \
+  --name "Angular" \
+  --description "Angular OIDC App" \
+  --type spa \
+  --callbacks http://localhost:4200/home \
+  --logout-urls http://localhost:4200 \
+  --origins http://localhost:4200 \
+  --web-origins http://localhost:4200
+----
 
 When you create Single Page Applications (SPAs) with the Auth0 CLI, authorization code flow with PKCE (Proof Key for Code Exchange) is selected by default. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
 
@@ -129,7 +135,7 @@ This command adds Auth0's Angular SDK and configures OIDC authentication for you
 .OktaDev Schematics in Action
 image::angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%", align=center]
 
-It creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
+The process creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
 
 [source,typescript]
 .src/app/home/home.component.ts
@@ -158,6 +164,7 @@ export class HomeComponent {
         returnTo: this.doc.location.origin
       }
     });
+  }
 }
 ----
 
@@ -165,10 +172,10 @@ export class HomeComponent {
 .src/app/home/home.component.html
 ----
 <div>
-  <button *ngIf="(auth.isAuthenticated$ | async) === false"
-          (click)="login()" id="login">Login</button>
+  <button  *ngIf="(auth.isAuthenticated$ | async) === false"
+    (click)="login()">Login</button>
   <button *ngIf="auth.isAuthenticated$ | async"
-          (click)="logout()" id="logout">Logout</button>
+    (click)="logout()">Logout</button>
 </div>
 ----
 
@@ -191,13 +198,14 @@ const config = {
 
 Start your app again using the `ng serve` command, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
+// todo: add pink arrow to new image
 .Login button
 image::angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%", align=center]
 
 Click on it, and you'll be redirected to Auth0 to log in.
 
 .Okta Login form
-image::angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="50%", align=center]
+image::angular-spring-boot/auth0-login.png[Auth0 Login form, 425, scaledwidth="50%", align=center]
 
 Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
@@ -237,13 +245,24 @@ image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 
 
 === Secure Spring Boot with Spring Security
 
-Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with Okta. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
+Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with OpenID Connect. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
 
 The OIDC integration you added to your Angular app allows you to authenticate a user and receive an access token. You can use this access token to securely communicate with a backend that is configured to use the same issuer. This is done by using an HTTP interceptor that adds it in an `Authorization` header as a bearer token.
 
-Open a terminal and navigate to your Spring Boot app's directory. Run `auth0 apps create --reveal-secrets`, specify a name, and select **Regular Web Application**. Type `\http://localhost:8080/login/oauth2/code/auth0` for the **Redirect URI** and use `\http://localhost:8080` for the **Logout URL**.
+Open a terminal and navigate to your Spring Boot app's directory. Create an OIDC app for Spring Boot with the following command:
 
-// todo: start from here
+[source,shell]
+----
+auth0 apps create \
+  --name "Spring Boot" \
+  --description "Spring Boot OIDC App" \
+  --type regular \
+  --callbacks http://localhost:8080/login/oauth2/code/okta \
+  --logout-urls http://localhost:8080 \
+  --reveal-secrets
+----
+
+Copy the results of the previous command into an `.okta.env` file. You'll need to replace the placeholders with your values.
 
 [source,shell]
 ----
@@ -252,9 +271,9 @@ export OKTA_OAUTH2_CLIENT_ID=<your-client-id>
 export OKTA_OAUTH2_CLIENT_SECRET=<your-client-secret>
 ----
 
-After replacing the `<...>` placeholders with your values, run `source .okta.env` to set these environment variables. Make sure to remove the Okta-related properties from your `application.properties` file.
+After replacing the `<...>` placeholders with your values, run `source .okta.env` to set these environment variables.
 
-Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Okta to sign in.
+Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Auth0 to sign in.
 
 TIP: If you don't get prompted, it's because you're already logged in. Try it in an incognito window to see the full login flow.
 
@@ -264,7 +283,6 @@ Your Spring Boot API is now secure, and it's configured to look for an `Authoriz
 
 To override the default configuration, create a `SecurityConfiguration.kt` class in the same directory as `DemoApplication.kt`:
 
-// todo: make sure this compiles
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
@@ -272,6 +290,7 @@ package com.okta.developer.notes
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 
@@ -281,10 +300,10 @@ class SecurityConfiguration {
     @Bean
     fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeHttpRequests { authorize ->
-                authorize.anyRequest().authenticated()
+            .authorizeHttpRequests { authz ->
+                authz.anyRequest().authenticated()
             }
-            .oauth2Login()
+            .oauth2Login(withDefaults())
             .oauth2ResourceServer().jwt()
 
         return http.build()
@@ -292,7 +311,7 @@ class SecurityConfiguration {
 }
 ----
 
-NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
+NOTE: The `oauth2Login(...)` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
 
 === Spring Data REST
 
@@ -321,7 +340,7 @@ fun main(args: Array<String>) {
 data class Note(@Id @GeneratedValue var id: Long? = null,
                 var title: String? = null,
                 var text: String? = null,
-                @JsonIgnore var user: String? = null)
+                @JsonIgnore var username: String? = null)
 ----
 
 Kotlin's https://kotlinlang.org/docs/reference/data-classes.html[data classes] are built to hold data. By adding the `data` keyword, your class will get `equals()`, `hashCode()`, `toString()`, and a `copy()` function. The `Type? = null` syntax means the arguments are nullable when creating a new instance of the class.
@@ -354,7 +373,7 @@ class AddUserToNote {
     fun handleCreate(note: Note) {
         val username: String = SecurityContextHolder.getContext().authentication.name
         println("Creating note: $note with user: $username")
-        note.user = username
+        note.username = username
     }
 }
 ----
@@ -386,7 +405,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
         listOf("Note 1", "Note 2", "Note 3").forEach {
-            repository.save(Note(title = it, user = "user"))
+            repository.save(Note(title = it, username = "user"))
         }
         repository.findAll().forEach { println(it) }
     }
@@ -397,9 +416,9 @@ Restart your Spring Boot app, and you should see the following printed to your c
 
 [source,shell]
 ----
-Note(id=1, title=Note 1, text=null, user=user)
-Note(id=2, title=Note 2, text=null, user=user)
-Note(id=3, title=Note 3, text=null, user=user)
+Note(id=1, title=Note 1, text=null, username=user)
+Note(id=2, title=Note 2, text=null, username=user)
+Note(id=3, title=Note 3, text=null, username=user)
 ----
 
 Create a `UserController.kt` class (in the same directory as `DemoApplication.kt`) and use it to filter notes by the currently logged-in user. While you're at it, add a `/user` endpoint that returns the user's information.
@@ -421,7 +440,7 @@ class UserController(val repository: NotesRepository) {
     @GetMapping("/user/notes")
     fun notes(principal: Principal): List<Note> {
         println("Fetching notes for user: ${principal.name}")
-        return repository.findAllByUser(principal.name)
+        return repository.findAllByUsername(principal.name)
     }
 
     @GetMapping("/user")
@@ -436,7 +455,7 @@ The `findAllByUser()` method doesn't exist on `NotesRepository`, so you'll need 
 [source,kotlin]
 ----
 interface NotesRepository : JpaRepository<Note, Long> {
-    fun findAllByUser(name: String): List<Note>
+    fun findAllByUsername(name: String): List<Note>
 }
 ----
 
@@ -490,6 +509,8 @@ class SecurityConfiguration {
 Restart your Spring Boot app after adding this bean.
 
 Now that your API is working, it's time to develop a UI for it with Angular!
+
+// todo: start from here
 
 == CRUD in Angular
 
