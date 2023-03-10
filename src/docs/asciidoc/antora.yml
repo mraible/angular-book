@@ -14,3 +14,7 @@ asciidoc:
     email: matt@raibledesigns.com
     subject: Angular
     keywords: Angular, Angular CLI, TypeScript, Bootstrap, Spring Boot, Kotlin, OAuth, OpenID Connect
+    page-downloadable-asset-title: Download from
+    page-downloadable-asset-keys: infoq
+    page-downloadable-asset-infoq-link: https://infoq.com/minibooks/angular-mini-book
+    page-downloadable-asset-infoq-icon: infoq
