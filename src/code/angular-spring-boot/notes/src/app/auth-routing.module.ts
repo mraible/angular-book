@@ -9,10 +9,11 @@ const config = {
   domain: 'dev-06bzs1cu.us.auth0.com',
   clientId: 'y3RlJzTl68eZOQyGqA0yGiJla7fyaZ88',
   authorizationParams: {
-    redirect_uri: window.location.origin + '/home',
+    audience: 'https://dev-06bzs1cu.us.auth0.com/api/v2/',
+    redirect_uri: window.location.origin + '/home'
   },
   httpInterceptor: {
-    allowedList: ['/api/*']
+    allowedList: ['http://localhost:8080/api/*']
   },
 };
 
