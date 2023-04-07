@@ -22,13 +22,13 @@ image::angular-bootstrap/angular-bootstrap.png[Beautiful Angular 😍, 800, scal
 
 == Angular Loves Bootstrap
 
-You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
+You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Of the fabulous folks that answered my recent poll, Bootstrap and Angular Material were both quite popular. https://twitter.com/mraible/status/1196894737870938113[In 2019], 53% answered Bootstrap and 33% answered Angular Material.
 
 .What's your preferred CSS framework with Angular?
-[link=https://twitter.com/mraible/status/1196894737870938113]
-image::angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
+[link=https://twitter.com/mraible/status/1643925994015981568]
+image::angular-bootstrap/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
 
-// todo: update to use https://twitter.com/mraible/status/1643925994015981568
+// to create image above, use ++++ to embed the tweet, then take a screenshot
 
 == Integrate Bootstrap with Angular
 
@@ -51,11 +51,7 @@ Add Bootstrap and NG Bootstrap:
 [source,shell]
 ----
 rm package-lock.json
-git commit -am "Temporarily remove package-lock.json"
-
 ng update @angular/cli @angular/core
-git commit -am "Upgrade Angular with ng update"
-
 ng add @ng-bootstrap/ng-bootstrap@14
 ----
 
@@ -93,7 +89,8 @@ auth0 apps create \
   --logout-urls http://localhost:8080 \
   --reveal-secrets
 
-# Copy the results of this command into notes-api/.okta.env
+# Copy the results of this command into notes-api/.okta.env or copy .okta.env
+# from the angular-spring-boot project and update the client ID and secret.
 ----
 
 Restart each app:
@@ -189,10 +186,12 @@ And change `styles.scss` to import Bootstrap's Sass.
 [source,css]
 .src/styles.scss
 ----
-@import "~bootstrap/scss/bootstrap.scss";
+@import 'bootstrap/scss/bootstrap.scss';
 ----
 
-To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.1.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.2.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+
+*todo*: check to see if `sass` renders in all formats
 
 [source,sass]
 ----
@@ -206,8 +205,7 @@ Then import this file at the top of `src/styles.scss`:
 
 [source,sass]
 ----
-@import "variables";
-@import "~bootstrap/scss/bootstrap.scss";
+@import 'variables', 'bootstrap/scss/bootstrap.scss';
 ----
 
 You'll see the colors change after these updates.
@@ -528,6 +526,8 @@ At the beginning of this section, I said I'd show you how to develop a searchabl
 === Add Search by Title with Spring Data JPA
 
 Adding search functionality requires the fewest code modifications. Change the `UserController#notes()` method in your Spring Boot app to accept a title parameter and return notes with the parameter's value in their title.
+
+// todo: start here
 
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
