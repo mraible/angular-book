@@ -46,12 +46,16 @@ cd angular-bootstrap/notes
 npm install
 ----
 
-CAUTION: If you get an error when running `npm install`, delete `node_modules` and `package-lock.json` and try again.
-
 Add Bootstrap and NG Bootstrap:
 
 [source,shell]
 ----
+rm package-lock.json
+git commit -am "Temporarily remove package-lock.json"
+
+ng update @angular/cli @angular/core
+git commit -am "Upgrade Angular with ng update"
+
 ng add @ng-bootstrap/ng-bootstrap@14
 ----
 
