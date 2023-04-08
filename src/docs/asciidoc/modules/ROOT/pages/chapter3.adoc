@@ -527,8 +527,6 @@ At the beginning of this section, I said I'd show you how to develop a searchabl
 
 Adding search functionality requires the fewest code modifications. Change the `UserController#notes()` method in your Spring Boot app to accept a title parameter and return notes with the parameter's value in their title.
 
-// todo: start here
-
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
 ----
@@ -618,7 +616,7 @@ Add a `headers` variable to `note-list.component.ts` and an `onSort()` method.
 [source,typescript]
 .src/app/note/node.module.ts
 ----
-import { QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { SortableHeaderDirective, SortEvent } from './sortable.directive';
 
 export class NoteListComponent implements OnInit {
@@ -687,10 +685,10 @@ Update `note-list.component.html` so it uses the `sortable` directive and calls 
 ----
 <thead>
   <tr>
-  <th class="border-top-0" scope="col">#</th>
-  <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
-  <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
-  <th class="border-top-0" scope="col" style="width:120px"></th>
+    <th class="border-top-0" scope="col">#</th>
+    <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
+    <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+    <th class="border-top-0" scope="col" style="width:120px"></th>
   </tr>
 </thead>
 ----
@@ -789,14 +787,57 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
         for (x in 0..1000) {
-            repository.save(Note(title = "Note ${x}", username = "<your username>"))
+            repository.save(Note(title = "Note ${x}", username = "<your email>"))
         }
         repository.findAll().forEach { println(it) }
     }
 }
 ----
 
-_Make sure to replace `<your username>` with the email address you use to log in to Auth0._
+_Make sure to replace `<your email>` with the email address you use to log in to Auth0._
+
+[IMPORTANT]
+====
+The `principal.name` will not resolve to the user's email address by default. To fix this, you need to add an Action in Auth0 that will add the email address to the access token. Log in to your Auth0 management dashboard and go to *Actions* > *Library* > *Build Custom*.
+
+Name it "Add email claim" and click *Create*. Replace the code with the following:
+
+[source,javascript]
+----
+exports.onExecutePostLogin = async (event, api) => {
+  const namespace = 'https://angular-book.com';
+  if (event.authorization) {
+    api.accessToken.setCustomClaim(`${namespace}/email`, event.user.email);
+  }
+};
+----
+
+Select *Save Draft* and then *Deploy*.
+
+Now go to *Actions* > *Flows* > *Login* and add the action to the flow from the *Custom* panel on the right. Click *Apply*. The results should look as follows:
+
+image::angular-bootstrap/login-flow-with-email-claim.png[Login flow with email claim, 350, scaledwidth="50%", align=center]
+
+Now, when you log in, the email address will be added to the access token.
+
+Adjust the `UserController` to use the email address from the access token instead of the `principal.name`.
+
+[source,kotlin]
+----
+@GetMapping("/user/notes")
+fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
+    val jwt: JwtAuthenticationToken = principal as JwtAuthenticationToken
+    val email = jwt.tokenAttributes.get("https://angular-book.com/email").toString()
+    println("Fetching notes for user: ${email}")
+    return if (title.isNullOrEmpty()) {
+        repository.findAllByUsername(email, pageable)
+    } else {
+        println("Searching for title: ${title}")
+        repository.findAllByUsernameAndTitleContainingIgnoreCase(email, title, pageable)
+    }
+}
+----
+====
 
 Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
 
@@ -951,11 +992,13 @@ TIP: You can download the code for this book's examples from InfoQ. The `angular
 
 I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
 
-1. Install JHipster and KHipster:
+1. Install Node 16 for JHipster 7. If you're using https://github.com/nvm-sh/nvm[nvm], run `nvm use 16`.
+
+2. Install JHipster and KHipster:
 
   npm install -g generator-jhipster generator-jhipster-kotlin
 
-2. Create an `easy-notes` directory and a `notes.jdl` file in it:
+3. Create an `easy-notes` directory and a `notes.jdl` file in it:
 
   application {
     config {
@@ -976,7 +1019,7 @@ I also wanted to let you know you can get a lot of this functionality for free w
   }
   paginate Note with pagination
 
-3. In a terminal, navigate to the `easy-notes` directory and run:
+4. In a terminal, navigate to the `easy-notes` directory and run:
 
   khipster jdl notes.jdl
 
@@ -996,7 +1039,7 @@ Then, run `npm run e2e` in another terminal window to verify everything works. H
 .KHipster Notes
 image::angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%", align=center]
 
-TIP: Want to make JHipster work with Okta or Auth0? See https://www.jhipster.tech/security/[JHipster's security documentation].
+TIP: Want to make JHipster work with Auth0? See https://www.jhipster.tech/security/#auth0[JHipster's security documentation].
 
 == Summary
 

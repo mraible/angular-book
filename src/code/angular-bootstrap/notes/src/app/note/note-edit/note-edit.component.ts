@@ -29,14 +29,12 @@ export class NoteEditComponent implements OnInit {
         map(p => p['id']),
         switchMap(id => {
           if (id === 'new') { return of(new Note()); }
-          // this.id = id;
           return this.noteService.findById(id);
         })
       )
       .subscribe({
         next: note => {
           this.note = note;
-          // this.note.id = +note.id;
           this.feedback = {};
         },
         error: err => {
@@ -49,7 +47,6 @@ export class NoteEditComponent implements OnInit {
     this.noteService.save(this.note).subscribe({
       next: note => {
         this.note = note;
-        // this.note.id = +this.id;
         this.feedback = {type: 'success', message: 'Save was successful!'};
         setTimeout(async () => {
           await this.router.navigate(['/notes']);
