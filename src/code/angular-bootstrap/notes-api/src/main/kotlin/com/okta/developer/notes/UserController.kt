@@ -15,7 +15,7 @@ class UserController(val repository: NotesRepository) {
     @GetMapping("/user/notes")
     fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
         val jwt: JwtAuthenticationToken = principal as JwtAuthenticationToken
-        val email = jwt.tokenAttributes.get("https://angular-book.com/email").toString()
+        val email = jwt.tokenAttributes.getOrDefault("https://angular-book.org/email", principal.name).toString()
         println("Fetching notes for user: ${email}")
         return if (title.isNullOrEmpty()) {
             repository.findAllByUsername(email, pageable)
