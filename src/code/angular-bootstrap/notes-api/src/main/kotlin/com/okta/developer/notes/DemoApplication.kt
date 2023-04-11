@@ -43,7 +43,7 @@ class AddUserToNote {
     @HandleBeforeCreate
     fun handleCreate(note: Note) {
         val username: String = SecurityContextHolder.getContext().authentication.name
-        println("Creating note: $note with user: $username")
         note.username = username
+        println("Creating note: $note")
     }
 }
