@@ -28,9 +28,7 @@ export class NoteListComponent implements OnInit {
   }
 
   search(event?: Event): void {
-    console.log('hello')
     if (event) {
-      console.log(event);
       this.filter.page = 0;
     }
     this.noteService.load(this.filter);

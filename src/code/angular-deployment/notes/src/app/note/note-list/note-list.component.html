@@ -11,7 +11,7 @@
            placeholder="Title" class="form-control ml-2 mr-2">
   </div>
   <div class="col-auto">
-    <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+    <button (click)="search($event)" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
     <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
   </div>
 </form>
