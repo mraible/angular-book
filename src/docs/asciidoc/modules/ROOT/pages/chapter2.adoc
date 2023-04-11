@@ -387,8 +387,8 @@ class AddUserToNote {
     @HandleBeforeCreate
     fun handleCreate(note: Note) {
         val username: String = SecurityContextHolder.getContext().authentication.name
-        println("Creating note: $note with user: $username")
         note.username = username
+        println("Creating note: $note")
     }
 }
 ----
@@ -678,7 +678,7 @@ Add a new note, and you'll see a message like this in your backend console.
 
 [source%autofit,shell]
 ----
-Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: auth0|61bcbc76f64d4a0072af8a1d
+Creating note: Note(id=null, title=1st note, text=Wahoo!, username=auth0|61bcbc76f64d4a0072af8a1d)
 ----
 
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
