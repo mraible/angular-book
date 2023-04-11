@@ -64,7 +64,7 @@ image::angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwid
 
 Let's fix that!
 
-.Security Configuration
+.Security Configuration [[security-configuration]]
 ****
 Both app's should have their security configured to use OIDC from the last chapter. If you need to register apps for them, you can use the Auth0 CLI.
 
@@ -434,7 +434,7 @@ Modify the `note-list.component.html` so the search form is all on one line.
            placeholder="Title" class="form-control ml-2 mr-2">
   </div>
   <div class="col-auto">
-    <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+    <button (click)="search($event)" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
     <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
   </div>
 </form>
@@ -823,6 +823,7 @@ Now, when you log in, the email address will be added to the access token.
 Adjust the `UserController` to use the email address from the access token instead of the `principal.name`.
 
 [source,kotlin]
+.src/main/kotlin/com/okta/developer/notes/UserController.kt
 ----
 @GetMapping("/user/notes")
 fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
@@ -835,6 +836,23 @@ fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> 
     } else {
         println("Searching for title: ${title}")
         repository.findAllByUsernameAndTitleContainingIgnoreCase(email, title, pageable)
+    }
+}
+----
+
+Modify the `AddUserToNote` class in `DemoApplication` too.
+
+[source,kotlin]
+----
+class AddUserToNote {
+
+    @HandleBeforeCreate
+    fun handleCreate(note: Note) {
+        val auth = SecurityContextHolder.getContext().authentication
+        val email = (auth as JwtAuthenticationToken).tokenAttributes
+            .getOrDefault("https://angular-book.org/email", auth.name).toString()
+        note.username = email
+        println("Creating note: $note")
     }
 }
 ----
@@ -910,7 +928,10 @@ export class NoteListComponent implements OnInit {
 
   ...
 
-  search(): void {
+  search(event?: Event): void {
+    if (event) {
+      this.filter.page = 0;
+    }
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
   }
