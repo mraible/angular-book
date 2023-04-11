@@ -27,7 +27,12 @@ export class NoteListComponent implements OnInit {
     this.search();
   }
 
-  search(): void {
+  search(event?: Event): void {
+    console.log('hello')
+    if (event) {
+      console.log(event);
+      this.filter.page = 0;
+    }
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
   }
