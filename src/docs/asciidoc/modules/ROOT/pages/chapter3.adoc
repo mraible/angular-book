@@ -62,7 +62,7 @@ image::angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwid
 
 Let's fix that!
 
-.Security Configuration [[security-configuration]]
+.Security Configuration
 ****
 Both app's should have their security configured to use OIDC from the last chapter. If you need to configure security for them, you can use the Okta CLI.
 
@@ -818,7 +818,6 @@ export class NoteListComponent implements OnInit {
   ...
 
   search(): void {
-    this.filter.page = 0;
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
   }
