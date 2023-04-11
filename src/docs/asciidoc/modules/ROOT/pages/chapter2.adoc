@@ -701,7 +701,7 @@ Add a new note, and you'll see a message like this in your backend console.
 
 [source,shell]
 ----
-Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: mraible@gmail.com
+Creating note: Note(id=null, title=1st note, text=Wahoo!, user=mraible@gmail.com)
 ----
 
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.

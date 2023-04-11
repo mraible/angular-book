@@ -28,42 +28,39 @@ To begin, you'll need to https://signup.heroku.com/login[create a Heroku account
 .Create Heroku app
 image::angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="80%", align=center]
 
-After creating your app, click on the **Resources** tab and add the **Auth0** add-on.
+After creating your app, you _could_ select the **Resources** tab and add the https://elements.heroku.com/addons/auth0[Auth0 add-on]. However, this will create a new Auth0 tenant for you and configure your Heroku app to use it. I think it's easier to use the tenant you already configured.
 
-// todo: update for Auth0 add-on https://devcenter.heroku.com/articles/auth0
+Both your Angular and Spring Boot app should have their security configured to use OIDC from the <<#security-configuration, last chapter>>. However, you'll need to configure Auth0 for both the Angular app and Spring Boot app to allow Heroku URLs.
 
-.Auth0 Add-On
-image::angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="55%", align=center]
-
-CAUTION: If you haven't entered a credit card for your Heroku account, you will receive an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even for free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Simply add a credit card to continue.
-
-Click **Submit Order Form** and wait 20-30 seconds while your Auth0 account is created and OIDC apps are registered. Now, go to your app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
-
-.Okta Add-On
-image::angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%", align=center]
-
-.What if I already have an Auth0 account?
-****
-If you already have an Auth0 account, you can use it too. However, the Auth0 add-on makes things easier because it creates SPA and Web OIDC apps on Auth0 for you. It automatically configures their redirect URIs for Heroku too.
-
-If you want to use an existing Auth0 account, I recommend using the https://github.com/auth0/auth0-cli[Auth0 CLI]. The CLI makes it easy to create similar OIDC apps with `auth0 apps create`. You will need to make sure their redirect URIs match your Heroku app.
-****
-
-Update the `.okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$AUTH0_*` is the value from Heroku.
-
-// heroku config -s | grep 'AUTH0_CLIENT_ID\|AUTH0_CLIENT_SECRET\|AUTH0_DOMAIN' | tee -a .okta.env
+You can run `auth0 apps list` to get the client IDs for your Auth0 apps. Then, update the URLs for your Spring Boot app, replacing `bootiful-angular` with your Heroku app's name.
 
 [source,shell]
 ----
-export OKTA_OAUTH2_ISSUER=$AUTH0_DOMAIN
-export OKTA_OAUTH2_CLIENT_ID=$AUTH0_CLIENT_ID
-export OKTA_OAUTH2_CLIENT_SECRET=$AUTH0_CLIENT_SECRET
+auth0 apps update <spring-boot-client-id> \
+  --callbacks http://localhost:8080/login/oauth2/code/okta,https://bootiful-angular.herokuapp.com/login/oauth2/code/okta \
+  --logout-urls http://localhost:8080,https://bootiful-angular.herokuapp.com \
+  --origins http://localhost:8080,https://bootiful-angular.herokuapp.com \
+  --web-origins http://localhost:8080,https://bootiful-angular.herokuapp.com
 ----
 
-[NOTE]
-====
-If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
-====
+Now you'll need to set the `OKTA_*` environment variables on Heroku for your Spring Boot app. You can do this by running `heroku config:set` or by using the **Settings** tab in the Heroku dashboard. You can also use the following command from the `angular-deployment/notes-api` directory. If you don't have an `.okta.env` file in this directory, copy the one from the `angular-bootstrap/notes-api` directory.
+
+[source,shell]
+----
+source .okta.env
+heroku config:set -a bootiful-angular \
+  OKTA_OAUTH2_ISSUER=$OKTA_OAUTH2_ISSUER \
+  OKTA_OAUTH2_CLIENT_ID=$OKTA_OAUTH2_CLIENT_ID \
+  OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET \
+  OKTA_OAUTH2_AUDIENCE=$OKTA_OAUTH2_AUDIENCE
+----
+
+Now, go to your Heroku app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you just set.
+
+.Heroku environment variables
+image::angular-deployment/heroku-config-vars.png[Heroku environment variables, 800, scaledwidth="100%", align=center]
+
+=== Deploy Your Angular + Spring Boot App to Heroku
 
 Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and running `./gradlew bootRun`.
 
@@ -87,14 +84,14 @@ Next, click the paste icon. You'll need to delete `export` in the Name column. N
 image::angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="60%", align=center]
 ====
 
-Next, configure Angular for OIDC authentication by modifying its `auth-routing.module.ts` to use the generated domain and client ID.
+Your Angular app should already be configured for OIDC authentication from the last chapter. However, if you registered a new SPA app on Auth0, you'll need to modify `auth-routing.module.ts` to use the new client ID.
 
 [source,typescript]
 .notes/src/app/auth-routing.module.ts
 ----
 const config = {
-  domain: '$AUTH0_DOMAIN',
-  clientId: '$AUTH0_CLIENT_ID',
+  domain: '<your-auth0-domain>',
+  clientId: '<your-client-id>',
   ...
 };
 ----
@@ -107,16 +104,12 @@ npm i
 ng serve
 ----
 
-CAUTION: If you get an error when running `npm i`, delete `node_modules` and `package-lock.json` and try again.
-
 Open `http://localhost:4200` in your browser.
 
 .Angular Home
 image::angular-deployment/angular-home.png[Angular Home, 800, scaledwidth="100%", align=center]
 
-Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Auth0. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$AUTH0_ADMIN_EMAIL` and `$AUTH0_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
-
-// todo: verify the Auth0 add-on provides credentials as environment variables
+Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Auth0. If you want to see the full authentication flow, log out, or try it in a private window. Create a note and search for its title to make sure everything works.
 
 .First note
 image::angular-deployment/first-note.png[First note, 800, scaledwidth="100%", align=center]
@@ -142,7 +135,7 @@ There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradl
 plugins {
     ...
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
 }
 ----
 
@@ -161,11 +154,16 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 
 [source,shell]
 ----
-npm i -g npm-check-updates
-ncu
+npx npm-check-updates
 ----
 
-At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.3 and TypeScript to version ~4.5.5.
+At the time of this writing, `npx npm-check-updates -u` will upgrade `auth0-angular` from version 2.0.1 to 2.1.0 and TypeScript to version ~5.0.4. Since Angular 15 does not support TypeScript 5, you'll need to downgrade it to version 4.9.5.
+
+[source,json]
+.notes/package.json
+----
+"typescript": "~4.9.5"
+----
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
@@ -199,10 +197,10 @@ import org.springframework.beans.factory.annotation.Value
 @Configuration
 class SecurityConfiguration {
 
+    ...
+
     @Value("#{ @environment['allowed.origins'] ?: {} }")
     private lateinit var allowedOrigins: List<String>
-
-    ...
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
@@ -227,14 +225,10 @@ Angular has an https://angular.io/guide/build[environment concept] built-in. To 
 ng generate environments
 ----
 
-Now, when you run `ng build` to create a production build, it will replace the values in `environment.ts` with those in `environment.prod.ts`.
-
-// todo: verify `--configuration prod` is not needed for `build` script
-
-Open `environment.ts` and add an `apiUrl` variable for development. This file will be used when running `ng serve`.
+Open `environment.development.ts` and add an `apiUrl` variable for development. This file will be used when running `ng serve`.
 
 [source,typescript]
-.notes/src/environments/environment.ts
+.notes/src/environments/environment.development.ts
 ----
 export const environment = {
   production: false,
@@ -242,7 +236,7 @@ export const environment = {
 };
 ----
 
-Edit `environment.prod.ts` to point to your production Heroku URL. Be sure to replace `bootiful-angular` with your app's name.
+Edit `environment.ts` to point to your production Heroku URL. Be sure to replace `bootiful-angular` with your app's name.
 
 [source,typescript]
 .notes/src/environments/environment.prod.ts
@@ -263,7 +257,7 @@ import { environment } from '../environments/environment';
 const config = {
   ...
   httpInterceptor: {
-    allowedList: [environment.apiUrl]
+    allowedList: [`${environment.apiUrl}/*`]
   },
 };
 ----
@@ -412,7 +406,7 @@ Heroku expects you to have one Git repo per application. However, in this partic
 
 Luckily, there's a https://elements.heroku.com/buildpacks/lstoll/heroku-buildpack-monorepo[heroku-buildpack-monorepo] that allows you to deploy multiple apps from the same repo.
 
-You should already have a Heroku app that you added Auth0 to. Let's use it for hosting Spring Boot. Run `heroku apps` and you'll see the one you created.
+You should already have a Heroku app that you configured with Auth0 environment variables. Let's use it for hosting Spring Boot. Run `heroku apps` and you'll see the one you created.
 
 [source,shell]
 ----
@@ -428,10 +422,13 @@ You can run `heroku config -a $APP_NAME` to see your Auth0 variables. In my case
 APP_NAME=bootiful-angular
 ----
 
-Associate your existing Git repo with the app on Heroku.
+Check your project into Git and associate it with the app on Heroku.
 
 [source,shell]
 ----
+git init
+git add .
+git commit -m "Initial commit"
 heroku git:remote -a $APP_NAME
 ----
 
@@ -460,22 +457,6 @@ By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-herok
 heroku config:set GRADLE_TASK="bootJar -Pprod"
 ----
 
-The `$AUTH0_*` environment variables don't have the same names as the Okta Spring Boot starter expects. This is because the Auth0 Heroku Add-On creates two apps: SPA and web. The web app's config variables end in `_WEB`. You'll have to make some changes so those variables are used for the Okta Spring Boot starter. One way to do so is to create a `Procfile` in the `notes-api` directory.
-
-[source,shell]
-----
-web: java -Dserver.port=$PORT -Dokta.oauth2.client-id=${AUTH0_CLIENT_ID} -Dokta.oauth2.client-secret=${AUTH0_CLIENT_SECRET} -jar build/lib/*.jar
-----
-
-// todo: verify the following paragraph is still true
-
-I think it's easier to rename the variable, so that's what I recommend. Run the following command and remove `_WEB` from the two variables that have it.
-
-[source,shell]
-----
-heroku config:edit
-----
-
 Tell Heroku to use Java 17 by creating a `notes-api/system.properties` and specifying the Java runtime version:
 
 [source,shell]
@@ -488,7 +469,7 @@ Commit this file so it's included in your deployment.
 [source,shell]
 ----
 git add system.properties
-git commit -m "Use Java 11 on Heroku"
+git commit -m "Use Java 17 on Heroku"
 ----
 
 Now you're ready to deploy! Take a deep breath and witness how Heroku can deploy your Spring Boot + Kotlin app with a simple `git push`.
@@ -500,14 +481,12 @@ git push heroku main
 
 When I ran this command, I received this output:
 
-// todo: update output below
-
 [source,shell]
 ----
 remote: Compressing source files... done.
 remote: Building source:
 remote:
-remote: -----> Building on the Heroku-20 stack
+remote: -----> Building on the Heroku-22 stack
 remote: -----> Using buildpacks:
 remote:        1. https://github.com/lstoll/heroku-buildpack-monorepo
 remote:        2. heroku/gradle
@@ -515,10 +494,10 @@ remote: -----> Monorepo app detected
 remote:       Copied notes-api to root of app successfully
 remote: -----> Gradle app detected
 remote: -----> Spring Boot detected
-remote: -----> Installing JDK 11... done
+remote: -----> Installing OpenJDK 17... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.4-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.6.1-bin.zip
 remote:        ........................................................................
 remote:        > Task :processResources
 remote:        > Task :compileKotlin
@@ -527,22 +506,22 @@ remote:        > Task :classes
 remote:        > Task :bootJarMainClassName
 remote:        > Task :bootJar
 remote:
-remote:        BUILD SUCCESSFUL in 1m 31s
+remote:        BUILD SUCCESSFUL in 1m 29s
 remote:        4 actionable tasks: 4 executed
 remote: -----> Discovering process types
 remote:        Procfile declares types     -> (none)
 remote:        Default types for buildpack -> web
 remote:
 remote: -----> Compressing...
-remote:        Done: 101.1M
+remote:        Done: 112.1M
 remote: -----> Launching...
-remote:        Released v9
+remote:        Released v12
 remote:        https://bootiful-angular.herokuapp.com/ deployed to Heroku
 remote:
 remote: Verifying deploy... done.
 To https://git.heroku.com/bootiful-angular.git
  * [new branch]      main -> main
-Execution time: 2 min. 15 s.
+Execution time: 2 min. 17 s.
 ----
 
 Run `heroku open` to open your app. You'll be redirected to Auth0 to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code:
@@ -570,8 +549,8 @@ Commit this change and run `git push heroku main` to update your app on Heroku.
 
 Now when you access the app, it should say hello.
 
-.Hello, SUPER ADMIN
-image::angular-deployment/heroku-hello.png[Hello, SUPER ADMIN, 800, scaledwidth="100%", align=center]
+.Hello, Matt Raible
+image::angular-deployment/heroku-hello.png[Hello, Matt Raible, 800, scaledwidth="100%", align=center]
 
 == Deploy Angular to Heroku with Secure Headers
 
@@ -598,14 +577,14 @@ Change `notes/package.json` to have a different `start` script.
 
 [source,json]
 ----
-"start": "http-server-spa dist/notes index.html $PORT",
+"start": "npx http-server-spa dist/notes index.html $PORT",
 ----
 
 Add a `heroku-postbuild` script to your `package.json`:
 
 [source,json]
 ----
-"heroku-postbuild": "ng build && npm install -g http-server-spa"
+"heroku-postbuild": "ng build"
 ----
 
 Commit your changes, add a new Git remote for this app, and deploy!
@@ -626,7 +605,17 @@ heroku open --remote angular
 
 NOTE: If you experience any issues, you can run `heroku logs --remote angular` to see your app's log files.
 
-You won't be able to log in to your app until you modify its Sign-in redirect URI on Auth0. Log in to your Auth0 dashboard. (tip: you can do this from the first Heroku app you created, under the **Resources** tab by clicking on **Auth0**.) Go to the **Applications** section, find your **SPA** app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Sign-in redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Sign-out redirect URIs.
+You won't be able to log in to your app until you modify its Allowed Callback URLs on Auth0 to allow Heroku. You can do this with the Auth0 CLI:
+
+[source,shell]
+----
+auth0 apps list # to get Angular client ID
+auth0 apps update <angular-client-id> \
+  --callbacks http://localhost:4200/home,https://$APP_NAME.herokuapp.com/home \
+  --logout-urls http://localhost:4200,https://$APP_NAME.herokuapp.com \
+  --origins http://localhost:4200,https://$APP_NAME.herokuapp.com \
+  --web-origins http://localhost:4200,https://$APP_NAME.herokuapp.com
+----
 
 You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
 
@@ -636,6 +625,8 @@ heroku config:set ALLOWED_ORIGINS=https://$APP_NAME.herokuapp.com --remote herok
 ----
 
 Now you should be able to add a note. Pat yourself on the back for a job well done!
+
+// todo: the configuration below did not seem necessary since data was still present after a restart.
 
 One issue you'll experience is that you're going to lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
 
@@ -650,34 +641,76 @@ You've deployed your app to Heroku, but there are still a couple of security iss
 
 The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
 
-// todo: update for NGINX buildpack
+Create a `notes/config/nginx.conf.erb` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
 
-Create a `notes/static.json` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
-
-[source,json]
-.notes/static.json
+[source,ruby]
 ----
-{
-  "headers": {
-    "/**": {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com",
-      "Referrer-Policy": "no-referrer, strict-origin-when-cross-origin",
-      "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
-      "X-Content-Type-Options": "nosniff",
-      "X-Frame-Options": "DENY",
-      "X-XSS-Protection": "1; mode=block",
-      "Permissions-Policy": "geolocation=(self), microphone=(), accelerometer=(), camera=()"
-    }
-  },
-  "https_only": true,
-  "root": "dist/notes/",
-  "routes": {
-    "/**": "index.html"
-  }
+daemon off;
+# Heroku dynos have at least 4 cores.
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+	use epoll;
+	accept_mutex on;
+	worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+	gzip on;
+	gzip_comp_level 2;
+	gzip_min_length 512;
+	gzip_proxied any; # Heroku router sends Via header
+
+	server_tokens off;
+
+	log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+	access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+	error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+	include mime.types;
+	default_type application/octet-stream;
+	sendfile on;
+
+	# Must read the body in 5 seconds.
+	client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+
+	server {
+		listen <%= ENV["PORT"] %>;
+		server_name _;
+		keepalive_timeout 5;
+		client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
+
+		root dist/notes;
+		index index.html;
+
+		location / {
+			try_files $uri /index.html;
+		}
+
+		add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com";
+		add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin";
+		add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
+		add_header X-Content-Type-Options nosniff;
+		add_header X-Frame-Options DENY;
+		add_header X-XSS-Protection "1; mode=block";
+		add_header Permissions-Policy "geolocation=(self), microphone=(), accelerometer=(), camera=()";
+	}
 }
 ----
 
-For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack]. This buildpack is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously.
+NOTE: In this code, you might notice that some https URLs are allowed in the content security policy. Those are there so this app can make XHR requests to those domains when that functionality is added.
+
+For `config/nginx.conf.erb` to be read, you have to use the https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx[Heroku NGINX buildpack].
+
+Add a `Procfile` to the root of the `notes` directory.
+
+[source,shell]
+.notes/Procfile
+----
+web: bin/start-nginx-solo
+----
+
+The NGINX buildback is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously.
 
 [source,json]
 .notes/package.json
@@ -691,13 +724,14 @@ For `static.json` to be read, you have to use the https://github.com/heroku/hero
 },
 ----
 
-Commit your changes to Git, add the static buildpack, and redeploy your Angular app.
+Commit your changes to Git, add the Node.js + NGINX buildpack, and redeploy your Angular app.
 
 [source,shell]
 ----
 git add .
-git commit -m "Configure secure headers and static buildpack"
-heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git --remote angular
+git commit -m "Configure secure headers and nginx buildpack"
+heroku buildpacks:add heroku/nodejs --remote angular
+heroku buildpacks:add heroku-community/nginx --remote angular
 git push angular main
 ----
 
@@ -705,6 +739,8 @@ Now you'll have a security report you can be proud of!
 
 .Security Report Summary with an A
 image::angular-deployment/heroku-headers.png[Security Report Summary with an A, 800, scaledwidth="100%", align=center]
+
+todo: start here
 
 == Use `ng deploy` with Firebase, Netlify, and AWS
 
