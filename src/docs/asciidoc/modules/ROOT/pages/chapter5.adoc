@@ -14,11 +14,7 @@ If you're following along, you should have an `angular-deployment` directory wit
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-deployment` directory has the previous section's completed example. Copy it to `angular-docker` in your favorite code location.
 
-**Prerequisites:**
-
-* https://docs.docker.com/install/[Docker]
-* https://nodejs.org/[Node.js] 16+
-* https://adoptium.net/[Java] 11+
+If you don't have Docker installed, you can https://www.docker.com/products/docker-desktop[download it from docker.com].
 
 == Dockerize an Angular App
 
@@ -26,7 +22,7 @@ Create a `notes/Dockerfile` that uses Node.js as a base image and Nginx as a web
 
 [source,docker]
 ----
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -80,8 +76,6 @@ Make sure your Docker daemon is running with `docker ps`. Then run the following
 docker build -t ng-notes .
 ----
 
-CAUTION: If you get an error when running `docker build`, delete `node_modules` and `package-lock.json` and try again.
-
 If it builds successfully, you'll see messages like the following:
 
 [source,shell]
@@ -108,7 +102,7 @@ Add these Docker commands as scripts to your `package.json` file.
 The `docker run` command will serve up the production version of the Angular app, which should already have its backend configured to point to your Heroku app. You should have deployed your Spring Boot app to Heroku in the <<#deploy-spring-boot-to-heroku, previous chapter>>.
 
 [source,typescript]
-.notes/src/environments/environment.prod.ts
+.notes/src/environments/environment.ts
 ----
 export const environment = {
   production: true,
@@ -120,7 +114,14 @@ Since this runs the production build, you'll need to add `\http://localhost:4200
 
 [source,shell]
 ----
-heroku config:set ALLOWED_ORIGINS=http://localhost:4200  --app <your-heroku-app>
+heroku config:edit --app <your-heroku-app>
+----
+
+Append the URL to your existing ones, separating them with a comma.
+
+[source,shell]
+----
+ALLOWED_ORIGINS='...,http://localhost:4200'
 ----
 
 TIP: One advantage of doing this is that you can run your local Angular app against your production backend. I've found this very useful when debugging and fixing UI issues caused by production data.
@@ -158,6 +159,15 @@ Then, create a new app.
 heroku create
 ----
 
+Add the `angular-docker` project to Git and commit it from the root directory.
+
+[source,shell]
+----
+git init
+git add .
+git commit -m "Initial commit"
+----
+
 Add the Git URL as a new remote named `docker`.
 
 [source,shell]
@@ -190,7 +200,7 @@ You'll also need to update your `Dockerfile` so it uses the aforementioned `envs
 [source,docker]
 .notes/Dockerfile
 ----
-FROM node:16-alpine AS builder
+FROM --platform=linux/amd64 node:18-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -201,9 +211,9 @@ ENV PATH="./node_modules/.bin:$PATH"
 COPY . ./
 RUN ng build
 
-FROM nginx:1-alpine
+FROM --platform=linux/amd64 nginx:1-alpine
 RUN apk --no-cache add curl
-RUN curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` -o envsubst && \
+RUN curl -L https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-`uname -s`-`uname -m` -o envsubst && \
     chmod +x envsubst && \
     mv envsubst /usr/local/bin
 COPY ./nginx.config /etc/nginx/nginx.template
@@ -211,7 +221,7 @@ CMD ["/bin/sh", "-c", "envsubst < /etc/nginx/nginx.template > /etc/nginx/conf.d/
 COPY --from=builder /opt/web/dist/notes /usr/share/nginx/html
 ----
 
-Then, push your Docker image to Heroku's Container Registry.
+Then, from the `notes` directory, push your Docker image to Heroku's Container Registry.
 
 [source,shell]
 ----
@@ -232,23 +242,24 @@ And open the app in your browser:
 heroku open --remote docker
 ----
 
-You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Okta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs:
+You'll need to add your app's URL to Auth0 as an allowed callback URL. Run `auth0 apps open` or log in to your Auth0 management dashboard and open the Angular app. Add the following URLs:
 
-- Sign-in: `\https://<angular-docker-app>.herokuapp.com/callback`
-- Sign-out: `\https://<angular-docker-app>.herokuapp.com`
+- Callback: `\https://<angular-docker-app>.herokuapp.com/home`
+- Logout: `\https://<angular-docker-app>.herokuapp.com`
+- Web origin: `\https://<angular-docker-app>.herokuapp.com`
 
-You'll need to add the new app's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command.
+You'll need to add the new app's URL as an allowed origin in your Spring Boot app on Heroku. Run the following command to edit your Spring Boot app's configuration.
 
 [source,shell]
 ----
 heroku config:edit --app <your-spring-boot-app-on-heroku>
 ----
 
-Add the new URL after your existing `localhost` one, separating them with a comma. For example:
+Add the new URL after your existing ones, separating them with a comma. For example:
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='http://localhost:4200,https://<angular-docker-app>.herokuapp.com'
+ALLOWED_ORIGINS='...,https://<angular-docker-app>.herokuapp.com'
 ----
 
 Now you should be able to log in and see the note you created earlier.
@@ -258,7 +269,7 @@ Now you should be able to log in and see the note you created earlier.
 If you test your freshly-deployed Angular app with https://securityheaders.com/[securityheaders.com], you'll get an **F**. To solve this, modify your `nginx.config` to add security headers.
 
 [source,nginx]
-.notes/nginx.conf
+.notes/nginx.config
 ----
 server {
     listen       ${PORT:-80};
@@ -271,7 +282,7 @@ server {
         try_files $$uri /index.html;
     }
 
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com";
     add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin";
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
     add_header X-Content-Type-Options nosniff;
