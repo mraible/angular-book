@@ -318,8 +318,6 @@ git commit -m "Add Docker for Angular"
 
 In the previous sections, you learned how to deploy your Angular and Spring Boot apps separately. Now I'll show you how to combine them into a single JAR for production. You'll still be able to run them independently in development, but deploying them to production will be easier because you won't have to worry about CORS (cross-origin resource sharing). I'll also convert the OAuth flows so they all happen server-side, which is more secure as the access token won't be stored in the browser.
 
-NOTE: Most client-side OAuth libraries keep access tokens in local storage. However, there is an https://gitlab.com/jimdigriz/oauth2-worker[oauth2-worker] project that allows you to store them in a web worker. There are also folks that think https://pragmaticwebsecurity.com/articles/oauthoidc/localstorage-xss.html[avoiding LocalStorage for tokens is the wrong solution].
-
 === Update Your Angular App's Authentication Mechanism
 
 Create a new `AuthService` service that will communicate with your Spring Boot API for authentication logic.
@@ -371,15 +369,14 @@ export class AuthService {
     const redirectUri = `${location.origin}${this.location.prepareExternalUrl('/')}`;
 
     this.http.post(`${environment.apiUrl}/api/logout`, {}).subscribe((response: any) => {
-      location.href = response.logoutUrl + '?id_token_hint=' + response.idToken
-        + '&post_logout_redirect_uri=' + redirectUri;
+      location.href = response.logoutUrl + '?client_id=' + response.idToken + '&returnTo=' + redirectUri;
     });
   }
 }
 ----
 <.> Talk to the `/user` endpoint to determine authenticated status. A username will be returned if the user is logged in.
 <.> When the user clicks a login button, redirect them to a Spring Security endpoint to do the OAuth dance.
-<.> Logout using the `/api/logout` endpoint, which returns the Okta Logout API URL and a valid ID token.
+<.> Logout using the `/api/logout` endpoint, which returns the Auth0 Logout API URL and the client ID token.
 ====
 
 Create a `user.ts` file in the same directory to hold your `User` model.
@@ -393,7 +390,7 @@ export class User {
 }
 ----
 
-Update `app.component.ts` to use your new `AuthService` in favor of `OktaAuth`.
+Update `app.component.ts` to use your new `AuthService` in favor of Auth0's `AuthService`.
 
 [source,typescript]
 .notes/src/app/app.component.ts
@@ -416,14 +413,14 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe(
-      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
-    );
+    this.auth.$authenticationState.subscribe((isAuthenticated: boolean) => {
+      this.isAuthenticated = isAuthenticated;
+    });
   }
 }
 ----
 
-Remove `OktaAuthModule` and its related code from `app.component.spec.ts` and `home.component.spec.ts`. You'll also need to add `HttpClientTestingModule` to their `TestBed` imports.
+Remove `AuthModule` and its related code from `app.component.spec.ts` and `home.component.spec.ts`. You'll also need to add `HttpClientTestingModule` to their `TestBed` imports.
 
 Change the buttons and link in `app.component.html` to reference the `isAuthenticated` property instead of `oktaAuth`.
 
@@ -462,9 +459,9 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe(
-      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
-    );
+    this.auth.$authenticationState.subscribe((isAuthenticated: boolean) => {
+      this.isAuthenticated = isAuthenticated;
+    });
   }
 }
 ----
@@ -477,7 +474,7 @@ Update `home.component.html` so it reads the `isAuthenticated` property.
 <p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
 ----
 
-Delete `notes/src/app/auth-routing.module.ts` and `notes/src/app/shared/okta`.
+Delete `notes/src/app/auth-routing.module.ts`.
 
 Modify `app.module.ts` to remove the `AuthRoutingModule` import, add `HomeComponent` as a declaration, and import `HttpClientModule`.
 
@@ -512,7 +509,7 @@ import { HttpClientModule } from '@angular/common/http';
 export class AppModule { }
 ----
 
-Update `notes/src/app/note/note.routes.ts` to remove the `OktaAuthGuard`.
+Update `notes/src/app/note/note.routes.ts` to remove the `AuthGuard`.
 
 Add the route for `HomeComponent` to `app-routing.module.ts`.
 
@@ -530,7 +527,7 @@ const routes: Routes = [
 ];
 ----
 
-Change both `environments.ts` and `environments.prod.ts` to use a blank `apiUrl`.
+Change both `environment.development.ts` and `environment.ts` to use a blank `apiUrl`.
 
 [source,typescript]
 ----
@@ -573,16 +570,136 @@ Add this file as a `proxyConfig` option in `angular.json`.
 },
 ----
 
-Remove Okta's SDKs and OktaDev Schematics from your Angular project.
+Remove Auth0's Angular SDK and OktaDev Schematics:
 
 [source,shell]
 ----
-npm uninstall @okta/okta-angular @okta/okta-auth-js @oktadev/schematics
+npm uninstall @auth0/auth0-angular @oktadev/schematics
 ----
 
-At this point, your Angular app doesn't contain any Okta-specific code for authentication. Instead, it relies on your Spring Boot app to provide that.
+At this point, your Angular app doesn't contain any Auth0-specific code for authentication. Instead, it relies on your Spring Boot app to provide that.
 
-You should still be able to run `ng serve` in your Angular app and `source .okta.env && ./gradlew bootRun` in your Spring Boot app for local development. However, you'll need to make some adjustments to your Spring Boot app to include Angular for production.
+In the Spring Boot app, you'll need to adjust how the email is retrieved from the user's profile since the authentication object returned from Spring Security will be an `OAuth2AuthenticationToken` instead of a `JwtAuthenticationToken`. This is because it's no longer acting as a resource server and can get user information from the authorization server.
+
+In `DemoApplication.kt`, change the type of token that's imported.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+----
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+----
+
+Then, modify its `AddUserToNote` class to get the email from the new token type.
+
+[source,kotlin]
+----
+class AddUserToNote {
+
+    @HandleBeforeCreate
+    fun handleCreate(note: Note) {
+        val auth = SecurityContextHolder.getContext().authentication
+        val email = (auth as OAuth2AuthenticationToken).principal.attributes["email"] as String
+        note.username = email
+        println("Creating note: $note")
+    }
+}
+----
+
+You'll need to make the same change to the import and `email` variable in `UserController.kt`.
+
+[source,kotlin]
+----
+...
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+
+@RestController
+class UserController(val repository: NotesRepository) {
+
+    @GetMapping("/user/notes")
+    fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
+        val email = (principal as OAuth2AuthenticationToken).principal.attributes["email"] as String
+        ...
+    }
+
+    ...
+}
+----
+
+In order to log in from your Angular app, you'll need to modify the Spring Boot app on Auth0 to allow callback and logout URLs from the Angular app's. Run `auth0 apps open`, select your Spring Boot app, and it'll open in the Auth0 dashboard. Then, add the following URLs:
+
+- Callback: `http://localhost:4200/login/oauth2/code/okta`
+- Logout: `http://localhost:4200`
+
+Now you can run `ng serve` in your Angular app and `source .okta.env && ./gradlew bootRun` in your Spring Boot app, and log in as you did before. You will not be able to log out since you haven't added the `/api/logout` endpoint to do so. You also won't be able to add notes because (cross-site request forgery) CSRF needs to be configured. You'll do that in the next section.
+
+=== Configure Spring Boot for CSRF
+
+In order to add notes, you'll need to configure Spring Boot to use CSRF. CSRF is a security measure that prevents cross-site request forgery. It works by requiring a token to be sent with every request. This token is stored in a cookie, and is sent back to the server with every request. The server then checks that the token matches the one in the cookie. If it doesn't, the request is rejected.
+
+To configure Spring Boot for CSRF, modify your `SecurityConfiguration.kt` file to add CSRF support.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+----
+...
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
+
+@Configuration
+class SecurityConfiguration {
+
+        @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
+        ...
+
+        http.csrf()
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler())
+
+        http.addFilterAfter(CookieCsrfFilter(), BasicAuthenticationFilter::class.java)
+
+        ...
+    }
+}
+----
+
+Create a `CookieCsrfFilter.kt` file in the same package to add the CSRF token to the response.
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.web.csrf.CsrfToken
+import org.springframework.web.filter.OncePerRequestFilter
+import java.io.IOException
+
+/**
+ * Spring Security 6 doesn't set a XSRF-TOKEN cookie by default.
+ * This solution is <a href="https://github.com/spring-projects/spring-security/issues/12141#issuecomment-1321345077">recommended</a> by Spring Security.
+ */
+class CookieCsrfFilter : OncePerRequestFilter() {
+    /** {@inheritDoc}  */
+    @Throws(ServletException::class, IOException::class)
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val csrfToken = request.getAttribute(CsrfToken::class.java.name) as CsrfToken
+        response.setHeader(csrfToken.headerName, csrfToken.token)
+        filterChain.doFilter(request, response)
+    }
+}
+----
+
+todo: Should a bit.ly link be used in the Javadoc above? https://bit.ly/3MDwjnj
+
+Now you'll need to make some adjustments to your Spring Boot app to include Angular for production.
 
 === Configure Spring Boot to Include Your Angular SPA
 
@@ -664,7 +781,7 @@ class SecurityConfiguration {
                 .and()
             .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
 
-        return http.build();
+        return http.build()
     }
 
     @Bean
