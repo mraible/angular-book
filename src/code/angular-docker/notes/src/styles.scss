@@ -1,5 +1,4 @@
-@import "variables";
-@import "~bootstrap/scss/bootstrap.scss";
+@import 'variables', 'bootstrap/scss/bootstrap.scss';
 
 th[sortable] {
   cursor: pointer;

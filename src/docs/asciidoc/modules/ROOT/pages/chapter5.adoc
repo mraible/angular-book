@@ -337,14 +337,14 @@ export class AuthService {
   }
 
   getUser(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <.>
-      map((response: User) => {
-        if (response !== null) {
-          this.$authenticationState.next(true);
-        }
-        return response;
-      })
-    );
+    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}) // <.>
+      .pipe(map((response: User) => {
+          if (response !== null) {
+            this.$authenticationState.next(true);
+          }
+          return response;
+        })
+      );
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -833,7 +833,7 @@ Add a `server.port` property to `application-prod.properties` that uses a `PORT`
 server.port=${PORT:8080}
 ----
 
-Because there won't be any cross-domain requests, you can remove the `corsConfigurationSource` bean and `allowedOrigins` variable in `SecurityConfiguration.kt`, too.
+Because there won't be any cross-domain requests, you can remove the `corsConfigurationSource` bean, the `allowedOrigins` variable, and associated imports in `SecurityConfiguration.kt`, too.
 
 === Modify Gradle to Build a JAR with Angular Included
 
