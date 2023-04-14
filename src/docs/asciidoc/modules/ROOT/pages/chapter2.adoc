@@ -1015,6 +1015,7 @@ class DemoApplicationTests {
 
 Now, running `./gradlew test` should pass as expected.
 
+////
 == Security Patterns for Spring Boot
 
 In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
@@ -1072,6 +1073,7 @@ class SecurityConfiguration {
 Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this at https://angular.io/guide/security[Angular's Security docs].
 
 In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
+////
 
 == Summary
 
