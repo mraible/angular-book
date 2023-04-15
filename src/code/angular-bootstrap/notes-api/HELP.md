@@ -9,6 +9,7 @@ For further reference, please consider the following sections:
 * [Spring Data JPA](https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#data.sql.jpa-and-spring-data)
 * [Rest Repositories](https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#howto.data-access.exposing-spring-data-repositories-as-rest)
 * [Okta Spring Boot documentation](https://github.com/okta/okta-spring-boot#readme)
+* [Validation](https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#io.validation)
 * [Spring Web](https://docs.spring.io/spring-boot/docs/3.0.4/reference/htmlsingle/#web)
 
 ### Guides
@@ -21,6 +22,7 @@ The following guides illustrate how to use some features concretely:
 * [Okta-Hosted Login Page Example](https://github.com/okta/samples-java-spring/tree/master/okta-hosted-login)
 * [Custom Login Page Example](https://github.com/okta/samples-java-spring/tree/master/custom-login)
 * [Okta Spring Security Resource Server Example](https://github.com/okta/samples-java-spring/tree/master/resource-server)
+* [Validation](https://spring.io/guides/gs/validating-form-input/)
 * [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
 * [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
 * [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
