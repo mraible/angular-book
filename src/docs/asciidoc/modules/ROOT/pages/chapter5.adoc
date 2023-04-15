@@ -686,28 +686,48 @@ In your Spring Boot app, you'll need to change several things. You'll need to co
 
 To begin, delete `src/main/kotlin/com/okta/developer/notes/HomeController.kt`. You'll no longer need this because your Angular app will be served up at the `/` path.
 
-Next, create a `RouteController.kt` that routes all requests to `index.html`.
+Next, create a `SpaWebFilter.kt` that routes all requests to `index.html`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/RouteController.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/SpaWebFilter.kt
 ----
 package com.okta.developer.notes
 
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestMapping
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.web.filter.OncePerRequestFilter
+import java.io.IOException
 
-@Controller
-class RouteController {
+class SpaWebFilter : OncePerRequestFilter() {
 
-    @RequestMapping(value = ["/{path:[^\\.]*}"])
-    fun redirect(request: HttpServletRequest): String {
-        return "forward:/"
+    /**
+     * Forwards any unmapped paths (except those containing a period) to `index.html`.
+     */
+    @Throws(ServletException::class, IOException::class)
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val path = request.requestURI
+        if (!path.startsWith("/api") &&
+            !path.startsWith("/login") &&
+            !path.startsWith("/oauth2") &&
+            !path.startsWith("/user") &&
+            !path.contains(".") &&
+            path.matches("/(.*)".toRegex())
+        ) {
+            request.getRequestDispatcher("/index.html").forward(request, response)
+            return
+        }
+        filterChain.doFilter(request, response)
     }
 }
 ----
 
-Modify `SecurityConfiguration.kt` to allow anonymous access to static web files, the `/user` info endpoint, and to add additional security headers.
+Modify `SecurityConfiguration.kt` to allow anonymous access to static web files, the `/user` info endpoint, add the `SpaWebFilter`, and to add additional security headers.
 
 [source%autofit,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
@@ -758,6 +778,7 @@ class SecurityConfiguration {
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler())
 
+        http.addFilterAfter(SpaWebFilter(), BasicAuthenticationFilter::class.java)
         http.addFilterAfter(CookieCsrfFilter(), BasicAuthenticationFilter::class.java)
 
         http.headers { headers ->
@@ -925,6 +946,14 @@ Then, at the end of this file, add `jib` configuration to specify your image nam
 [source,kotlin]
 ----
 jib {
+    from {
+        platforms {
+            platform {
+                architecture = (project.properties["jibArchitecture"] ?: "amd64").toString()
+                os = "linux"
+            }
+        }
+    }
     to {
         image = "<your-username>/bootiful-angular"
     }
@@ -940,6 +969,8 @@ Run the following command to build a Docker image with Jib.
 ----
 ./gradlew jibDockerBuild -Pprod
 ----
+
+WARNING: If you're building on a Mac with Apple Silicon, you'll need to specify the architecture. For example, `./gradlew jibDockerBuild -Pprod -PjibArchitecture=arm64`.
 
 TIP: If you want to override the image name in `build.gradle.kts`, you can pass in an `--image` parameter. For example, `./gradlew jibDockerBuild -Pprod --image=bootiful-ng`.
 
@@ -1102,8 +1133,6 @@ heroku logs --tail --remote jib
 
 Once you've verified it has started OK, set the Hibernate configuration so it only validates the schema.
 
-// todo: is this still necessary or did they change the defaults in Spring Boot 3?
-
 [source,shell]
 ----
 heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote jib
@@ -1113,7 +1142,6 @@ You'll need to add this app's URL to Auth0 as an allowed callback URL. Run `auth
 
 - Callback: `\https://<heroku-app>.herokuapp.com/login/oauth2/code/okta
 - Logout: `\https://<heroku-app>.herokuapp.com`
-- Web origin: `\https://<heroku-app>.herokuapp.com`
 
 Now, you should be able to open your app, click the **Login** button, and authenticate!
 
@@ -1261,7 +1289,6 @@ metadata:
   name: config-certmanager
   namespace: knative-serving
   labels:
-    serving.knative.dev/release: v1.9.3
     networking.knative.dev/certificate-provider: cert-manager
 data:
   issuerRef: |
@@ -1277,7 +1304,6 @@ metadata:
   namespace: knative-serving
 data:
   auto-tls: Enabled
-  http-protocol: Enabled
 EOF
 ----
 
@@ -1293,7 +1319,7 @@ DOCKER_USERNAME=<your-dockerhub-username>
 OKTA_ISSUER=<your-auth0-issuer>
 OKTA_CLIENT_ID=<your-auth0-client-id>
 OKTA_CLIENT_SECRET=<your-auth0-client-secret>
-OKTA_AUDIENCE=<your-auth0-client-secret>
+OKTA_AUDIENCE=<your-auth0-audience>
 ----
 
 Then, run:
@@ -1370,20 +1396,20 @@ spec:
       containers:
         - image: $DOCKER_USERNAME/bootiful-angular
           env:
-          - name: SPRING_DATASOURCE_URL
-            value: jdbc:postgresql://pgservice:5432/bootiful-angular
-          - name: SPRING_DATASOURCE_USERNAME
-            value: bootiful-angular
-          - name: SPRING_DATASOURCE_PASSWORD
-            value: $DB_PASSWORD
-          - name: OKTA_OAUTH2_ISSUER
-            value: $OKTA_ISSUER
-          - name: OKTA_OAUTH2_CLIENT_ID
-            value: $OKTA_CLIENT_ID
-          - name: OKTA_OAUTH2_CLIENT_SECRET
-            value: $OKTA_CLIENT_SECRET
-          - name: OKTA_OAUTH2_AUDIENCE
-            value: $OKTA_AUDIENCE
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://pgservice:5432/bootiful-angular
+            - name: SPRING_DATASOURCE_USERNAME
+              value: bootiful-angular
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: $DB_PASSWORD
+            - name: OKTA_OAUTH2_ISSUER
+              value: $OKTA_ISSUER
+            - name: OKTA_OAUTH2_CLIENT_ID
+              value: $OKTA_CLIENT_ID
+            - name: OKTA_OAUTH2_CLIENT_SECRET
+              value: $OKTA_CLIENT_SECRET
+            - name: OKTA_OAUTH2_AUDIENCE
+              value: $OKTA_AUDIENCE
 EOF
 ----
 
@@ -1402,22 +1428,22 @@ spec:
       containers:
         - image: $DOCKER_USERNAME/bootiful-angular
           env:
-          - name: SPRING_DATASOURCE_URL
-            value: jdbc:postgresql://pgservice:5432/bootiful-angular
-          - name: SPRING_DATASOURCE_USERNAME
-            value: bootiful-angular
-          - name: SPRING_DATASOURCE_PASSWORD
-            value: $DB_PASSWORD
-          - name: OKTA_OAUTH2_ISSUER
-            value: $OKTA_ISSUER
-          - name: OKTA_OAUTH2_CLIENT_ID
-            value: $OKTA_CLIENT_ID
-          - name: OKTA_OAUTH2_CLIENT_SECRET
-            value: $OKTA_CLIENT_SECRET
-          - name: OKTA_OAUTH2_AUDIENCE
-            value: $OKTA_AUDIENCE
-          - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-            value: validate
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://pgservice:5432/bootiful-angular
+            - name: SPRING_DATASOURCE_USERNAME
+              value: bootiful-angular
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: $DB_PASSWORD
+            - name: OKTA_OAUTH2_ISSUER
+              value: $OKTA_ISSUER
+            - name: OKTA_OAUTH2_CLIENT_ID
+              value: $OKTA_CLIENT_ID
+            - name: OKTA_OAUTH2_CLIENT_SECRET
+              value: $OKTA_CLIENT_SECRET
+            - name: OKTA_OAUTH2_AUDIENCE
+              value: $OKTA_AUDIENCE
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: validate
 EOF
 ----
 
@@ -1433,19 +1459,15 @@ The result should look similar to this:
 [source,shell]
 ----
 NAME               URL
-bootiful-angular   https://bootiful-angular.default.34.171.210.214.sslip.io
+bootiful-angular   https://bootiful-angular.default.34.72.191.176.sslip.io
 ----
-
-// todo: why is the current result http instead of https?
 
 You'll need to add this URL as an **Allowed Callback URL** and an **Allowed Logout URL** to your Spring Boot app in the Auth0 management console in order to log in. Access it with ease using `auth0 apps open`. Then, add the following URLs:
 
-- Callback: `\https://bootiful-angular.default.34.171.210.214.sslip.io/login/oauth2/code/okta`
-- Logout: `\https://bootiful-angular.default.34.171.210.214.sslip.io`
+- Callback: `\https://bootiful-angular.default.34.72.191.176.sslip.io/login/oauth2/code/okta`
+- Logout: `\https://bootiful-angular.default.34.72.191.176.sslip.io`
 
 Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
-
-// todo: update image when it works
 
 .Angular + Spring Boot in Docker running on Knative
 image::angular-docker/knative-works.png[Angular + Spring Boot in Docker running on Knative, 800, scaledwidth="100%", align=center]

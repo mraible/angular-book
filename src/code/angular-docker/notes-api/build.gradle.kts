@@ -25,6 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.okta.spring:okta-spring-boot-starter:3.0.3")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -80,6 +81,14 @@ val buildWeb = tasks.register<NpxTask>("buildNpm") {
 }
 
 jib {
+    from {
+        platforms {
+            platform {
+                architecture = (project.properties["jibArchitecture"] ?: "amd64").toString()
+                os = "linux"
+            }
+        }
+    }
     to {
         image = "mraible/bootiful-angular"
     }

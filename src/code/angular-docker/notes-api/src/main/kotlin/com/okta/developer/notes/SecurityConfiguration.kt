@@ -41,6 +41,7 @@ class SecurityConfiguration {
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler())
 
+        http.addFilterAfter(SpaWebFilter(), BasicAuthenticationFilter::class.java)
         http.addFilterAfter(CookieCsrfFilter(), BasicAuthenticationFilter::class.java)
 
         http.headers { headers ->
