@@ -21,7 +21,7 @@ jobs:
           echo "Upgrading to Angular $ANGULAR_VERSION"
           npm install -g @angular/cli@$ANGULAR_VERSION
           find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir npm ci \;
-          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir ng update @angular/core @angular/cli \;
+          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION \;
 
       - name: Upgrade to Spring Boot 3.1
         run: |
