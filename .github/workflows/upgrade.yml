@@ -42,7 +42,9 @@ jobs:
             echo "Upgrading $dir"
             sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" $dir/build.gradle.kts
             sed -i "s|^.*repositories.*\$|repositories { mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") } }|" $dir/build.gradle.kts
-            sed -i "s|^.*pluginManagement.*\$|pluginManagement { repositories { maven { url = uri(\"https://repo.spring.io/milestone\") }; gradlePluginPortal() }}|" $dir/settings.gradle.kts
+            if ! grep -q 'https://repo.spring.io/milestone' $dir/settings.gradle.kts; then
+              sed -i "s|^.*pluginManagement.*\$|pluginManagement { repositories { maven { url = uri(\"https://repo.spring.io/milestone\") }; gradlePluginPortal() }}|" $dir/settings.gradle.kts
+            fi
             cat $dir/build.gradle.kts && cat $dir/settings.gradle.kts
             cd $origin
           done
