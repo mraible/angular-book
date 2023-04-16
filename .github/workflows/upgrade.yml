@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   upgrade:
+    name: Upgrade and test
     runs-on: ubuntu-latest
 
     steps:
