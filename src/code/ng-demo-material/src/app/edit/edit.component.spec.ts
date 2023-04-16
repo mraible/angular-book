@@ -1,11 +1,11 @@
 import { EditComponent } from './edit.component';
 import { TestBed } from '@angular/core/testing';
 import { Address, Person, SearchService } from '../shared';
-import { MockActivatedRoute, MockRouter } from '../search/mocks/routes';
+import { MockActivatedRoute, MockRouter } from '../shared/search/mocks/routes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -14,11 +14,11 @@ describe('EditComponent', () => {
   let mockActivatedRoute: MockActivatedRoute;
   let mockRouter: MockRouter;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockActivatedRoute = new MockActivatedRoute({id: 1});
     mockRouter = new MockRouter();
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [EditComponent],
       providers: [
         {provide: ActivatedRoute, useValue: mockActivatedRoute},
