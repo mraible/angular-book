@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: ['11','17']
+        java: ['17']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -48,7 +48,5 @@ jobs:
         cache: 'gradle'
     - name: Build book
       run: npm run setup
-      env:
-        GRADLE_OPTS: -Xmx1g
     - name: Build site
       run: npm run build:site
