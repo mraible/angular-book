@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   boot-app:
     image: mraible/bootiful-angular
@@ -7,6 +7,7 @@ services:
       - OKTA_OAUTH2_ISSUER=${OKTA_OAUTH2_ISSUER}
       - OKTA_OAUTH2_CLIENT_ID=${OKTA_OAUTH2_CLIENT_ID}
       - OKTA_OAUTH2_CLIENT_SECRET=${OKTA_OAUTH2_CLIENT_SECRET}
+      - OKTA_OAUTH2_AUDIENCE=${OKTA_OAUTH2_AUDIENCE}
     ports:
       - 8080:8080
     depends_on:

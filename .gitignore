@@ -130,3 +130,4 @@ dist/
 
 .cache
 /public/
+/.idea/
