@@ -32,8 +32,14 @@ jobs:
 
       - name: Run Angular tests
         run: |
-          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir pwd && xvfb-run ng test --watch=false \;
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            echo "Running tests in $dir"
+            cd $dir && xvfb-run ng test --watch=false
+          done
 
       - name: Run Spring Boot tests
         run: |
-          find src/code -name 'build.gradle.kts' -execdir ./gradlew test \;
+          for dir in $(find src/code 'build.gradle.kts' -exec dirname {} \;); do
+            echo "Running tests in $dir"
+            cd $dir && ./gradlew test
+          done
