@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: ['11','17']
+        java: ['17']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -45,7 +45,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-        cache: 'gradle'
     - name: Build book
       run: npm run setup
       env:
