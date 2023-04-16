@@ -19,6 +19,7 @@ jobs:
         run: |
           ANGULAR_VERSION="16.0.0-rc.0"
           echo "Upgrading to Angular $ANGULAR_VERSION"
+          npm i -g @angular/cli@$ANGULAR_VERSION
           find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir npm ci \;
           find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir ng update @angular/core @angular/cli --next \;
 
@@ -34,7 +35,7 @@ jobs:
           for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
             origin=$(pwd)
             echo "Running tests in $dir"
-            cd $dir && xvfb-run npm test -- --watch=false && cd $origin
+            cd $dir && xvfb-run ng test --watch=false && cd $origin
           done
 
       - name: Run Spring Boot tests
