@@ -28,38 +28,39 @@ To begin, you'll need to https://signup.heroku.com/login[create a Heroku account
 .Create Heroku app
 image::angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="80%", align=center]
 
-After creating your app, click on the **Resources** tab and add the **Okta** add-on.
+After creating your app, you _could_ select the **Resources** tab and add the https://elements.heroku.com/addons/auth0[Auth0 add-on]. However, this will create a new Auth0 tenant for you and configure your Heroku app to use it. I think it's easier to use the tenant you already configured.
 
-.Okta Add-On
-image::angular-deployment/okta-add-on.png[Okta Add-On, 450, scaledwidth="55%", align=center]
+Both your Angular and Spring Boot app should have their security configured to use OIDC from the <<#security-configuration, last chapter>>. However, you'll need to configure Auth0 for both the Angular app and Spring Boot app to allow Heroku URLs.
 
-CAUTION: If you haven't entered a credit card for your Heroku account, you will receive an error. This is because Heroku requires you to have a credit card on file to use any of their add-ons, even for free ones. This is part of Heroku's assurance to guard against misuse (real person, real credit card, etc.). I think this is a good security practice. Simply add a credit card to continue.
-
-Click **Submit Order Form** and wait 20-30 seconds while your Okta account is created and OIDC apps are registered. Now, go to your app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you can use to configure both Angular and Spring Boot for OIDC authentication.
-
-.Okta Add-On
-image::angular-deployment/heroku-config-vars.png[Okta Add-On, 800, scaledwidth="100%", align=center]
-
-.What if I already have an Okta account?
-****
-If you already have an Okta account, you can use it too. However, the Okta add-on makes things easier because it creates SPA and Web OIDC apps on Okta for you. It automatically configures their redirect URIs for Heroku too.
-
-If you want to use an existing Okta account, I recommend using the https://cli.okta.com[Okta CLI]. The CLI makes it easy to create similar OIDC apps with `okta apps create`. You will need to make sure their redirect URIs match your Heroku app.
-****
-
-Update the `.okta.env` file in the `angular-deployment/notes-api` directory and copy the config vars into it, where `$OKTA_*` is the value from Heroku.
+You can run `auth0 apps list` to get the client IDs for your Auth0 apps. Then, update the URLs for your Spring Boot app, replacing `bootiful-angular` with your Heroku app's name.
 
 [source,shell]
 ----
-export OKTA_OAUTH2_ISSUER=$OKTA_OAUTH2_ISSUER
-export OKTA_OAUTH2_CLIENT_ID=$OKTA_OAUTH2_CLIENT_ID_WEB
-export OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET_WEB
+auth0 apps update <spring-boot-client-id> \
+  --callbacks http://localhost:8080/login/oauth2/code/okta,https://bootiful-angular.herokuapp.com/login/oauth2/code/okta \
+  --logout-urls http://localhost:8080,https://bootiful-angular.herokuapp.com \
+  --origins http://localhost:8080,https://bootiful-angular.herokuapp.com \
+  --web-origins http://localhost:8080,https://bootiful-angular.herokuapp.com
 ----
 
-[NOTE]
-====
-If you're on Windows without https://docs.microsoft.com/en-us/windows/wsl/install[Windows Subsystem for Linux] installed, create an `okta.bat` file and use `SET` instead of `export`.
-====
+Now you'll need to set the `OKTA_*` environment variables on Heroku for your Spring Boot app. You can do this by running `heroku config:set` or by using the **Settings** tab in the Heroku dashboard. You can also use the following command from the `angular-deployment/notes-api` directory. If you don't have an `.okta.env` file in this directory, copy the one from the `angular-bootstrap/notes-api` directory.
+
+[source,shell]
+----
+source .okta.env
+heroku config:set -a bootiful-angular \
+  OKTA_OAUTH2_ISSUER=$OKTA_OAUTH2_ISSUER \
+  OKTA_OAUTH2_CLIENT_ID=$OKTA_OAUTH2_CLIENT_ID \
+  OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET \
+  OKTA_OAUTH2_AUDIENCE=$OKTA_OAUTH2_AUDIENCE
+----
+
+Now, go to your Heroku app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you just set.
+
+.Heroku environment variables
+image::angular-deployment/heroku-config-vars.png[Heroku environment variables, 800, scaledwidth="100%", align=center]
+
+=== Deploy Your Angular + Spring Boot App to Heroku
 
 Start your Spring Boot app by navigating to the `notes-api` directory, sourcing this file, and running `./gradlew bootRun`.
 
@@ -77,22 +78,21 @@ If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and past
 .Edit DemoApplication Configuration
 image::angular-deployment/idea-edit-configuration.png[Edit DemoApplication Configuration, 800, scaledwidth="100%", align=center]
 
-Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Okta from IDEA!
+Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Auth0 from IDEA!
 
 .IntelliJ Environment Variables
 image::angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="60%", align=center]
 ====
 
-Next, configure Angular for OIDC authentication by modifying its `auth-routing.module.ts` to use the generated issuer, client ID, and update the callback URL.
+Your Angular app should already be configured for OIDC authentication from the last chapter. However, if you registered a new SPA app on Auth0, you'll need to modify `auth-routing.module.ts` to use the new client ID.
 
 [source,typescript]
 .notes/src/app/auth-routing.module.ts
 ----
-const oktaConfig = {
-  issuer: '$OKTA_OAUTH2_ISSUER',
-  redirectUri: '/callback',
-  clientId: '$OKTA_OAUTH2_CLIENT_ID_SPA',
-  scopes: ['openid', 'profile']
+const config = {
+  domain: '<your-auth0-domain>',
+  clientId: '<your-client-id>',
+  ...
 };
 ----
 
@@ -104,14 +104,12 @@ npm i
 ng serve
 ----
 
-CAUTION: If you get an error when running `npm i`, delete `node_modules` and `package-lock.json` and try again.
-
 Open `http://localhost:4200` in your browser.
 
 .Angular Home
 image::angular-deployment/angular-home.png[Angular Home, 800, scaledwidth="100%", align=center]
 
-Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Okta. If you want to see the full authentication flow, log out, or try it in a private window. You can use the `$OKTA_ADMIN_EMAIL` and `$OKTA_ADMIN_PASSWORD` from your Heroku config variables for credentials. Create a note to make sure everything works.
+Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Auth0. If you want to see the full authentication flow, log out, or try it in a private window. Create a note and search for its title to make sure everything works.
 
 .First note
 image::angular-deployment/first-note.png[First note, 800, scaledwidth="100%", align=center]
@@ -137,7 +135,7 @@ There's a https://github.com/patrikerdes/gradle-use-latest-versions-plugin[Gradl
 plugins {
     ...
     id("se.patrikerdes.use-latest-versions") version "0.2.18"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
 }
 ----
 
@@ -148,7 +146,7 @@ Then run the following command in the `notes-api` directory to update your depen
 ./gradlew useLatestVersions
 ----
 
-You can verify everything still works by running `./gradlew bootRun` and navigating to `http://localhost:8080/api/notes`. You should be redirected to Okta to log in, then back to your app.
+You can verify everything still works by running `./gradlew bootRun` and navigating to `http://localhost:8080/api/notes`. You should be redirected to Auth0 to log in, then back to your app.
 
 TIP: If your app fails to start, you need to run `source .okta.env` first.
 
@@ -156,11 +154,16 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 
 [source,shell]
 ----
-npm i -g npm-check-updates
-ncu
+npx npm-check-updates
 ----
 
-At the time of this writing, `ncu -u` will upgrade Angular from version ~13.2.0 to ~13.2.3 and TypeScript to version ~4.5.5.
+At the time of this writing, `npx npm-check-updates -u` will upgrade `auth0-angular` from version 2.0.1 to 2.1.0 and TypeScript to version ~5.0.4. Since Angular 15 does not support TypeScript 5, you'll need to downgrade it to version 4.9.5.
+
+[source,json]
+.notes/package.json
+----
+"typescript": "~4.9.5"
+----
 
 TIP: You can also use `npm update`, which is https://docs.npmjs.com/cli/v6/commands/npm-update[included in npm since v5].
 
@@ -179,7 +182,7 @@ Confirm you can still log in at `http://localhost:4200`.
 There are a few places where `localhost` is hard-coded:
 
 1. `notes-api/src/main/kotlin/.../DemoApplication.kt` has `\http://localhost:4200`
-2. `notes/src/app/shared/okta/auth-interceptor.ts` has `\http://localhost`
+2. `notes/src/app/auth-routing.module.ts` has `\http://localhost:8080`
 3. `notes/src/app/note/note.service.ts` has `\http://localhost:8080`
 
 You need to change Spring Boot's code so other origins can make CORS requests too. Angular's code needs updating so access tokens will be sent to production URLs while API requests are sent to the correct endpoint.
@@ -194,10 +197,10 @@ import org.springframework.beans.factory.annotation.Value
 @Configuration
 class SecurityConfiguration {
 
+    ...
+
     @Value("#{ @environment['allowed.origins'] ?: {} }")
     private lateinit var allowedOrigins: List<String>
-
-    ...
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
@@ -215,12 +218,17 @@ Define the `allowed.origins` property in `notes-api/src/main/resources/applicati
 allowed.origins=http://localhost:4200
 ----
 
-Angular has an https://angular.io/guide/build[environment concept] built-in. When you run `ng build` to create a production build, it replaces `environment.ts` with `environment.prod.ts`.
+Angular has an https://angular.io/guide/build[environment concept] built-in. To use it, you first need to generate environments for your project.
 
-Open `environment.ts` and add an `apiUrl` variable for development. This file will be used when running `ng serve`.
+[source,shell]
+----
+ng generate environments
+----
+
+Open `environment.development.ts` and add an `apiUrl` variable for development. This file will be used when running `ng serve`.
 
 [source,typescript]
-.notes/src/environments/environment.ts
+.notes/src/environments/environment.development.ts
 ----
 export const environment = {
   production: false,
@@ -228,7 +236,7 @@ export const environment = {
 };
 ----
 
-Edit `environment.prod.ts` to point to your production Heroku URL. Be sure to replace `bootiful-angular` with your app's name.
+Edit `environment.ts` to point to your production Heroku URL. Be sure to replace `bootiful-angular` with your app's name.
 
 [source,typescript]
 .notes/src/environments/environment.prod.ts
@@ -239,23 +247,19 @@ export const environment = {
 };
 ----
 
-Update `auth-interceptor.ts` to use `environment.apiUrl`.
+Update `auth-routing.module.ts` to use `environment.apiUrl`.
 
 [source%autofit,typescript]
-.notes/src/app/shared/okta/auth.interceptor.ts
+.notes/src/app/auth-routing.module.ts
 ----
-import { environment } from '../../../environments/environment';
+import { environment } from '../environments/environment';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-
+const config = {
   ...
-
-  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const allowedOrigins = [environment.apiUrl];
-    ...
-  }
-}
+  httpInterceptor: {
+    allowedList: [`${environment.apiUrl}/*`]
+  },
+};
 ----
 
 Update `notes.service.ts` as well.
@@ -282,7 +286,7 @@ export class NoteService {
 
 === Use PostgreSQL for the Production Database
 
-H2 is a SQL database that works nicely for development. In production, you're going to want something a little more robust. Personally, I like PostgreSQL so I'll use it in this example.
+H2 is a SQL database that works nicely for development. In production, you're going to want something a little more robust. Personally, I like PostgreSQL, so I'll use it in this example.
 
 Similar to Angular's environments, Spring and Maven have profiles that allow you to enable different behavior for different environments.
 
@@ -328,7 +332,7 @@ Create a `notes-api/src/main/docker/postgresql.yml` so you can test your `prod` 
 version: '3.8'
 services:
   notes-postgresql:
-    image: postgres:14.1
+    image: postgres:15.2
     environment:
       - POSTGRES_USER=notes
       - POSTGRES_PASSWORD=@-xYcoZn2
@@ -350,87 +354,6 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/notes
 spring.datasource.username=notes
 spring.datasource.password=@-xYcoZn2
 ----
-
-The word `user` is a keyword in PostgreSQL, so you'll need to change `user` to `username` in the `Note` entity.
-
-[source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-----
-data class Note(@Id @GeneratedValue var id: Long? = null,
-                var title: String? = null,
-                var text: String? = null,
-                @JsonIgnore var username: String? = null)
-----
-
-This will cause compilation errors and you'll need to rename method names and variables to fix them.
-
-ifdef::backend-html5[]
-.Click to see the diff
-endif::[]
-[%collapsible]
-====
-[source,diff]
-----
-diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-index 9e2e823..81a0378 100644
---- a/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-+++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
-@@ -10,7 +10,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
-     @Throws(Exception::class)
-     override fun run(args: ApplicationArguments) {
-         for (x in 0..1000) {
--            repository.save(Note(title = "Note ${x}", user = "mraible@gmail.com"))
-+            repository.save(Note(title = "Note ${x}", username = "mraible@gmail.com"))
-         }
-         repository.findAll().forEach { println(it) }
-     }
-diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-index b28d64b..3a1fd3e 100644
---- a/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-+++ b/notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
-@@ -27,13 +27,13 @@ data class Note(
-     @Id @GeneratedValue var id: Long? = null,
-     var title: String? = null,
-     var text: String? = null,
--    @JsonIgnore var user: String? = null
-+    @JsonIgnore var username: String? = null
- )
-
- @RepositoryRestResource
- interface NotesRepository : JpaRepository<Note, Long> {
--    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
--    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
-+    fun findAllByUsername(name: String, pageable: Pageable): Page<Note>
-+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
- }
-
- @Component
-@@ -44,6 +44,6 @@ class AddUserToNote {
-     fun handleCreate(note: Note) {
-         val username: String = SecurityContextHolder.getContext().authentication.name
-         println("Creating note: $note with user: $username")
--        note.user = username
-+        note.username = username
-     }
- }
-diff --git a/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt b/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
-index 0f71858..670fedd 100644
---- a/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
-+++ b/notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
-@@ -15,10 +15,10 @@ class UserController(val repository: NotesRepository) {
-     fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
-         println("Fetching notes for user: ${principal.name}")
-         return if (title.isNullOrEmpty()) {
--            repository.findAllByUser(principal.name, pageable)
-+            repository.findAllByUsername(principal.name, pageable)
-         } else {
-             println("Searching for title: ${title}")
--            repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title, pageable)
-+            repository.findAllByUsernameAndTitleContainingIgnoreCase(principal.name, title, pageable)
-         }
-     }
-----
-====
 
 You won't want to pre-populate your production database with a bunch of notes, so add a `@Profile` annotation to the top of `DataInitializer` so it only runs for the `dev` profile.
 
@@ -483,7 +406,7 @@ Heroku expects you to have one Git repo per application. However, in this partic
 
 Luckily, there's a https://elements.heroku.com/buildpacks/lstoll/heroku-buildpack-monorepo[heroku-buildpack-monorepo] that allows you to deploy multiple apps from the same repo.
 
-You should already have a Heroku app that you added Okta to. Let's use it for hosting Spring Boot. Run `heroku apps` and you'll see the one you created.
+You should already have a Heroku app that you configured with Auth0 environment variables. Let's use it for hosting Spring Boot. Run `heroku apps` and you'll see the one you created.
 
 [source,shell]
 ----
@@ -492,17 +415,20 @@ $ heroku apps
 bootiful-angular
 ----
 
-You can run `heroku config -a $APP_NAME` to see your Okta variables. In my case, I'll be using `bootiful-angular` for `$APP_NAME`.
+You can run `heroku config -a $APP_NAME` to see your Auth0 variables. In my case, I'll be using `bootiful-angular` for `$APP_NAME`.
 
 [source,shell]
 ----
 APP_NAME=bootiful-angular
 ----
 
-Associate your existing Git repo with the app on Heroku.
+Check your project into Git and associate it with the app on Heroku.
 
 [source,shell]
 ----
+git init
+git add .
+git commit -m "Initial commit"
 heroku git:remote -a $APP_NAME
 ----
 
@@ -531,25 +457,11 @@ By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-herok
 heroku config:set GRADLE_TASK="bootJar -Pprod"
 ----
 
-The `$OKTA_*` environment variables don't have the same names as the Okta Spring Boot starter expects. This is because the Okta Heroku Add-On creates two apps: SPA and web. The web app's config variables end in `_WEB`. You'll have to make some changes so those variables are used for the Okta Spring Boot starter. One way to do so is to create a `Procfile` in the `notes-api` directory.
+Tell Heroku to use Java 17 by creating a `notes-api/system.properties` and specifying the Java runtime version:
 
 [source,shell]
 ----
-web: java -Dserver.port=$PORT -Dokta.oauth2.client-id=${OKTA_OAUTH2_CLIENT_ID_WEB} -Dokta.oauth2.client-secret=${OKTA_OAUTH2_CLIENT_SECRET_WEB} -jar build/lib/*.jar
-----
-
-I think it's easier to rename the variable, so that's what I recommend. Run the following command and remove `_WEB` from the two variables that have it.
-
-[source,shell]
-----
-heroku config:edit
-----
-
-Tell Heroku to use Java 11 by creating a `notes-api/system.properties` and specifying the Java runtime version:
-
-[source,shell]
-----
-java.runtime.version=11
+java.runtime.version=17
 ----
 
 Commit this file so it's included in your deployment.
@@ -557,7 +469,7 @@ Commit this file so it's included in your deployment.
 [source,shell]
 ----
 git add system.properties
-git commit -m "Use Java 11 on Heroku"
+git commit -m "Use Java 17 on Heroku"
 ----
 
 Now you're ready to deploy! Take a deep breath and witness how Heroku can deploy your Spring Boot + Kotlin app with a simple `git push`.
@@ -574,7 +486,7 @@ When I ran this command, I received this output:
 remote: Compressing source files... done.
 remote: Building source:
 remote:
-remote: -----> Building on the Heroku-20 stack
+remote: -----> Building on the Heroku-22 stack
 remote: -----> Using buildpacks:
 remote:        1. https://github.com/lstoll/heroku-buildpack-monorepo
 remote:        2. heroku/gradle
@@ -582,10 +494,10 @@ remote: -----> Monorepo app detected
 remote:       Copied notes-api to root of app successfully
 remote: -----> Gradle app detected
 remote: -----> Spring Boot detected
-remote: -----> Installing JDK 11... done
+remote: -----> Installing OpenJDK 17... done
 remote: -----> Building Gradle app...
 remote: -----> executing ./gradlew bootJar -Pprod
-remote:        Downloading https://services.gradle.org/distributions/gradle-7.4-bin.zip
+remote:        Downloading https://services.gradle.org/distributions/gradle-7.6.1-bin.zip
 remote:        ........................................................................
 remote:        > Task :processResources
 remote:        > Task :compileKotlin
@@ -594,25 +506,25 @@ remote:        > Task :classes
 remote:        > Task :bootJarMainClassName
 remote:        > Task :bootJar
 remote:
-remote:        BUILD SUCCESSFUL in 1m 31s
+remote:        BUILD SUCCESSFUL in 1m 29s
 remote:        4 actionable tasks: 4 executed
 remote: -----> Discovering process types
 remote:        Procfile declares types     -> (none)
 remote:        Default types for buildpack -> web
 remote:
 remote: -----> Compressing...
-remote:        Done: 101.1M
+remote:        Done: 112.1M
 remote: -----> Launching...
-remote:        Released v9
+remote:        Released v12
 remote:        https://bootiful-angular.herokuapp.com/ deployed to Heroku
 remote:
 remote: Verifying deploy... done.
 To https://git.heroku.com/bootiful-angular.git
  * [new branch]      main -> main
-Execution time: 2 min. 15 s.
+Execution time: 2 min. 17 s.
 ----
 
-Run `heroku open` to open your app. You'll be redirected to Okta to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code:
+Run `heroku open` to open your app. You'll be redirected to Auth0 to authenticate, then back to your app. It will display a 404 error message because you have nothing mapped to `/`. You can fix that by adding a `HomeController` with the following code:
 
 [source,kotlin]
 ----
@@ -637,8 +549,8 @@ Commit this change and run `git push heroku main` to update your app on Heroku.
 
 Now when you access the app, it should say hello.
 
-.Hello, SUPER ADMIN
-image::angular-deployment/heroku-hello.png[Hello, SUPER ADMIN, 800, scaledwidth="100%", align=center]
+.Hello, Matt Raible
+image::angular-deployment/heroku-hello.png[Hello, Matt Raible, 800, scaledwidth="100%", align=center]
 
 == Deploy Angular to Heroku with Secure Headers
 
@@ -665,14 +577,14 @@ Change `notes/package.json` to have a different `start` script.
 
 [source,json]
 ----
-"start": "http-server-spa dist/notes index.html $PORT",
+"start": "npx http-server-spa dist/notes index.html $PORT",
 ----
 
 Add a `heroku-postbuild` script to your `package.json`:
 
 [source,json]
 ----
-"heroku-postbuild": "ng build && npm install -g http-server-spa"
+"heroku-postbuild": "ng build"
 ----
 
 Commit your changes, add a new Git remote for this app, and deploy!
@@ -693,7 +605,17 @@ heroku open --remote angular
 
 NOTE: If you experience any issues, you can run `heroku logs --remote angular` to see your app's log files.
 
-You won't be able to log in to your app until you modify its Sign-in redirect URI on Okta. Log in to your Okta dashboard. (tip: you can do this from the first Heroku app you created, under the **Resources** tab by clicking on **Okta**.) Go to the **Applications** section, find your **SPA** app, and edit it. Add `https://<angular-app-on-heroku>.herokuapp.com/callback` to the Sign-in redirect URIs and `https://<angular-app-on-heroku>.herokuapp.com` to the Sign-out redirect URIs.
+You won't be able to log in to your app until you modify its Allowed Callback URLs on Auth0 to allow Heroku. You can do this with the Auth0 CLI:
+
+[source,shell]
+----
+auth0 apps list # to get Angular client ID
+auth0 apps update <angular-client-id> \
+  --callbacks http://localhost:4200/home,https://$APP_NAME.herokuapp.com/home \
+  --logout-urls http://localhost:4200,https://$APP_NAME.herokuapp.com \
+  --origins http://localhost:4200,https://$APP_NAME.herokuapp.com \
+  --web-origins http://localhost:4200,https://$APP_NAME.herokuapp.com
+----
 
 You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
 
@@ -704,6 +626,8 @@ heroku config:set ALLOWED_ORIGINS=https://$APP_NAME.herokuapp.com --remote herok
 
 Now you should be able to add a note. Pat yourself on the back for a job well done!
 
+// todo: the configuration below did not seem necessary since data was still present after a restart.
+
 One issue you'll experience is that you're going to lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
 
 [source,shell]
@@ -713,36 +637,80 @@ heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote heroku
 
 === Secure Angular Apps on Heroku
 
-You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Okta Angular SDK in your browser's console.
+You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Auth0 Angular SDK in your browser's console.
 
 The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
 
-Create a `notes/static.json` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
+Create a `notes/config/nginx.conf.erb` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
 
-[source,json]
-.notes/static.json
+[source,ruby]
 ----
-{
-  "headers": {
-    "/**": {
-      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com",
-      "Referrer-Policy": "no-referrer, strict-origin-when-cross-origin",
-      "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
-      "X-Content-Type-Options": "nosniff",
-      "X-Frame-Options": "DENY",
-      "X-XSS-Protection": "1; mode=block",
-      "Permissions-Policy": "geolocation=(self), microphone=(), accelerometer=(), camera=()"
-    }
-  },
-  "https_only": true,
-  "root": "dist/notes/",
-  "routes": {
-    "/**": "index.html"
-  }
+daemon off;
+# Heroku dynos have at least 4 cores.
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+	use epoll;
+	accept_mutex on;
+	worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+	gzip on;
+	gzip_comp_level 2;
+	gzip_min_length 512;
+	gzip_proxied any; # Heroku router sends Via header
+
+	server_tokens off;
+
+	log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+	access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+	error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+	include mime.types;
+	default_type application/octet-stream;
+	sendfile on;
+
+	# Must read the body in 5 seconds.
+	client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+
+	server {
+		listen <%= ENV["PORT"] %>;
+		server_name _;
+		keepalive_timeout 5;
+		client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
+
+		root dist/notes;
+		index index.html;
+
+		location / {
+			try_files $uri /index.html;
+		}
+
+		add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com";
+		add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin";
+		add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
+		add_header X-Content-Type-Options nosniff;
+		add_header X-Frame-Options DENY;
+		add_header X-XSS-Protection "1; mode=block";
+		add_header Permissions-Policy "geolocation=(self), microphone=(), accelerometer=(), camera=()";
+	}
 }
 ----
 
-For `static.json` to be read, you have to use the https://github.com/heroku/heroku-buildpack-static[Heroku static buildpack]. This buildpack is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously.
+NOTE: In this code, you might notice that some https URLs are allowed in the content security policy. Those are there so this app can make XHR requests to those domains when that functionality is added.
+
+For `config/nginx.conf.erb` to be read, you have to use the https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx[Heroku NGINX buildpack].
+
+Add a `Procfile` to the root of the `notes` directory.
+
+[source,shell]
+.notes/Procfile
+----
+web: bin/start-nginx-solo
+----
+
+The NGINX buildback is made for SPA applications, so you can revert the `scripts` section of your `package.json` back to what you had previously.
 
 [source,json]
 .notes/package.json
@@ -756,13 +724,14 @@ For `static.json` to be read, you have to use the https://github.com/heroku/hero
 },
 ----
 
-Commit your changes to Git, add the static buildpack, and redeploy your Angular app.
+Commit your changes to Git, add the Node.js + NGINX buildpack, and redeploy your Angular app.
 
 [source,shell]
 ----
 git add .
-git commit -m "Configure secure headers and static buildpack"
-heroku buildpacks:add https://github.com/heroku/heroku-buildpack-static.git --remote angular
+git commit -m "Configure secure headers and nginx buildpack"
+heroku buildpacks:add heroku/nodejs --remote angular
+heroku buildpacks:add heroku-community/nginx --remote angular
 git push angular main
 ----
 
@@ -779,9 +748,6 @@ Below are the https://angular.io/guide/deployment[current providers and packages
 
 |===
 |Hosting provider | Package
-
-|Azure
-|https://npmjs.org/package/@azure/ng-deploy[`@azure/ng-deploy`]
 
 |AWS S3
 |https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy[`@jefiozie/ngx-aws-deploy`]
@@ -828,11 +794,24 @@ Run `ng add @angular/fire` in the `notes` directory and your new project should 
 
 [source,shell]
 ----
-? Please select a project: notes-1337
-? Please select a hosting site: https://notes-1337-d8605.web.app
-CREATE .firebaserc (194 bytes)
+ℹ Using package manager: npm
+✔ Found compatible package version: @angular/fire@7.5.0.
+✔ Package information loaded.
+
+The package @angular/fire@7.5.0 will be installed and executed.
+Would you like to proceed? Yes
+✔ Packages successfully installed.
+UPDATE package.json (1311 bytes)
+✔ Packages installed successfully.
+? What features would you like to setup? ng deploy -- hosting
+Using firebase-tools version 11.25.3
+? Which Firebase account would you like to use? mraible@gmail.com
+✔ Preparing the list of your Firebase projects
+? Please select a project: notes
+? Please select a hosting site: https://notes-ed93c.web.app
+CREATE .firebaserc (179 bytes)
 UPDATE .gitignore (602 bytes)
-UPDATE angular.json (3363 bytes)
+UPDATE angular.json (3279 bytes)
 UPDATE firebase.json (783 bytes)
 ----
 
@@ -849,13 +828,14 @@ Add the new URL after your existing Heroku one, separating them with a comma. Fo
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='https://polar-everglades-67173.herokuapp.com,https://notes-1337-d8605.web.app'
+ALLOWED_ORIGINS='https://sleepy-hamlet-76750.herokuapp.com,https://notes-ed93c.web.app'
 ----
 
-You'll also need to modify your Okta SPA app to add your Firebase URL as a Sign-in redirect URI and Sign-out redirect URI. For mine, I added:
+You'll also need to modify your Auth0 SPA app to add your Firebase URL as an Allowed Callback URL, Allowed Logout URL, and Allowed Web Origin. You can use the Auth0 CLI and `auth0 apps open` to quickly access it. For mine, I added:
 
-* Sign-in redirect URI: `\https://notes-1337-d8605.web.app/callback`
-* Sign-out redirect URI: `\https://notes-1337-d8605.web.app`
+* Allowed Callback URL: `\https://notes-ed93c.web.app/home`
+* Allowed Logout URL: `\https://notes-ed93c.web.app`
+* Allowed Web Origin: `\https://notes-ed93c.web.app`
 
 Open your Firebase URL in your browser, log in, and you should be able to see the note you added on Heroku.
 
@@ -875,7 +855,7 @@ If you test your new Firebase site on https://securityheaders.com/[securityheade
       },
       {
         "key": "Content-Security-Policy",
-        "value": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com"
+        "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com"
       },
       {
         "key": "Referrer-Policy",
@@ -928,7 +908,7 @@ git commit -m "Add Firebase deployment"
 
 === Angular Deployment to Netlify
 
-Netlify is a hosting provider for static sites that I've enjoyed using in the past. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality. I wrote about Netlify in https://developer.okta.com/blog/2020/02/18/gatsby-react-netlify[Build a Secure Blog with Gatsby, React, and Netlify].
+Netlify is a hosting provider for static sites that I've enjoyed using in the past. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality.
 
 Check out your `main` branch and create a new `netlify` one.
 
@@ -941,9 +921,9 @@ git checkout -b netlify
 Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site by selecting **Add new site** > **Deploy Manually**. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
 
 .Netlify create site
-image::angular-deployment/netlify-create-site.png[Netlify create site, 750, scaledwidth="90%", align=center]
+image::angular-deployment/netlify-create-site.png[Netlify create site, 800, scaledwidth="100%", align=center]
 
-Click on your new site > **Site Settings** to copy your **API ID** to a text editor. You'll also need a personal access token. To create one, click on your avatar in the top right > **User settings** > **Applications** and click **New access token**. Copy the generated token to your text editor.
+Click on your new site > **Site Settings** to copy your **Site ID** to a text editor. You'll also need a personal access token. To create one, click on your avatar in the top right > **User settings** > **Applications** and click **New access token**. Copy the generated token to your text editor.
 
 Run the command below to add Netlify deployment support.
 
@@ -965,12 +945,12 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='...,https://modest-hopper-bc1197.netlify.app'
+ALLOWED_ORIGINS='...,https://dapper-baklava-050b77.netlify.app'
 ----
 
-You'll also need to update your Okta SPA app to allow the URL as a sign-in and sign-out redirect.
+You'll also need to update your Auth0 Angular app to allow the URL as a callback, login, and web origin.
 
-If you try to log in, you'll get a `Page Not Found` error stemming from Okta trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents:
+If you try to log in, you'll get a `Page Not Found` error stemming from Auth0 trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents:
 
 [source,shell]
 ----
@@ -990,7 +970,7 @@ Then, modify `angular.json` to include this file in its assets.
 ],
 ----
 
-Run `ng deploy` again and you should be able to log in successfully.
+Run `ng deploy` again, and you should be able to log in successfully.
 
 === Better Security Headers on Netlify
 
@@ -1001,7 +981,7 @@ Create a `src/_headers` file with the following contents. Note that the first li
 [source,text]
 ----
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com
   Referrer-Policy: no-referrer, strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -1076,7 +1056,7 @@ Before running the command to add S3 deployment support, you'll need a few thing
 
 You'll also need to https://portal.aws.amazon.com/billing/signup[create an AWS account]. After creating an account, go to the https://s3.console.aws.amazon.com/[Amazon S3 console]. Click **Create Bucket** and give it a name you'll remember. Use the default region selected for you and click **Create Bucket**.
 
-To create the secret access key, go to your https://console.aws.amazon.com/iam/home?nc2=h_m_sc#/security_credentials[security credentials page]. Expand the **Access keys** section, and then **Create New Access Key**. Click **Show Access Key** and copy the values into a text editor.
+To create the secret access key, go to your https://console.aws.amazon.com/iam/home?nc2=h_m_sc#/security_credentials[security credentials page]. Scroll down to the **Access keys** section, and then select **Create access key**. Click **Show** and copy the key name and value into a text editor.
 
 TIP: If you have trouble creating a secret access key, see https://aws.amazon.com/blogs/security/how-to-find-update-access-keys-password-mfa-aws-management-console/[this blog post].
 
@@ -1118,7 +1098,7 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
             "Effect": "Allow",
             "Principal": "*",
             "Action": ["s3:GetObject"],
-            "Resource": ["arn:aws:s3:::{your-bucket-name}/*"]
+            "Resource": ["arn:aws:s3:::<your-bucket-name>/*"]
         }
     ]
 }
@@ -1126,18 +1106,19 @@ The last step you need to do to make it public is add a bucket policy. Go to **P
 
 Click **Save changes** to continue.
 
-At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve this].
+At this point, you could navigate to `\http://<bucket-name>.s3-website-<region-name>.amazonaws.com` in your browser, and the application will try to load. However, there's no HTTPS support. You can https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3/[use CloudFront to solve this].
 
-Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Click in the **Origin Domain Name** field and select your S3 bucket.
+Open the https://console.aws.amazon.com/cloudfront/[CloudFront console] and choose **Create Distribution**. Click in the **Origin Domain Name** field, select your S3 bucket, then select **Use website endpoint**.
 
 Set the **Viewer Protocol Policy** to `Redirect HTTP to HTTPS` and allow all HTTP methods. Under the **Response headers policy**, click **Create Policy**. Name it something you'll remember and enable all the security headers.
 
-In the **Security headers** section, set the values to the defaults unless specified below:
+In the **Security headers** section, enable each header and set the values to the defaults unless specified below:
 
+* Strict-Transport-Security: use default max-age and select `includeSubdomains`
 * X-Frame-Options: `DENY`
 * X-XSS-Protection: `Enabled` and select `block`
 * Referrer-Policy: `strict-origin-when-cross-origin`
-* Content-Security-Policy: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com`
+* Content-Security-Policy: `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com`
 
 Add a Custom header for `Permissions-Policy`:
 
@@ -1162,12 +1143,10 @@ Make sure to append the URL to your existing ones, separating them with a comma.
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='...,https://d3uxowqxrueu13.cloudfront.net'
+ALLOWED_ORIGINS='...,https://d1j8r5b1hr0ai8.cloudfront.net'
 ----
 
-Update your Okta SPA app to allow the URL as a redirect, too.
-
-If you try to log in, you'll get a 403 when redirecting back to the site. To fix this, edit your distribution > **Error pages**. Create two custom error responses for `404` and `403`. Return a path of `/index.html` and a `200: OK` response code.
+Update your Auth0 Angular app to allow the URL as a redirect, too.
 
 Now you should be able to authenticate to your Angular app on AWS successfully!
 
@@ -1187,10 +1166,10 @@ git commit -am "Add AWS S3 deployment"
 
 == Summary
 
-In this section, you learned how to upgrade Angular and Spring Boot to their latest versions and make them production-ready. You used the https://devcenter.heroku.com/articles/okta[Okta add-on for Heroku] to add OAuth 2.0 + OIDC to both apps, then deployed them to Heroku. After you got them working on Heroku with PostgreSQL, you learned how to deploy the Angular app to Firebase, Netlify, and AWS.
+In this section, you learned how to upgrade Angular and Spring Boot to their latest versions and make them production-ready. You configured Auth0 to be aware of your production URLs and deployed both apps to Heroku. After you got them working on Heroku with PostgreSQL, you learned how to deploy the Angular app to Firebase, Netlify, and AWS.
 
 You learned how to make your Angular app more secure with security headers, force HTTPS, and make each cloud provider SPA-aware.
 
 TIP: You can download the code for this book's examples from InfoQ. The `angular-deployment` directory has this chapter's completed example.
 
-In the next section, I'll show you how to containerize and deploy your Angular + Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll provide instructions for deploying to Heroku and Knative on Google Cloud!
+In the next section, I'll show you how to containerize and deploy your Angular and Spring Boot app with Docker. You'll learn how to combine them into a JAR and use server-side authorization code flow (the most secure OAuth 2.0 flow). As icing on the cake, I'll provide instructions for deploying to Heroku and Knative on Google Cloud!
