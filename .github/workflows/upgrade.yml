@@ -15,19 +15,13 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Install latest Chrome
-        run: |
-          sudo apt update
-          sudo apt --only-upgrade install google-chrome-stable
-          google-chrome --version
-
       - name: Upgrade to Angular 16
         run: |
           ANGULAR_VERSION="16.0.0-rc.0"
           echo "Upgrading to Angular $ANGULAR_VERSION"
           npm install -g @angular/cli@$ANGULAR_VERSION
-          find src/code -name 'package.json' -execdir ng update @angular/core@16 @angular/cli@16 \;
-          find src/code -name 'package.json' -execdir npm ci \;
+          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir ng update @angular/core@16 @angular/cli@16 \;
+          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir npm ci \;
 
       - name: Upgrade to Spring Boot 3.1
         run: |
@@ -38,7 +32,7 @@ jobs:
 
       - name: Run Angular tests
         run: |
-          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir xvfb-run ng test --watch=false \;
+          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir pwd && xvfb-run ng test --watch=false \;
 
       - name: Run Spring Boot tests
         run: |
