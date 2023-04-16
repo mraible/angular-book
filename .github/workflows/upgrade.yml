@@ -37,8 +37,15 @@ jobs:
         run: |
           SPRING_BOOT_VERSION="3.1.0-M2"
           echo "Upgrading to Spring Boot $SPRING_BOOT_VERSION"
-          find src/code -name 'build.gradle.kts' -exec sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" {} \;
-          find src/code -name 'build.gradle.kts' -exec sed -i "s|^.*repositories.*\$|repositories { mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") } }|" {} \;
+          for dir in $(find src/code -name 'build.gradle.kts' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" $dir/build.gradle.kts
+            sed -i "s|^.*repositories.*\$|repositories { mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") } }|" $dir/build.gradle.kts
+            echo 'pluginManagement {\n    repositories {\n        maven { url = uri("https://repo.spring.io/milestone") }\n        gradlePluginPortal()\n    }\n}' >> $dir/settings.gradle.kts
+            cd $origin
+          done
+
 
       - name: Run Angular tests
         run: |
