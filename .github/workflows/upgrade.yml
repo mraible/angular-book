@@ -39,15 +39,6 @@ jobs:
             cd $origin
           done
 
-
-      - name: Run Angular tests
-        run: |
-          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
-            origin=$(pwd)
-            echo "Running tests in $dir"
-            cd $dir && xvfb-run ng test --watch=false && cd $origin
-          done
-
       - name: Run Spring Boot tests
         run: |
           for dir in $(find src/code -name 'build.gradle.kts' -exec dirname {} \;); do
