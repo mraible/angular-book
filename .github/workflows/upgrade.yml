@@ -20,8 +20,11 @@ jobs:
           ANGULAR_VERSION="16.0.0-rc.0"
           echo "Upgrading to Angular $ANGULAR_VERSION"
           npm i -g @angular/cli@$ANGULAR_VERSION
-          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir npm ci \;
-          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir ng update @angular/core @angular/cli --next \;
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            cd $dir && npm ci && ng update @angular/core @angular/cli --next && cd $origin
+          done
 
       - name: Upgrade to Spring Boot 3.1
         run: |
@@ -42,5 +45,6 @@ jobs:
         run: |
           for dir in $(find src/code 'build.gradle.kts' -exec dirname {} \;); do
             echo "Running tests in $dir"
-            cd $dir && ./gradlew test && cd ~
+            origin=$(pwd)
+            cd $dir && ./gradlew test && cd $origin
           done
