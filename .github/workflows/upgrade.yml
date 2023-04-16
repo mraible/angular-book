@@ -24,7 +24,7 @@ jobs:
       - name: Upgrade to Angular 16
         run: |
           ANGULAR_VERSION="16.0.0-rc.0"
-          echo "Updating to Angular $ANGULAR_VERSION"
+          echo "Upgrading to Angular $ANGULAR_VERSION"
           npm install -g @angular/cli@$ANGULAR_VERSION
           find src/code -name 'package.json' -execdir ng update @angular/core@16 @angular/cli@16 \;
           find src/code -name 'package.json' -execdir npm ci \;
@@ -32,13 +32,13 @@ jobs:
       - name: Upgrade to Spring Boot 3.1
         run: |
           SPRING_BOOT_VERSION="3.1.0-M2"
-          echo "Updating to Spring Boot $SPRING_BOOT_VERSION"
+          echo "Upgrading to Spring Boot $SPRING_BOOT_VERSION"
           find src/code -name 'build.gradle.kts' -exec sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" {} \;
           find src/code -name 'build.gradle.kts' -exec sed -i "s|^.*repositories.*\$|repositories { mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") } }|" {} \;
 
       - name: Run Angular tests
         run: |
-          find src/code -name 'package.json' -execdir xvfb-run ng test -- --watch=false \;
+          find src/code -name 'package.json' -not -path '*/node_modules/*' -execdir xvfb-run ng test --watch=false \;
 
       - name: Run Spring Boot tests
         run: |
