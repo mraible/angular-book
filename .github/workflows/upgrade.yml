@@ -45,7 +45,7 @@ jobs:
               sed -i "s|^.*mavenCentral().*\$|mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") }" $dir/build.gradle.kts
             fi
             if ! grep -q 'https://repo.spring.io/milestone' $dir/settings.gradle.kts; then
-              echo 'pluginManagement { repositories { maven { url = uri(\"https://repo.spring.io/milestone\") }; gradlePluginPortal() }}' >> $dir/settings.gradle.kts
+              echo 'pluginManagement { repositories { maven { url = uri("https://repo.spring.io/milestone") }; gradlePluginPortal() }}' >> $dir/settings.gradle.kts
             fi
             cat $dir/build.gradle.kts && cat $dir/settings.gradle.kts
             cd $origin
