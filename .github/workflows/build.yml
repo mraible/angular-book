@@ -49,6 +49,6 @@ jobs:
     - name: Build book
       run: npm run setup
       env:
-        GRADLE_OPTS: -Xmx1g
+        GRADLE_OPTS: -Xmx2g
     - name: Build site
       run: npm run build:site
