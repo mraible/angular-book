@@ -11,7 +11,7 @@
            placeholder="Title" class="form-control ml-2 mr-2">
   </div>
   <div class="col-auto">
-    <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+    <button (click)="search($event)" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
     <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
   </div>
 </form>
@@ -20,12 +20,12 @@
   <div class="table-responsive">
     <table class="table table-centered table-hover mb-0" id="datatable">
       <thead>
-      <tr>
-        <th class="border-top-0" scope="col">#</th>
-        <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
-        <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
-        <th class="border-top-0" scope="col" style="width:120px"></th>
-      </tr>
+        <tr>
+          <th class="border-top-0" scope="col">#</th>
+          <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
+          <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+          <th class="border-top-0" scope="col" style="width:120px"></th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of noteList" [class.active]="item === selectedNote">

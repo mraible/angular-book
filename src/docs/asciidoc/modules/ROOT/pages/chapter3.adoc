@@ -22,11 +22,13 @@ image::angular-bootstrap/angular-bootstrap.png[Beautiful Angular 😍, 800, scal
 
 == Angular Loves Bootstrap
 
-You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Most of the fabulous folks that follow me still use Bootstrap.
+You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Of the fabulous folks that answered my recent poll, Bootstrap and Angular Material were both quite popular. https://twitter.com/mraible/status/1196894737870938113[In 2019], 53% answered Bootstrap and 33% answered Angular Material.
 
 .What's your preferred CSS framework with Angular?
-[link=https://twitter.com/mraible/status/1196894737870938113]
-image::angular-spring-boot/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
+[link=https://twitter.com/mraible/status/1643925994015981568]
+image::angular-bootstrap/css-framework-tweet.png[CSS framework tweet, 500, scaledwidth="50%", align=center]
+
+// to create image above, use ++++ to embed the tweet, then take a screenshot
 
 == Integrate Bootstrap with Angular
 
@@ -44,13 +46,13 @@ cd angular-bootstrap/notes
 npm install
 ----
 
-CAUTION: If you get an error when running `npm install`, delete `node_modules` and `package-lock.json` and try again.
-
 Add Bootstrap and NG Bootstrap:
 
 [source,shell]
 ----
-ng add @ng-bootstrap/ng-bootstrap
+rm package-lock.json
+ng update @angular/cli @angular/core
+ng add @ng-bootstrap/ng-bootstrap@14
 ----
 
 This process will import `NgbModule` in `app.module.ts` and configure your app to use Bootstrap by adding a reference to `bootstrap.min.css` in `angular.json`.
@@ -62,17 +64,33 @@ image::angular-bootstrap/notes-bare-bones.png[Bare-bones styling, 800, scaledwid
 
 Let's fix that!
 
-.Security Configuration
+.Security Configuration [[security-configuration]]
 ****
-Both app's should have their security configured to use OIDC from the last chapter. If you need to configure security for them, you can use the Okta CLI.
+Both app's should have their security configured to use OIDC from the last chapter. If you need to register apps for them, you can use the Auth0 CLI.
 
 [source,shell]
 ----
-# in the notes directory
-okta apps create # select SPA > callback > http://localhost:4200/callback
+auth0 apps create \
+  --name "Angular" \
+  --description "Angular OIDC App" \
+  --type spa \
+  --callbacks http://localhost:4200/home \
+  --logout-urls http://localhost:4200 \
+  --origins http://localhost:4200 \
+  --web-origins http://localhost:4200
 
-# in the notes-api directory
-okta apps create web # callback > http://localhost:8080/login/oauth2/code/okta
+# Copy your domain and client ID into notes/src/app/auth-routing.module.ts
+
+auth0 apps create \
+  --name "Spring Boot" \
+  --description "Spring Boot OIDC App" \
+  --type regular \
+  --callbacks http://localhost:8080/login/oauth2/code/okta \
+  --logout-urls http://localhost:8080 \
+  --reveal-secrets
+
+# Copy the results of this command into notes-api/.okta.env or copy .okta.env
+# from the angular-spring-boot project and update the client ID and secret.
 ----
 
 Restart each app:
@@ -109,7 +127,7 @@ Now we're getting somewhere!
 .Slightly styled
 image::angular-bootstrap/notes-default-style.png[Slightly styled, 800, scaledwidth="100%", align=center]
 
-Enter a note and you'll see it in the list.
+Enter a note, and you'll see it in the list.
 
 .First note
 image::angular-bootstrap/first-note.png[First note, 800, scaledwidth="100%", align=center]
@@ -168,10 +186,12 @@ And change `styles.scss` to import Bootstrap's Sass.
 [source,css]
 .src/styles.scss
 ----
-@import "~bootstrap/scss/bootstrap.scss";
+@import 'bootstrap/scss/bootstrap.scss';
 ----
 
-To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.1.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.2.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+
+*todo*: check to see if `sass` renders in all formats
 
 [source,sass]
 ----
@@ -185,8 +205,7 @@ Then import this file at the top of `src/styles.scss`:
 
 [source,sass]
 ----
-@import "variables";
-@import "~bootstrap/scss/bootstrap.scss";
+@import 'variables', 'bootstrap/scss/bootstrap.scss';
 ----
 
 You'll see the colors change after these updates.
@@ -200,7 +219,7 @@ anchor:make-angular-beautiful[]
 
 == Make Your Angular App Beautiful with Bootstrap
 
-You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/5.1/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
+You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/5.2/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
 
 [source,html]
 .src/app/app.component.html
@@ -231,11 +250,11 @@ You can see from the screenshots above that `angular-crud` generates screens wit
         </li>
       </ul>
       <form class="d-flex">
-        <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signInWithRedirect()" type="button"
+        <button *ngIf="(auth.isAuthenticated$ | async) === false"
+                (click)="login()" type="button"
                 class="btn btn-outline-primary">Login</button>
-        <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signOut()" type="button"
+        <button *ngIf="auth.isAuthenticated$ | async"
+                (click)="logout()" type="button"
                 class="btn btn-outline-secondary">Logout</button>
       </form>
     </div>
@@ -243,7 +262,7 @@ You can see from the screenshots above that `angular-crud` generates screens wit
 </nav>
 
 <div class="container-fluid pt-3">
-  <a *ngIf="!(authService.authState$ | async)?.isAuthenticated">Please log in to manage your notes.</a>
+  <a *ngIf="(auth.isAuthenticated$ | async) === false">Please log in to manage your notes.</a>
   <router-outlet></router-outlet>
 </div>
 ----
@@ -255,13 +274,13 @@ Download the `angular.svg` file from https://angular.io/presskit[angular.io/pres
 wget https://angular.io/assets/images/logos/angular/angular.svg -P src/assets/images/
 ----
 
-Add `OktaAuth` and `OktaAuthStateService` as dependencies to `AppComponent`:
+Add `AuthService` and `DOCUMENT` as imports to `AppComponent`, inject them into the constructor, and add `login()` and `logout()` methods.
 
 [source,typescript]
 ----
 import { Component, Inject } from '@angular/core';
-import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -271,8 +290,19 @@ import { OktaAuth } from '@okta/okta-auth-js';
 export class AppComponent {
   title = 'notes';
 
-  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
-              public authService: OktaAuthStateService) {
+  constructor(public auth: AuthService, @Inject(DOCUMENT) private doc: Document) {
+  }
+
+  login(): void {
+    this.auth.loginWithRedirect();
+  }
+
+  logout(): void {
+    this.auth.logout({
+      logoutParams: {
+        returnTo: this.doc.location.origin
+      }
+    });
   }
 }
 ----
@@ -282,8 +312,27 @@ Remove the login and logout buttons from `home.component.html`:
 [source,html]
 .src/app/home/home.component.html
 ----
-<p><a routerLink="/notes"
-      *ngIf="(authService.authState$ | async)?.isAuthenticated">View Notes</a></p>
+<p><a routerLink="/notes" *ngIf="auth.isAuthenticated$ | async">View Notes</a></p>
+----
+
+You can also remove the `login()` and `logout()` methods from `home.component.ts`.
+
+[source,typescript]
+.src/app/home/home.component.ts
+----
+import { Component, Inject } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss']
+})
+export class HomeComponent {
+
+  constructor(public auth: AuthService) {
+  }
+}
 ----
 
 Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
@@ -385,7 +434,7 @@ Modify the `note-list.component.html` so the search form is all on one line.
            placeholder="Title" class="form-control ml-2 mr-2">
   </div>
   <div class="col-auto">
-    <button (click)="search()" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
+    <button (click)="search($event)" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
     <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
   </div>
 </form>
@@ -399,7 +448,7 @@ image::angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwid
 
 === Add Validation and Bootstrap to the Note Edit Template
 
-If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/5.1/forms/overview/[stylish forms] using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
+If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/5.2/forms/overview/[stylish forms] using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
 
 The following HTML will add floating labels to your form using the `form-floating` class and add more spacing with `mb-3`.
 
@@ -443,7 +492,7 @@ That's an improvement!
 .Styled Notes Form
 image::angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%", align=center]
 
-To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so it can be referenced in an error message.
+To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name, so it can be referenced in an error message.
 
 [source%autofit,html]
 ----
@@ -485,10 +534,10 @@ Adding search functionality requires the fewest code modifications. Change the `
 fun notes(principal: Principal, title: String?): List<Note> {
     println("Fetching notes for user: ${principal.name}")
     return if (title.isNullOrEmpty()) {
-        repository.findAllByUser(principal.name)
+        repository.findAllByUsername(principal.name)
     } else {
         println("Searching for title: ${title}")
-        repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title)
+        repository.findAllByUsernameAndTitleContainingIgnoreCase(principal.name, title)
     }
 }
 ----
@@ -500,8 +549,8 @@ Add the new repository method to the `NotesRepository` in `DemoApplication.kt`.
 ----
 @RepositoryRestResource
 interface NotesRepository : JpaRepository<Note, Long> {
-    fun findAllByUser(name: String): List<Note>
-    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String): List<Note>
+    fun findAllByUsername(name: String): List<Note>
+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, term: String): List<Note>
 }
 ----
 
@@ -567,7 +616,7 @@ Add a `headers` variable to `note-list.component.ts` and an `onSort()` method.
 [source,typescript]
 .src/app/note/node.module.ts
 ----
-import { QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { SortableHeaderDirective, SortEvent } from './sortable.directive';
 
 export class NoteListComponent implements OnInit {
@@ -636,10 +685,10 @@ Update `note-list.component.html` so it uses the `sortable` directive and calls 
 ----
 <thead>
   <tr>
-  <th class="border-top-0" scope="col">#</th>
-  <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
-  <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
-  <th class="border-top-0" scope="col" style="width:120px"></th>
+    <th class="border-top-0" scope="col">#</th>
+    <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
+    <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+    <th class="border-top-0" scope="col" style="width:120px"></th>
   </tr>
 </thead>
 ----
@@ -696,16 +745,16 @@ class UserController(val repository: NotesRepository) {
     fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
         println("Fetching notes for user: ${principal.name}")
         return if (title.isNullOrEmpty()) {
-            repository.findAllByUser(principal.name, pageable)
+            repository.findAllByUsername(principal.name, pageable)
         } else {
             println("Searching for title: ${title}")
-            repository.findAllByUserAndTitleContainingIgnoreCase(principal.name, title, pageable)
+            repository.findAllByUsernameAndTitleContainingIgnoreCase(principal.name, title, pageable)
         }
     }
 
     @GetMapping("/user")
     fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
-        return user;
+        return user
     }
 }
 ----
@@ -722,8 +771,8 @@ import org.springframework.data.domain.Pageable
 
 @RepositoryRestResource
 interface NotesRepository : JpaRepository<Note, Long> {
-    fun findAllByUser(name: String, pageable: Pageable): Page<Note>
-    fun findAllByUserAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
+    fun findAllByUsername(name: String, pageable: Pageable): Page<Note>
+    fun findAllByUsernameAndTitleContainingIgnoreCase(name: String, term: String, pageable: Pageable): Page<Note>
 }
 ----
 
@@ -738,14 +787,76 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
         for (x in 0..1000) {
-            repository.save(Note(title = "Note ${x}", user = "<your username>"))
+            repository.save(Note(title = "Note ${x}", username = "<your email>"))
         }
         repository.findAll().forEach { println(it) }
     }
 }
 ----
 
-_Make sure to replace `<your username>` with the email address you use to log in to Okta._
+_Make sure to replace `<your email>` with the email address you use to log in to Auth0._
+
+[IMPORTANT]
+====
+The `principal.name` will not resolve to the user's email address by default. To fix this, you need to add an Action in Auth0 that will add the email address to the access token. Log in to your Auth0 management dashboard and go to *Actions* > *Library* > *Build Custom*.
+
+Name it "Add email claim" and click *Create*. Replace the code with the following:
+
+[source,javascript]
+----
+exports.onExecutePostLogin = async (event, api) => {
+  const namespace = 'https://angular-book.org';
+  if (event.authorization) {
+    api.accessToken.setCustomClaim(`${namespace}/email`, event.user.email);
+  }
+};
+----
+
+Select *Save Draft* and then *Deploy*.
+
+Now go to *Actions* > *Flows* > *Login* and add the action to the flow from the *Custom* panel on the right. Click *Apply*. The results should look as follows:
+
+image::angular-bootstrap/login-flow-with-email-claim.png[Login flow with email claim, 350, scaledwidth="50%", align=center]
+
+Now, when you log in, the email address will be added to the access token.
+
+Adjust the `UserController` to use the email address from the access token instead of the `principal.name`.
+
+[source,kotlin]
+.src/main/kotlin/com/okta/developer/notes/UserController.kt
+----
+@GetMapping("/user/notes")
+fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
+    val jwt: JwtAuthenticationToken = principal as JwtAuthenticationToken
+    val email = jwt.tokenAttributes
+        .getOrDefault("https://angular-book.org/email", principal.name).toString()
+    println("Fetching notes for user: ${email}")
+    return if (title.isNullOrEmpty()) {
+        repository.findAllByUsername(email, pageable)
+    } else {
+        println("Searching for title: ${title}")
+        repository.findAllByUsernameAndTitleContainingIgnoreCase(email, title, pageable)
+    }
+}
+----
+
+Modify the `AddUserToNote` class in `DemoApplication` too.
+
+[source,kotlin]
+----
+class AddUserToNote {
+
+    @HandleBeforeCreate
+    fun handleCreate(note: Note) {
+        val auth = SecurityContextHolder.getContext().authentication
+        val email = (auth as JwtAuthenticationToken).tokenAttributes
+            .getOrDefault("https://angular-book.org/email", auth.name).toString()
+        note.username = email
+        println("Creating note: $note")
+    }
+}
+----
+====
 
 Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
 
@@ -817,7 +928,10 @@ export class NoteListComponent implements OnInit {
 
   ...
 
-  search(): void {
+  search(event?: Event): void {
+    if (event) {
+      this.filter.page = 0;
+    }
     this.noteService.load(this.filter);
     this.total$ = this.noteService.size$;
   }
@@ -900,11 +1014,13 @@ TIP: You can download the code for this book's examples from InfoQ. The `angular
 
 I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
 
-1. Install JHipster and KHipster:
+1. Install Node 16 for JHipster 7. If you're using https://github.com/nvm-sh/nvm[nvm], run `nvm use 16`.
+
+2. Install JHipster and KHipster:
 
   npm install -g generator-jhipster generator-jhipster-kotlin
 
-2. Create an `easy-notes` directory and a `notes.jdl` file in it:
+3. Create an `easy-notes` directory and a `notes.jdl` file in it:
 
   application {
     config {
@@ -925,7 +1041,7 @@ I also wanted to let you know you can get a lot of this functionality for free w
   }
   paginate Note with pagination
 
-3. In a terminal, navigate to the `easy-notes` directory and run:
+4. In a terminal, navigate to the `easy-notes` directory and run:
 
   khipster jdl notes.jdl
 
@@ -945,7 +1061,7 @@ Then, run `npm run e2e` in another terminal window to verify everything works. H
 .KHipster Notes
 image::angular-bootstrap/khipster-notes.png[KHipster Notes, 800, scaledwidth="100%", align=center]
 
-TIP: Want to make JHipster work with Okta or Auth0? See https://www.jhipster.tech/security/[JHipster's security documentation].
+TIP: Want to make JHipster work with Auth0? See https://www.jhipster.tech/security/#auth0[JHipster's security documentation].
 
 == Summary
 
