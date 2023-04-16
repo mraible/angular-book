@@ -13,6 +13,10 @@ https://angular.io/[Angular] is an open source, popular web framework. It allows
 This document provides a high-level view of the changes introduced in the Angular Mini-Book by release.
 For a detailed view of what has changed, refer to the https://github.com/mraible/angular-book/commits/main[commit history] on GitHub.
 
+== 2.0.0 (2022-02-17) - @mraible
+
+* Upgraded to Angular 13 and Spring Boot 2.6.
+
 == 1.0.0 (2021-11-16) - @mraible
 
-* Initial Release
+* Initial release with Angular 12 and Spring Boot 2.5
