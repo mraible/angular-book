@@ -1,0 +1,39 @@
+name: Update projects to use Angular 16 and Spring Boot 3.1
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+
+      - name: Update to Angular 16
+        run: |
+          npm install -g @angular/cli@16.0.0-rc.0
+          find src/code -name 'package.json' -execdir ng update @angular/core@16 @angular/cli@16 \;
+          find src/code -name 'package.json' -execdir npm install \;
+
+      - name: Update to Spring Boot 3.1
+        run: |
+          SPRING_BOOT_VERSION="3.1.0-M2"
+          find src/code -name 'build.gradle.kts' -exec sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" {} \;
+          find src/code -name 'build.gradle.kts' -exec sed -i "s|^.*repositories.*\$|repositories { mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") } }|" {} \;
+
+      - name: Run Angular tests
+        run: |
+          find src/code -name 'package.json' -execdir ng test \;
+
+      - name: Run Spring Boot tests
+        run: |
+          find src/code -name 'build.gradle.kts' -execdir ./gradlew test \;
