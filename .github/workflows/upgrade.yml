@@ -22,6 +22,17 @@ jobs:
           java-version: 17
           cache: 'gradle'
 
+      - name: Upgrade to Angular 16
+        run: |
+          ANGULAR_VERSION="16.0.0-rc.0"
+          echo "Upgrading to Angular $ANGULAR_VERSION"
+          npm i -g @angular/cli@$ANGULAR_VERSION
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            cd $dir && npm ci && ng update @angular/core @angular/cli --next --force && cd $origin
+          done
+
       - name: Upgrade to Spring Boot 3.1
         run: |
           SPRING_BOOT_VERSION="3.1.0-M2"
@@ -37,6 +48,14 @@ jobs:
               echo 'pluginManagement { repositories { maven { url = uri("https://repo.spring.io/milestone") }; gradlePluginPortal() }}' >> $dir/settings.gradle.kts
             fi
             cd $origin
+          done
+
+      - name: Run Angular tests
+        run: |
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Running tests in $dir"
+            cd $dir && xvfb-run ng test --watch=false && cd $origin
           done
 
       - name: Run Spring Boot tests
