@@ -1,9 +1,6 @@
-name: Update projects to use Angular 16 and Spring Boot 3.1
+name: Update examples to use Angular 16 and Spring Boot 3.1
 
-on:
-  push:
-    branches:
-      - main
+on: [pull_request]
 
 jobs:
   upgrade:
