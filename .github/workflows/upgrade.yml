@@ -43,6 +43,7 @@ jobs:
             sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" $dir/build.gradle.kts
             sed -i "s|^.*repositories.*\$|repositories { mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") } }|" $dir/build.gradle.kts
             sed -i "s|^.*pluginManagement.*\$|pluginManagement { repositories { maven { url = uri(\"https://repo.spring.io/milestone\") }; gradlePluginPortal() }}|" $dir/settings.gradle.kts
+            cat $dir/build.gradle.kts && cat $dir/settings.gradle.kts
             cd $origin
           done
 
