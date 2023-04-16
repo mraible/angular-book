@@ -62,7 +62,7 @@ jobs:
       - name: Run Spring Boot tests
         run: |
           for dir in $(find src/code -name 'build.gradle.kts' -exec dirname {} \;); do
-            echo "Running tests in $dir"
             origin=$(pwd)
+            echo "Running tests in $dir"
             cd $dir && ./gradlew test && cd $origin
           done

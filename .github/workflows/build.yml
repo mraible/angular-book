@@ -48,8 +48,6 @@ jobs:
         cache: 'gradle'
     - name: Build book
       run: npm run setup
-      env:
-        GRADLE_OPTS: -Xmx1024m
     - name: Build site
       run: |
         npm run build:site
