@@ -16,11 +16,10 @@
     "asciidoctor"
   ],
   "scripts": {
-    "build": "bash ./gradlew all",
+    "build": "bash ./gradlew all --stacktrace",
     "build:site": "antora --html-url-extension-style=indexify site.yml",
     "clean": "bash ./gradlew clean",
     "serve": "npm run watch:all",
-    "watch:site": "node watch-site.js",
     "setup": "npm install && npm run build",
     "start": "npm run setup && npm run watch",
     "watch": "npm run watch:all",
