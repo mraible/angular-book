@@ -678,6 +678,8 @@ class CookieCsrfFilter : OncePerRequestFilter() {
 }
 ----
 
+Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this at https://angular.io/guide/http#security-xsrf-protection[Angular's Security docs].
+
 Now you'll need to make some adjustments to your Spring Boot app to include Angular for production.
 
 === Configure Spring Boot to Include Your Angular SPA
