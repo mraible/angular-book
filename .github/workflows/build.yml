@@ -46,9 +46,8 @@ jobs:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
         cache: 'gradle'
+    - uses: gradle/gradle-build-action@v2
     - name: Build book
-      run: npm run setup
-      env:
-        GRADLE_OPTS: -Xmx4g
+      run: ./gradlew all
     - name: Build site
       run: npm run build:site
