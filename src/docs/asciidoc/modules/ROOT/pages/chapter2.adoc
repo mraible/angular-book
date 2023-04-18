@@ -992,6 +992,56 @@ class DemoApplicationTests {
 
 Now, running `./gradlew test` should pass as expected.
 
+== Security Patterns for Spring Boot
+
+In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
+
+1. Use HTTPS in Production
+2. Use a Content Security Policy (CSP) to Prevent XSS Attacks
+3. Use OpenID Connect for Authentication
+
+You've already implemented #3 with Auth0, but what about the others?
+
+You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I prefer to do it in production, so I don't need to install certificates in development.
+
+A CSP can be configured with Spring Security.
+
+Modify your `SecurityConfiguration` class with these security enhancements.
+
+====
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+----
+import org.springframework.security.web.util.matcher.RequestMatcher
+
+@Configuration
+class SecurityConfiguration {
+
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
+        ...
+
+        http.cors()
+
+        http.requiresChannel().requestMatchers(RequestMatcher { r ->
+            r.getHeader("X-Forwarded-Proto") != null
+        }).requiresSecure() // <.>
+
+        http.headers()
+            .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
+
+        return http.build()
+    }
+
+    ...
+}
+----
+<.> Force HTTPS in production
+<.> Configure a CSP that only allows local scripts
+====
+
+In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
+
 == Summary
 
 In this chapter, I showed you how to create an Angular app, a Spring Boot app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
