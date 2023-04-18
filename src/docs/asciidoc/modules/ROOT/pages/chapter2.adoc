@@ -636,7 +636,7 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 [source,html]
 ----
 <div>
-  <button  *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()">Login</button>
+  <button *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()">Login</button>
   <p><a routerLink="/notes" *ngIf="auth.isAuthenticated$ | async">View Notes</a></p>
   <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()">Logout</button>
 </div>
