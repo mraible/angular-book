@@ -636,7 +636,7 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 [source,html]
 ----
 <div>
-  <button  *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()">Login</button>
+  <button *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()">Login</button>
   <p><a routerLink="/notes" *ngIf="auth.isAuthenticated$ | async">View Notes</a></p>
   <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()">Logout</button>
 </div>
@@ -998,15 +998,14 @@ Now, running `./gradlew test` should pass as expected.
 In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
 
 1. Use HTTPS in Production
-2. Enable Cross-Site Request Forgery (CSRF) Protection
-3. Use a Content Security Policy (CSP) to Prevent XSS Attacks
-4. Use OpenID Connect for Authentication
+2. Use a Content Security Policy (CSP) to Prevent XSS Attacks
+3. Use OpenID Connect for Authentication
 
-You've already implemented #4 with Auth0, but what about the others?
+You've already implemented #3 with Auth0, but what about the others?
 
 You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I prefer to do it in production, so I don't need to install certificates in development.
 
-CSRF protection and a CSP can be configured with Spring Security.
+A CSP can be configured with Spring Security.
 
 Modify your `SecurityConfiguration` class with these security enhancements.
 
@@ -1014,7 +1013,6 @@ Modify your `SecurityConfiguration` class with these security enhancements.
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.util.matcher.RequestMatcher
 
 @Configuration
@@ -1030,9 +1028,6 @@ class SecurityConfiguration {
             r.getHeader("X-Forwarded-Proto") != null
         }).requiresSecure() // <.>
 
-        http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <.>
-
         http.headers()
             .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
 
@@ -1043,11 +1038,8 @@ class SecurityConfiguration {
 }
 ----
 <.> Force HTTPS in production
-<.> Configure the CSRF Cookie so it can be read by JavaScript
 <.> Configure a CSP that only allows local scripts
 ====
-
-Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this at https://angular.io/guide/security[Angular's Security docs].
 
 In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
 ////
