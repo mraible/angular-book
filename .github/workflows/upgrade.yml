@@ -25,7 +25,7 @@ jobs:
 
       - name: Upgrade to Angular 16
         run: |
-          ANGULAR_VERSION="16.0.0-rc.1"
+          ANGULAR_VERSION="16.0.0-rc.2"
           echo "Upgrading to Angular $ANGULAR_VERSION"
           npm i -g @angular/cli@$ANGULAR_VERSION
           for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
