@@ -915,12 +915,12 @@ NullInjectorError: R3InjectorError(DynamicTestModule)[ActivatedRoute -> Activate
 
 `HttpTestingController` allows you to mock requests and use its `flush()` method to provide response values. Since the HTTP request methods return an `Observable`, you can subscribe to it and create expectations in the callback methods. Add the first test of `getAll()` to `search.service.spec.ts`.
 
-The test below should be on the same level as `beforeEach`.
+The test below should be on the same level as `beforeEach`. Passing the `done` function into the test ensures the test doesn't complete and exit prior to all the asserts running.
 
 [source,typescript]
 .src/app/shared/search/search.service.spec.ts
 ----
-it('should retrieve all search results', () => {
+it('should retrieve all search results', (done) => {
   const mockResponse = [
     {name: 'Nikola Jokić'},
     {name: 'Mike Malone'}
@@ -930,6 +930,7 @@ it('should retrieve all search results', () => {
     expect(people.length).toBe(2);
     expect(people[0].name).toBe('Nikola Jokić');
     expect(people).toEqual(mockResponse);
+    done();
   });
 
   const req = httpMock.expectOne('assets/data/people.json');
@@ -953,12 +954,13 @@ Add a couple more tests for filtering by search term and fetching by id.
 [source,typescript]
 .src/app/shared/search/search.service.spec.ts
 ----
-it('should filter by search term', () => {
+it('should filter by search term', (done) => {
   const mockResponse = [{name: 'Nikola Jokić'}];
 
   service.search('nik').subscribe((people: any) => {
     expect(people.length).toBe(1);
     expect(people[0].name).toBe('Nikola Jokić');
+    done();
   });
 
   const req = httpMock.expectOne('assets/data/people.json');
@@ -966,7 +968,7 @@ it('should filter by search term', () => {
   req.flush(mockResponse);
 });
 
-it('should fetch by id', () => {
+it('should fetch by id', (done) => {
   const mockResponse = [
     {id: 1, name: 'Nikola Jokić'},
     {id: 2, name: 'Mike Malone'}
@@ -974,6 +976,7 @@ it('should fetch by id', () => {
 
   service.get(2).subscribe((person: any) => {
     expect(person.name).toBe('Mike Malone');
+    done();
   });
 
   const req = httpMock.expectOne('assets/data/people.json');
