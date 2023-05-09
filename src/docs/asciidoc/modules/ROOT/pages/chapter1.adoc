@@ -1939,14 +1939,16 @@ Modify `home.component.html` to display a welcome message to the user and provid
 [source,html]
 .src/app/home/home.component.html
 ----
-<div>
-  <button *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()" id="login">Login</button>
+<ng-container *ngIf="(auth.isAuthenticated$ | async) === false; else signout">
+  <button (click)="login()" id="login">Login</button>
+</ng-container>
+<ng-template #signout>
   <div *ngIf="auth.user$ | async as user">
     <h2>Welcome, {{user?.name}}!</h2>
     <p><a routerLink="/search" routerLinkActive="active">Search</a></p>
   </div>
-  <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()" id="logout">Logout</button>
-</div>
+  <button (click)="logout()" id="logout">Logout</button>
+</ng-template>
 ----
 
 Refresh your app, and you should see your name with a link to *Search*.
