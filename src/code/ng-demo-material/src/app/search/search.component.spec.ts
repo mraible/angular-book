@@ -4,7 +4,6 @@ import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
-import { MockActivatedRoute } from '../shared/search/mocks/routes';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,15 +15,19 @@ describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
   let mockSearchService: SearchService;
-  let mockActivatedRoute: MockActivatedRoute;
 
   beforeEach(async () => {
-    mockActivatedRoute = new MockActivatedRoute({term: 'nikola'});
-
     await TestBed.configureTestingModule({
       declarations: [SearchComponent],
       providers: [
-        {provide: ActivatedRoute, useValue: mockActivatedRoute}
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {term: 'nikola'}
+            }
+          }
+        }
       ],
       imports: [FormsModule, RouterTestingModule, HttpClientTestingModule,
         MatListModule, MatIconModule, MatInputModule, NoopAnimationsModule]
