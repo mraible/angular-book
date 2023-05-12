@@ -7,11 +7,11 @@ on:
   pull_request: # build all PRs
 
 jobs:
-  env:
-    GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
   changes:
     name: Check for changes
     runs-on: ubuntu-latest
+    env:
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     outputs:
       src: ${{ steps.filter.outputs.changes }}
     steps:
