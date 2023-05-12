@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
-import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -9,6 +9,18 @@ import { OktaAuth } from '@okta/okta-auth-js';
 })
 export class HomeComponent {
 
-  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth, public authService: OktaAuthStateService) {
+  constructor(public auth: AuthService, @Inject(DOCUMENT) private doc: Document) {
+  }
+
+  login(): void {
+    this.auth.loginWithRedirect();
+  }
+
+  logout(): void {
+    this.auth.logout({
+      logoutParams: {
+        returnTo: this.doc.location.origin
+      }
+    });
   }
 }

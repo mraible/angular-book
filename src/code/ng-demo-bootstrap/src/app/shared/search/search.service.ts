@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -48,24 +47,24 @@ export class Address {
   state: string;
   zip: string;
 
-  constructor(obj?: any) {
-    this.street = obj?.street || null;
-    this.city = obj?.city || null;
-    this.state = obj?.state || null;
-    this.zip = obj?.zip || null;
+  constructor(address: Partial<Address> = {}) {
+    this.street = address?.street || '';
+    this.city = address?.city || '';
+    this.state = address?.state || '';
+    this.zip = address?.zip || '';
   }
 }
 
 export class Person {
-  id: number;
+  id: number | null;
   name: string;
   phone: string;
   address: Address;
 
-  constructor(obj?: any) {
-    this.id = obj?.id || null;
-    this.name = obj?.name || null;
-    this.phone = obj?.phone || null;
-    this.address = obj?.address || null;
+  constructor(person: Partial<Person> = {}) {
+    this.id = person?.id || null;
+    this.name = person?.name || '';
+    this.phone = person?.phone || '';
+    this.address = person?.address || new Address();
   }
 }

@@ -13,8 +13,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule.forChild(NOTE_ROUTES),
-    NgbModule
+    NgbModule,
+    RouterModule.forChild(NOTE_ROUTES)
   ],
   declarations: [
     NoteListComponent,
