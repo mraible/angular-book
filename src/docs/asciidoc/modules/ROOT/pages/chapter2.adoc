@@ -18,11 +18,7 @@ image::angular-spring-boot/bootiful-angular.png[Bootiful Angular, 800, scaledwid
 
 == What's New in Angular?
 
-Angular 13 is the version of Angular used in this book. It adds a build cache for improving build times and removes Internet Explorer support. It also leverages Ivy throughout and removes the View Engine, which was Angular's default renderer before Ivy.
-
-Ivy is a new compiler and renderer, introduced in Angular 9. The renderer is the engine that takes your components and templates and translates them into instructions that manipulate the DOM. Ivy is an internal component, so you don't interact with it directly. However, it can have a significant impact on your code, yielding much smaller JavaScript bundles and increasing performance.
-
-Simply put: upgrading to the latest version of Angular will make your web apps faster!
+Angular 15 is the version of Angular used in this book. It adds support for standalone components and optimized images using the `ngSrc` attribute. You can read more about its new features on the https://blog.angular.io/angular-v15-is-now-available-df7be7f2f4c8[Angular Blog].
 
 [TIP]
 ====
@@ -36,9 +32,9 @@ ng update @angular/cli @angular/core
 
 == What's New in Spring Boot?
 
-Spring Boot 2.6 was released in November 2021. It adds support for Java 17, SameSite attributes on session cookies, allows you to test Spring MVC using `WebTestClient`, improves embedded MongoDB support, and consolidates Elasticsearch properties so they match between Spring MVC and WebFlux.
+Spring Boot 3.0 was released in November 2022. It requires Java 17, supports native images by default with GraalVM, improves observability with Micrometer, and adds support for Jakarta EE 10. You can read more about its new features on the https://spring.io/blog/2022/11/24/spring-boot-3-0-goes-ga[Spring Blog].
 
-In this chapter, I'll show you how to build a note-taking application with Angular 13 and Spring Boot 2.6. Along the way, I'll do my best to weave in security tips and advice on how to make your apps more secure.
+In this chapter, I'll show you how to build a note-taking application with Angular 15 and Spring Boot 3. Along the way, I'll do my best to weave in security tips and advice on how to make your apps more secure.
 
 The Angular and Spring Boot projects release major versions every six months. Since Java does too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
 
@@ -46,8 +42,8 @@ Please try newer versions at your own risk and email me if you find issues and/o
 
 **Prerequisites:**
 
-* https://nodejs.org/[Node 16]+
-* https://adoptium.net/[Java 11]+
+* https://nodejs.org/[Node 18]+
+* https://adoptium.net/[Java 17]+
 * https://httpie.io/docs#installation[HTTPie]
 
 To install Node and Java on a Mac, Linux, or Windows Subsystem for Linux (WSL), you can use https://docs.brew.sh/Installation[Homebrew].
@@ -56,17 +52,17 @@ To install Node and Java on a Mac, Linux, or Windows Subsystem for Linux (WSL), 
 ----
 brew install node
 brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk11
+brew cask install adoptopenjdk17
 ----
 
-You can also use https://sdkman.io[SDKMAN!] to install Java 11.
+You can also use https://sdkman.io[SDKMAN!] to install Java 17.
 
 [source,shell]
 ----
-sdk install java 11.0.2-open
+sdk install java
 ----
-
-If you like to live on the bleeding edge, Java 17 should work too.
+// when last tested, this installs 17.0.6-tem
+If you like to live on the bleeding edge, the latest version of the JDK should work too.
 
 The previous section served as an intro to Angular and showed you how it works without a backend. In this section, you'll create a new app that's more of a _real-world_ application.
 
@@ -76,7 +72,7 @@ You should have installed the Angular CLI in the previous section. If you did no
 
 [source,shell]
 ----
-npm install -g @angular/cli@13
+npm install -g @angular/cli@15
 ----
 
 Then, create a directory on your hard drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
@@ -92,6 +88,7 @@ This process will take a minute or two to complete depending on your internet sp
 
 [source,shell]
 ----
+cd notes
 ng serve
 ----
 
@@ -104,52 +101,48 @@ Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
 === Add Authentication using OpenID Connect
 
-OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Okta is an alternative that works well too.
+OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Let's continue that path because Auth0 is excellent, and one of the easiest identity providers to use.
 
-To add OIDC login support to your Angular app, you'll first need an https://developer.okta.com/signup[free Okta developer account]. Install the https://cli.okta.com/[Okta CLI] and run `okta register` to sign up for a new account.
+To add OIDC login support to your Angular app, you'll first need a https://auth0.com/signup[free Auth0 account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to authorize your device.
 
-If you already have an account, run `okta login`. Then, run `okta apps create`. Select the default app name, or change it as you see fit. Choose **Single-Page App** and press kbd:[Return].
-
-Use `\http://localhost:4200/callback` for the Redirect URI and accept the default Logout Redirect URI of `\http://localhost:4200/`.
-
-.What does the Okta CLI do?
-****
-The Okta CLI will create an OIDC Single-Page App in your Okta Org. It will add the redirect URIs you specified and grant access to the Everyone group. It will also add a trusted origin for `\http://localhost:4200`. You will see output like the following when it's finished:
+Then, create a new OIDC app with `auth0 apps create`. Specify the name, type, callback URls, and logout redirect URL.
 
 [source,shell]
 ----
-Okta application configuration:
-Issuer:    https://dev-133337.okta.com/oauth2/default
-Client ID: 0oab8eb55Kb9jdMIr5d6
+auth0 apps create \
+  --name "Angular" \
+  --description "Angular OIDC App" \
+  --type spa \
+  --callbacks http://localhost:4200/home \
+  --logout-urls http://localhost:4200 \
+  --origins http://localhost:4200 \
+  --web-origins http://localhost:4200
 ----
 
-NOTE: You can also use the Okta Admin Console to create your app. See https://developer.okta.com/docs/guides/sign-into-spa/angular/create-okta-application/[Create an Angular App] for more information. Make sure to use the same redirect URIs if you use the Admin Console.
-****
-
-When you create SPA apps with the Okta CLI, authorization code flow with PKCE (Proof Key for Code Exchange) is selected by default. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
+When you create Single Page Applications (SPAs) with the Auth0 CLI, authorization code flow with PKCE (Proof Key for Code Exchange) is selected by default. This setting provides the maximum level of security you can currently have for single-page apps when using OIDC for auth.
 
 TIP: To learn more about PKCE (pronounced "`pixy`"), see link:https://developer.okta.com/blog/2019/08/22/okta-authjs-pkce[Implement the OAuth 2.0 Authorization Code with PKCE Flow].
 
-Copy your client ID and your issuer URI (from the Okta CLI's output) into the following command.
+Copy your client ID and your issuer URI (from the Auth0 CLI's output) into the following command.
 
 [source,shell]
 ----
-ng add @oktadev/schematics --issuer=$issuer --clientId=$clientId
+ng add @oktadev/schematics --auth0 --issuer=$issuer --clientId=$clientId
 ----
 
-This command adds Okta's Angular SDK and configures OIDC authentication for your app.
+This command adds Auth0's Angular SDK and configures OIDC authentication for your app.
 
 .OktaDev Schematics in Action
 image::angular-spring-boot/oktadev-schematics.png[OktaDev Schematics in Action, 800, scaledwidth="100%", align=center]
 
-It creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
+The process creates a `home.component.ts` that has authentication logic, as well as a template that renders login and logout buttons.
 
 [source,typescript]
 .src/app/home/home.component.ts
 ----
 import { Component, Inject } from '@angular/core';
-import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -158,8 +151,19 @@ import { OktaAuth } from '@okta/okta-auth-js';
 })
 export class HomeComponent {
 
-  constructor(@Inject(OKTA_AUTH) public oktaAuth: OktaAuth,
-              public authService: OktaAuthStateService) {
+  constructor(public auth: AuthService, @Inject(DOCUMENT) private doc: Document) {
+  }
+
+  login(): void {
+    this.auth.loginWithRedirect();
+  }
+
+  logout(): void {
+    this.auth.logout({
+      logoutParams: {
+        returnTo: this.doc.location.origin
+      }
+    });
   }
 }
 ----
@@ -168,63 +172,56 @@ export class HomeComponent {
 .src/app/home/home.component.html
 ----
 <div>
-  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-          (click)="oktaAuth.signInWithRedirect()">Login</button>
-  <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-          (click)="oktaAuth.signOut()">Logout</button>
+  <button  *ngIf="(auth.isAuthenticated$ | async) === false"
+    (click)="login()">Login</button>
+  <button *ngIf="auth.isAuthenticated$ | async"
+    (click)="logout()">Logout</button>
 </div>
 ----
 
-There's also an `HttpInterceptor` created to add an access token to outgoing HTTP requests.
+The `auth-routing.module.ts` configures an `HttpInterceptor` and its `allowedList` to add an access token to outgoing HTTP requests.
 
 [source,typescript]
-.src/app/shared/okta/auth.interceptor.ts
+.src/app/auth-routing.module.ts
 ----
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Inject, Injectable } from '@angular/core';
-import { OKTA_AUTH } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
-
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-
-  constructor(@Inject(OKTA_AUTH) private oktaAuth: OktaAuth) {
-  }
-
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return this.handleAccess(request, next);
-  }
-
-  private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Only add an access token to allowed origins
-    const allowedOrigins = ['http://localhost'];
-    if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
-      const accessToken = this.oktaAuth.getAccessToken();
-      request = request.clone({
-        setHeaders: {
-          Authorization: 'Bearer ' + accessToken
-        }
-      });
-    }
-    return next.handle(request);
-  }
-}
+const config = {
+  domain: '...',
+  clientId: '...',
+  authorizationParams: {
+    redirect_uri: window.location.origin + '/home',
+  },
+  httpInterceptor: {
+    allowedList: ['/api/*']
+  },
+};
 ----
 
-NOTE: You might notice that tokens are only added for `\http://localhost`. You'll need to modify the `allowedOrigins` array to include your production URL eventually.
+You'll need to update this configuration to add an `audience` parameter and so it'll add an access token when sending requests to your Spring Boot API.
+
+[source,typescript]
+.src/app/auth-routing.module.ts
+----
+const config = {
+  authorizationParams: {
+    audience: 'https://<your-auth0-domain>/api/v2/',
+  },
+  httpInterceptor: {
+    allowedList: ['http://localhost:8080/*']
+  },
+};
+----
 
 Start your app again using the `ng serve` command, open a private/incognito window to `http://localhost:4200`, and you'll see a **Login** button in the bottom left.
 
 .Login button
 image::angular-spring-boot/angular-login-button.png[Login button, 800, scaledwidth="100%", align=center]
 
-Click on it and you'll be redirected to Okta to log in.
+Click on it, and you'll be redirected to Auth0 to log in.
 
 .Okta Login form
-image::angular-spring-boot/okta-login.png[Okta Login form, 425, scaledwidth="50%", align=center]
+image::angular-spring-boot/auth0-login.png[Auth0 Login form, 800, scaledwidth="100%", align=center]
 
-Enter valid credentials and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
+Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
 .Logout button
 image::angular-spring-boot/angular-logout-button.png[Logout button, 800, scaledwidth="100%", align=center]
@@ -233,20 +230,20 @@ Now that you've created a secure Angular app let's create a Spring Boot app to s
 
 == Create a Spring Boot App
 
-The good folks at Pivotal (now VMWare) created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with HTTPie.
+The good folks at VMWare created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with HTTPie.
 
 Kotlin is an intriguing language for Spring developers because it reduces boilerplate code and allows succinct, effective code. Kotlin is 100% interoperable with Java, so you can continue to use the Java libraries and frameworks you know and love. Not only that, but Spring has first-class support for Kotlin.
 
-Create a new Spring Boot app that uses Java 11, Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
+Create a new Spring Boot app that uses Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
 
 [source,shell]
 ----
-https start.spring.io/starter.zip javaVersion==11 language==kotlin bootVersion==2.6.3 \
-artifactId==notes-api groupId==com.okta.developer packageName==com.okta.developer.notes \
-type==gradle-project dependencies==h2,data-jpa,data-rest,okta,web -d
+https start.spring.io/starter.zip type==gradle-project-kotlin language==kotlin \
+bootVersion==3.0.4 artifactId==notes-api groupId==com.okta.developer \
+packageName==com.okta.developer.notes dependencies==h2,data-jpa,data-rest,okta,validation,web -d
 ----
 
-NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version and it _should_ work. The value used here has been QA'd and is guaranteed to work.
+NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version, and it _should_ work. The value used here has been QA'd and is guaranteed to work.
 
 Run this command in a terminal and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
 
@@ -255,60 +252,43 @@ Run this command in a terminal and a `notes-api.zip` file will be downloaded. Ex
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
-You can also use https://start.spring.io/#!type=gradle-project&language=kotlin&platformVersion=2.6.3&packaging=jar&jvmVersion=11&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,web[start.spring.io] in your browser to create this same app.
+You can also use https://start.spring.io/#!type=gradle-project-kotlin&language=kotlin&platformVersion=3.0.4&packaging=jar&jvmVersion=17&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,validation,web[start.spring.io] in your browser to create this same app.
 
 .Create app with start.spring.io
 image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
 
 === Secure Spring Boot with Spring Security
 
-Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with Okta. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
+Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with OpenID Connect. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
 
 The OIDC integration you added to your Angular app allows you to authenticate a user and receive an access token. You can use this access token to securely communicate with a backend that is configured to use the same issuer. This is done by using an HTTP interceptor that adds it in an `Authorization` header as a bearer token.
 
-[source,typescript]
-.notes/src/app/shared/okta/auth.interceptor.ts
-----
-private handleAccess(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  // Only add an access token to whitelisted origins
-  const allowedOrigins = ['http://localhost'];
-  if (allowedOrigins.some(url => request.urlWithParams.includes(url))) {
-    const accessToken = this.oktaAuth.getAccessToken();
-    request = request.clone({
-      setHeaders: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    });
-  }
-  return next.handle(request);
-}
-----
-
-Open a terminal and navigate to your Spring Boot app's directory. Run `okta apps create`, specify a name, and select **Web** > **Okta Spring Boot Starter**. Accept the default redirect URIs.
-
-Your app's OIDC settings will be put in `src/main/resources/application.properties`:
-
-[source,properties]
-----
-okta.oauth2.issuer=https://{yourOktaDomain}/oauth2/default
-okta.oauth2.client-id={yourClientId}
-okta.oauth2.client-secret={yourClientSecret}
-----
-
-IMPORTANT: It's a good practice to **never store secrets in source control**. As an alternative, run `okta apps create web` and use Spring Security's default callback URL (`http://localhost:8080/login/oauth2/code/okta`). This will create an `.okta.env` file you can use to set environment variables before running your app.
-
-If you chose the **Okta Spring Boot Starter** option, move your settings from `application.properties` into a new `.okta.env` file and ignore `*.env` in your `notes-api/.gitignore` file.
+Open a terminal and navigate to your Spring Boot app's directory. Create an OIDC app for Spring Boot with the following command:
 
 [source,shell]
 ----
-export OKTA_OAUTH2_ISSUER=https://{yourOktaDomain}/oauth2/default
-export OKTA_OAUTH2_CLIENT_ID={yourClientId}
-export OKTA_OAUTH2_CLIENT_SECRET={yourClientSecret}
+auth0 apps create \
+  --name "Spring Boot" \
+  --description "Spring Boot OIDC App" \
+  --type regular \
+  --callbacks http://localhost:8080/login/oauth2/code/okta \
+  --logout-urls http://localhost:8080 \
+  --reveal-secrets
 ----
 
-After replacing the `{...}` placeholders with your values, run `source .okta.env` to set these environment variables. Make sure to remove the Okta-related properties from your `application.properties` file.
+Copy the results of the previous command into an `.okta.env` file. You'll need to replace the placeholders with your values.
 
-Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Okta to sign in.
+[source,shell]
+----
+export OKTA_OAUTH2_ISSUER=https://<your-auth0-domain>/
+export OKTA_OAUTH2_CLIENT_ID=<your-client-id>
+export OKTA_OAUTH2_CLIENT_SECRET=<your-client-secret>
+export OKTA_OAUTH2_AUDIENCE=https://<your-auth0-domain>/api/v2/
+----
+
+After replacing the `<...>` placeholders with your values, run `source .okta.env` to set these environment variables.
+
+Then start your app using `./gradlew bootRun`. Open `http://localhost:8080` in a browser, and you'll be redirected to Auth0 to sign in.
 
 TIP: If you don't get prompted, it's because you're already logged in. Try it in an incognito window to see the full login flow.
 
@@ -325,6 +305,7 @@ package com.okta.developer.notes
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 
@@ -334,19 +315,18 @@ class SecurityConfiguration {
     @Bean
     fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeHttpRequests { authorize ->
-                authorize.anyRequest().authenticated()
+            .authorizeHttpRequests { authz ->
+                authz.anyRequest().authenticated()
             }
-            .oauth2Login()
-            .and()
+            .oauth2Login(withDefaults())
             .oauth2ResourceServer().jwt()
 
-        return http.build();
+        return http.build()
     }
 }
 ----
 
-NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
+NOTE: The `oauth2Login(...)` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
 
 === Spring Data REST
 
@@ -360,9 +340,9 @@ package com.okta.developer.notes
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Id
 
 @SpringBootApplication
 class DemoApplication
@@ -375,7 +355,7 @@ fun main(args: Array<String>) {
 data class Note(@Id @GeneratedValue var id: Long? = null,
                 var title: String? = null,
                 var text: String? = null,
-                @JsonIgnore var user: String? = null)
+                @JsonIgnore var username: String? = null)
 ----
 
 Kotlin's https://kotlinlang.org/docs/reference/data-classes.html[data classes] are built to hold data. By adding the `data` keyword, your class will get `equals()`, `hashCode()`, `toString()`, and a `copy()` function. The `Type? = null` syntax means the arguments are nullable when creating a new instance of the class.
@@ -407,8 +387,8 @@ class AddUserToNote {
     @HandleBeforeCreate
     fun handleCreate(note: Note) {
         val username: String = SecurityContextHolder.getContext().authentication.name
-        println("Creating note: $note with user: $username")
-        note.user = username
+        note.username = username
+        println("Creating note: $note")
     }
 }
 ----
@@ -440,7 +420,7 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
         listOf("Note 1", "Note 2", "Note 3").forEach {
-            repository.save(Note(title = it, user = "user"))
+            repository.save(Note(title = it, username = "user"))
         }
         repository.findAll().forEach { println(it) }
     }
@@ -451,9 +431,9 @@ Restart your Spring Boot app, and you should see the following printed to your c
 
 [source,shell]
 ----
-Note(id=1, title=Note 1, text=null, user=user)
-Note(id=2, title=Note 2, text=null, user=user)
-Note(id=3, title=Note 3, text=null, user=user)
+Note(id=1, title=Note 1, text=null, username=user)
+Note(id=2, title=Note 2, text=null, username=user)
+Note(id=3, title=Note 3, text=null, username=user)
 ----
 
 Create a `UserController.kt` class (in the same directory as `DemoApplication.kt`) and use it to filter notes by the currently logged-in user. While you're at it, add a `/user` endpoint that returns the user's information.
@@ -475,12 +455,12 @@ class UserController(val repository: NotesRepository) {
     @GetMapping("/user/notes")
     fun notes(principal: Principal): List<Note> {
         println("Fetching notes for user: ${principal.name}")
-        return repository.findAllByUser(principal.name)
+        return repository.findAllByUsername(principal.name)
     }
 
     @GetMapping("/user")
     fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
-        return user;
+        return user
     }
 }
 ----
@@ -490,7 +470,7 @@ The `findAllByUser()` method doesn't exist on `NotesRepository`, so you'll need 
 [source,kotlin]
 ----
 interface NotesRepository : JpaRepository<Note, Long> {
-    fun findAllByUser(name: String): List<Note>
+    fun findAllByUsername(name: String): List<Note>
 }
 ----
 
@@ -524,8 +504,7 @@ class SecurityConfiguration {
         ...
 
         http.cors()
-
-        return http.build();
+        return http.build()
     }
 
     @Bean
@@ -534,7 +513,7 @@ class SecurityConfiguration {
         val config = CorsConfiguration()
         config.allowCredentials = true
         config.allowedOrigins = listOf("http://localhost:4200")
-        config.allowedMethods = listOf("*");
+        config.allowedMethods = listOf("*")
         config.allowedHeaders = listOf("*")
         source.registerCorsConfiguration("/**", config)
         return source
@@ -628,7 +607,7 @@ CREATE src/app/note/note-list/note-list.component.ts (1116 bytes)
 UPDATE src/app/app.module.ts (540 bytes)
 ----
 
-This schematic creates a `NotesModule`, routes a service to communicate with the API, and list/edit screens for viewing and editing notes. Open the generated `note.routes.ts` file, and protect the routes it creates with `OktaAuthGuard`.
+This schematic creates a `NotesModule`, routes a service to communicate with the API, and list/edit screens for viewing and editing notes. Open the generated `note.routes.ts` file, and protect the routes it creates with `AuthGuard`.
 
 [source,typescript]
 .src/app/note/note.routes.ts
@@ -636,18 +615,18 @@ This schematic creates a `NotesModule`, routes a service to communicate with the
 import { Routes } from '@angular/router';
 import { NoteListComponent } from './note-list/note-list.component';
 import { NoteEditComponent } from './note-edit/note-edit.component';
-import { OktaAuthGuard } from '@okta/okta-angular';
+import { AuthGuard } from '@auth0/auth0-angular';
 
 export const NOTE_ROUTES: Routes = [
   {
     path: 'notes',
     component: NoteListComponent,
-    canActivate: [OktaAuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'notes/:id',
     component: NoteEditComponent,
-    canActivate: [OktaAuthGuard]
+    canActivate: [AuthGuard]
   }
 ];
 ----
@@ -657,13 +636,11 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
 [source,html]
 ----
 <div>
-  <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-          (click)="oktaAuth.signInWithRedirect()">Login</button>
-  <p><a routerLink="/notes"
-        *ngIf="(authService.authState$ | async)?.isAuthenticated">View Notes</a></p>
-  <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-          (click)="oktaAuth.signOut()">Logout</button>
+  <button *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()">Login</button>
+  <p><a routerLink="/notes" *ngIf="auth.isAuthenticated$ | async">View Notes</a></p>
+  <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()">Logout</button>
 </div>
+
 ----
 
 Change `src/app/app.component.html` to be as simple as it can be.
@@ -699,9 +676,9 @@ image::angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%
 
 Add a new note, and you'll see a message like this in your backend console.
 
-[source,shell]
+[source%autofit,shell]
 ----
-Creating note: Note(id=null, title=1st note, text=Wahoo!, user=null) with user: mraible@gmail.com
+Creating note: Note(id=null, title=1st note, text=Wahoo!, username=auth0|61bcbc76f64d4a0072af8a1d)
 ----
 
 You still won't see notes in the list. You need to change the `NoteService` to call the `/user/notes` endpoint to get your notes.
@@ -1020,15 +997,14 @@ Now, running `./gradlew test` should pass as expected.
 In https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot[10 Excellent Ways to Secure Your Spring Boot Application], I recommended a few Spring Boot-specific items:
 
 1. Use HTTPS in Production
-2. Enable Cross-Site Request Forgery (CSRF) Protection
-3. Use a Content Security Policy (CSP) to Prevent XSS Attacks
-4. Use OpenID Connect for Authentication
+2. Use a Content Security Policy (CSP) to Prevent XSS Attacks
+3. Use OpenID Connect for Authentication
 
-You've already implemented #4 with Okta, but what about the others?
+You've already implemented #3 with Auth0, but what about the others?
 
 You can use https://github.com/FiloSottile/mkcert[mkcert] to generate local, valid TLS certificates. To force HTTPS, you just need to configure Spring Security. I prefer to do it in production, so I don't need to install certificates in development.
 
-CSRF protection and a CSP can be configured with Spring Security.
+A CSP can be configured with Spring Security.
 
 Modify your `SecurityConfiguration` class with these security enhancements.
 
@@ -1036,7 +1012,6 @@ Modify your `SecurityConfiguration` class with these security enhancements.
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
 ----
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.util.matcher.RequestMatcher
 
 @Configuration
@@ -1052,24 +1027,18 @@ class SecurityConfiguration {
             r.getHeader("X-Forwarded-Proto") != null
         }).requiresSecure() // <.>
 
-        http.csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <.>
-
         http.headers()
             .contentSecurityPolicy("script-src 'self'; report-to /csp-report-endpoint/") // <.>
 
-        return http.build();
+        return http.build()
     }
 
     ...
 }
 ----
 <.> Force HTTPS in production
-<.> Configure the CSRF Cookie so it can be read by JavaScript
 <.> Configure a CSP that only allows local scripts
 ====
-
-Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this at https://angular.io/guide/security[Angular's Security docs].
 
 In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
 

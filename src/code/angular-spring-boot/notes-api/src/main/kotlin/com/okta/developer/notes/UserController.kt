@@ -12,11 +12,11 @@ class UserController(val repository: NotesRepository) {
     @GetMapping("/user/notes")
     fun notes(principal: Principal): List<Note> {
         println("Fetching notes for user: ${principal.name}")
-        return repository.findAllByUser(principal.name)
+        return repository.findAllByUsername(principal.name)
     }
 
     @GetMapping("/user")
     fun user(@AuthenticationPrincipal user: OidcUser): OidcUser {
-        return user;
+        return user
     }
 }
