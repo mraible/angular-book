@@ -7,6 +7,8 @@ on:
   pull_request: # build all PRs
 
 jobs:
+  env:
+    GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
   changes:
     name: Check for changes
     runs-on: ubuntu-latest
@@ -45,7 +47,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-    - uses: gradle/gradle-build-action@v2
+        cache: 'gradle'
     - name: Build book
       run: npm run setup
     - name: Build site
