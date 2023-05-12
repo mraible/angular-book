@@ -4,12 +4,13 @@
 For further reference, please consider the following sections:
 
 * [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.6.3/gradle-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.6.3/gradle-plugin/reference/html/#build-image)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.6.3/reference/htmlsingle/#boot-features-jpa-and-spring-data)
-* [Rest Repositories](https://docs.spring.io/spring-boot/docs/2.6.3/reference/htmlsingle/#howto-use-exposing-spring-data-repositories-rest-endpoint)
+* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.0.5/gradle-plugin/reference/html/)
+* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.0.5/gradle-plugin/reference/html/#build-image)
+* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/3.0.5/reference/htmlsingle/#data.sql.jpa-and-spring-data)
+* [Rest Repositories](https://docs.spring.io/spring-boot/docs/3.0.5/reference/htmlsingle/#howto.data-access.exposing-spring-data-repositories-as-rest)
 * [Okta Spring Boot documentation](https://github.com/okta/okta-spring-boot#readme)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.6.3/reference/htmlsingle/#boot-features-developing-web-applications)
+* [Validation](https://docs.spring.io/spring-boot/docs/3.0.5/reference/htmlsingle/#io.validation)
+* [Spring Web](https://docs.spring.io/spring-boot/docs/3.0.5/reference/htmlsingle/#web)
 
 ### Guides
 The following guides illustrate how to use some features concretely:
@@ -21,9 +22,10 @@ The following guides illustrate how to use some features concretely:
 * [Okta-Hosted Login Page Example](https://github.com/okta/samples-java-spring/tree/master/okta-hosted-login)
 * [Custom Login Page Example](https://github.com/okta/samples-java-spring/tree/master/custom-login)
 * [Okta Spring Security Resource Server Example](https://github.com/okta/samples-java-spring/tree/master/resource-server)
+* [Validation](https://spring.io/guides/gs/validating-form-input/)
 * [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
 * [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
+* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
 
 ### Additional Links
 These additional references should also help you:
