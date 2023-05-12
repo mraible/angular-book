@@ -30,7 +30,10 @@ image::angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwi
 
 After creating your app, you _could_ select the **Resources** tab and add the https://elements.heroku.com/addons/auth0[Auth0 add-on]. However, this will create a new Auth0 tenant for you and configure your Heroku app to use it. I think it's easier to use the tenant you already configured.
 
-Both your Angular and Spring Boot app should have their security configured to use OIDC from the <<#security-configuration, last chapter>>. However, you'll need to configure Auth0 for both the Angular app and Spring Boot app to allow Heroku URLs.
+Both your Angular and Spring Boot app should have their security configured to use OIDC from the
+ifdef::backend-epub3[last chapter.]
+ifndef::backend-epub3[<<#security-configuration, last chapter>>.]
+However, you'll need to configure Auth0 for both the Angular app and Spring Boot app to allow Heroku URLs.
 
 You can run `auth0 apps list` to get the client IDs for your Auth0 apps. Then, update the URLs for your Spring Boot app, replacing `bootiful-angular` with your Heroku app's name.
 
@@ -794,6 +797,7 @@ Run `ng add @angular/fire` in the `notes` directory and your new project should 
 
 [source,shell]
 ----
+ifndef::backend-pdf[]
 ℹ Using package manager: npm
 ✔ Found compatible package version: @angular/fire@7.5.0.
 ✔ Package information loaded.
@@ -807,6 +811,22 @@ UPDATE package.json (1311 bytes)
 Using firebase-tools version 11.25.3
 ? Which Firebase account would you like to use? mraible@gmail.com
 ✔ Preparing the list of your Firebase projects
+endif::[]
+ifdef::backend-pdf[]
+Using package manager: npm
+- Found compatible package version: @angular/fire@7.5.0.
+- Package information loaded.
+
+The package @angular/fire@7.5.0 will be installed and executed.
+Would you like to proceed? Yes
+- Packages successfully installed.
+UPDATE package.json (1311 bytes)
+- Packages installed successfully.
+? What features would you like to setup? ng deploy -- hosting
+Using firebase-tools version 11.25.3
+? Which Firebase account would you like to use? mraible@gmail.com
+- Preparing the list of your Firebase projects
+endif::[]
 ? Please select a project: notes
 ? Please select a hosting site: https://notes-ed93c.web.app
 CREATE .firebaserc (179 bytes)

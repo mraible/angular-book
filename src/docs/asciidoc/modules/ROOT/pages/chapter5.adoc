@@ -923,7 +923,10 @@ source .okta.env
 java -jar build/libs/*.jar
 ----
 
-Congrats! You modified your Angular and Spring Boot apps to be packaged together and implemented the most secure form of OAuth 2.0 to boot! 🥳
+Congrats! You modified your Angular and Spring Boot apps to be packaged together and implemented the most secure form of OAuth 2.0 to boot!
+ifndef::backend-pdf[]
+🥳
+endif::[]
 
 == Build a Docker Image with Jib
 
@@ -1527,6 +1530,9 @@ This final section showed you a lot of options when it comes to deploying your A
 
 TIP: You can download the code for this book's examples from InfoQ. The `angular-docker` directory has this chapter's completed example.
 
-As a developer, you probably don't want to read a book to get a baseline to start a project. The good news is https://jhipster.tech[JHipster] does everything in this book. It allows you to run your Angular and Spring Boot apps separately, use Kotlin on the server, package your apps together for production, and use Docker for distribution. If you're interested in JHipster, you're in luck: there's a https://www.infoq.com/minibooks/jhipster-mini-book/[JHipster Mini-Book]! 🤓
+As a developer, you probably don't want to read a book to get a baseline to start a project. The good news is https://jhipster.tech[JHipster] does everything in this book. It allows you to run your Angular and Spring Boot apps separately, use Kotlin on the server, package your apps together for production, and use Docker for distribution. If you're interested in JHipster, you're in luck: there's a https://www.infoq.com/minibooks/jhipster-mini-book/[JHipster Mini-Book]!
+ifndef::backend-pdf[]
+🤓
+endif::[]
 
 In the meantime, I hope you enjoy your journey developing with Angular and Spring Boot! Please hit me up at @mraible { on Twitter, LinkedIn, and GitHub } if you have any questions.

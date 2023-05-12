@@ -20,4 +20,7 @@ An Angular app is composed of several building blocks:
 
 This book shows you how to build apps with Angular and guides you through many tools, techniques, security best practices, and production deployment options.
 
-I hope you learn something from it! 😃
+I hope you learn something from it!
+ifndef::backend-pdf[]
+😃
+endif::[]

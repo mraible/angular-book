@@ -38,7 +38,10 @@ In this chapter, I'll show you how to build a note-taking application with Angul
 
 The Angular and Spring Boot projects release major versions every six months. Since Java does too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
 
-Please try newer versions at your own risk and email me if you find issues and/or solutions! I've been known to trade t-shirts for contributions. 😉
+Please try newer versions at your own risk and email me if you find issues and/or solutions! I've been known to trade t-shirts for contributions.
+ifndef::backend-pdf[]
+😉
+endif::[]
 
 **Prerequisites:**
 
