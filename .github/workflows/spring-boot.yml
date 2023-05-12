@@ -36,21 +36,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Configure Node 16
+      - name: Configure Node 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 18
       - name: Configure Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
           cache: 'gradle'
-      - name: Install latest Chrome
-        run: |
-          sudo apt update
-          sudo apt --only-upgrade install google-chrome-stable
-          google-chrome --version
       - name: Install Angular dependencies
         run: npm ci
       - name: Run Angular tests
