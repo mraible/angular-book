@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchComponent } from './search.component';
-import { MockActivatedRoute } from './mocks/routes';
 import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { FormsModule } from '@angular/forms';
 import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,15 +15,19 @@ describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
   let mockSearchService: SearchService;
-  let mockActivatedRoute: MockActivatedRoute;
 
   beforeEach(async () => {
-    mockActivatedRoute = new MockActivatedRoute({term: 'nikola'});
-
     await TestBed.configureTestingModule({
       declarations: [SearchComponent],
       providers: [
-        {provide: ActivatedRoute, useValue: mockActivatedRoute}
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {term: 'nikola'}
+            }
+          }
+        }
       ],
       imports: [FormsModule, RouterTestingModule, HttpClientTestingModule,
         MatListModule, MatIconModule, MatInputModule, NoopAnimationsModule]

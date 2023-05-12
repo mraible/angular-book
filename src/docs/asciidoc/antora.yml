@@ -9,8 +9,8 @@ asciidoc:
     page-pagination: '@'
     book-title: The Angular Mini-Book
     author: Matt Raible
-    revnumber: 2.0
-    revyear: 2022
+    revnumber: 3.0.0-SNAPSHOT
+    revyear: 2023
     email: matt@raibledesigns.com
     subject: Angular
     keywords: Angular, Angular CLI, TypeScript, Bootstrap, Spring Boot, Kotlin, OAuth, OpenID Connect
@@ -18,3 +18,4 @@ asciidoc:
     page-downloadable-asset-keys: infoq
     page-downloadable-asset-infoq-link: https://infoq.com/minibooks/angular-mini-book
     page-downloadable-asset-infoq-icon: infoq
+    experimental: true
