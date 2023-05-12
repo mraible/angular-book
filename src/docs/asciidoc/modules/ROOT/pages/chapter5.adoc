@@ -349,7 +349,7 @@ export class AuthService {
 
   async isAuthenticated(): Promise<boolean> {
     const user = await lastValueFrom(this.getUser());
-    return user !== undefined;
+    return user !== null;
   }
 
   login(): void { // <.>
@@ -363,7 +363,7 @@ export class AuthService {
   }
 }
 ----
-<.> Talk to the `/user` endpoint to determine authenticated status. A username will be returned if the user is logged in.
+<.> Talk to the `/user` endpoint to determine authenticated status. A user object will be returned if the user is logged in.
 <.> When the user clicks a login button, redirect them to a Spring Security endpoint to do the OAuth dance.
 <.> Logout using the `/api/logout` endpoint, which returns the Auth0 Logout API URL with required parameters.
 ====
@@ -402,9 +402,6 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe((isAuthenticated: boolean) => {
-      this.isAuthenticated = isAuthenticated;
-    });
   }
 }
 ----
@@ -448,9 +445,6 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe((isAuthenticated: boolean) => {
-      this.isAuthenticated = isAuthenticated;
-    });
   }
 }
 ----
