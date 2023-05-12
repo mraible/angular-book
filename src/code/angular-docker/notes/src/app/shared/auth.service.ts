@@ -30,7 +30,7 @@ export class AuthService {
 
   async isAuthenticated(): Promise<boolean> {
     const user = await lastValueFrom(this.getUser());
-    return user !== undefined;
+    return user !== null;
   }
 
   login(): void {
