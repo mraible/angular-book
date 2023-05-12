@@ -14,11 +14,7 @@ If you're following along, you should have an `angular-deployment` directory wit
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-deployment` directory has the previous section's completed example. Copy it to `angular-docker` in your favorite code location.
 
-**Prerequisites:**
-
-* https://docs.docker.com/install/[Docker]
-* https://nodejs.org/[Node.js] 16+
-* https://adoptium.net/[Java] 11+
+If you don't have Docker installed, you can https://www.docker.com/products/docker-desktop[download it from docker.com].
 
 == Dockerize an Angular App
 
@@ -26,7 +22,7 @@ Create a `notes/Dockerfile` that uses Node.js as a base image and Nginx as a web
 
 [source,docker]
 ----
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -80,8 +76,6 @@ Make sure your Docker daemon is running with `docker ps`. Then run the following
 docker build -t ng-notes .
 ----
 
-CAUTION: If you get an error when running `docker build`, delete `node_modules` and `package-lock.json` and try again.
-
 If it builds successfully, you'll see messages like the following:
 
 [source,shell]
@@ -108,7 +102,7 @@ Add these Docker commands as scripts to your `package.json` file.
 The `docker run` command will serve up the production version of the Angular app, which should already have its backend configured to point to your Heroku app. You should have deployed your Spring Boot app to Heroku in the <<#deploy-spring-boot-to-heroku, previous chapter>>.
 
 [source,typescript]
-.notes/src/environments/environment.prod.ts
+.notes/src/environments/environment.ts
 ----
 export const environment = {
   production: true,
@@ -120,7 +114,14 @@ Since this runs the production build, you'll need to add `\http://localhost:4200
 
 [source,shell]
 ----
-heroku config:set ALLOWED_ORIGINS=http://localhost:4200  --app <your-heroku-app>
+heroku config:edit --app <your-heroku-app>
+----
+
+Append the URL to your existing ones, separating them with a comma.
+
+[source,shell]
+----
+ALLOWED_ORIGINS='...,http://localhost:4200'
 ----
 
 TIP: One advantage of doing this is that you can run your local Angular app against your production backend. I've found this very useful when debugging and fixing UI issues caused by production data.
@@ -158,6 +159,15 @@ Then, create a new app.
 heroku create
 ----
 
+Add the `angular-docker` project to Git and commit it from the root directory.
+
+[source,shell]
+----
+git init
+git add .
+git commit -m "Initial commit"
+----
+
 Add the Git URL as a new remote named `docker`.
 
 [source,shell]
@@ -190,7 +200,7 @@ You'll also need to update your `Dockerfile` so it uses the aforementioned `envs
 [source,docker]
 .notes/Dockerfile
 ----
-FROM node:16-alpine AS builder
+FROM --platform=linux/amd64 node:18-alpine AS builder
 
 WORKDIR /opt/web
 COPY package.json package-lock.json ./
@@ -201,9 +211,9 @@ ENV PATH="./node_modules/.bin:$PATH"
 COPY . ./
 RUN ng build
 
-FROM nginx:1-alpine
+FROM --platform=linux/amd64 nginx:1-alpine
 RUN apk --no-cache add curl
-RUN curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` -o envsubst && \
+RUN curl -L https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-`uname -s`-`uname -m` -o envsubst && \
     chmod +x envsubst && \
     mv envsubst /usr/local/bin
 COPY ./nginx.config /etc/nginx/nginx.template
@@ -211,7 +221,7 @@ CMD ["/bin/sh", "-c", "envsubst < /etc/nginx/nginx.template > /etc/nginx/conf.d/
 COPY --from=builder /opt/web/dist/notes /usr/share/nginx/html
 ----
 
-Then, push your Docker image to Heroku's Container Registry.
+Then, from the `notes` directory, push your Docker image to Heroku's Container Registry.
 
 [source,shell]
 ----
@@ -232,23 +242,24 @@ And open the app in your browser:
 heroku open --remote docker
 ----
 
-You'll need to add your app's URL to Okta as a valid redirect URI. In your Spring Boot app on Heroku, go to **Resources** and click on the **Okta** add-on. This will log you in to your Okta dashboard. Navigate to **Applications** > **SPA** > **General** > **Edit**. Add the following redirect URIs:
+You'll need to add your app's URL to Auth0 as an allowed callback URL. Run `auth0 apps open` or log in to your Auth0 management dashboard and open the Angular app. Add the following URLs:
 
-- Sign-in: `\https://<angular-docker-app>.herokuapp.com/callback`
-- Sign-out: `\https://<angular-docker-app>.herokuapp.com`
+- Callback: `\https://<angular-docker-app>.herokuapp.com/home`
+- Logout: `\https://<angular-docker-app>.herokuapp.com`
+- Web origin: `\https://<angular-docker-app>.herokuapp.com`
 
-You'll need to add the new app's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command.
+You'll need to add the new app's URL as an allowed origin in your Spring Boot app on Heroku. Run the following command to edit your Spring Boot app's configuration.
 
 [source,shell]
 ----
 heroku config:edit --app <your-spring-boot-app-on-heroku>
 ----
 
-Add the new URL after your existing `localhost` one, separating them with a comma. For example:
+Add the new URL after your existing ones, separating them with a comma. For example:
 
 [source,shell]
 ----
-ALLOWED_ORIGINS='http://localhost:4200,https://<angular-docker-app>.herokuapp.com'
+ALLOWED_ORIGINS='...,https://<angular-docker-app>.herokuapp.com'
 ----
 
 Now you should be able to log in and see the note you created earlier.
@@ -258,7 +269,7 @@ Now you should be able to log in and see the note you created earlier.
 If you test your freshly-deployed Angular app with https://securityheaders.com/[securityheaders.com], you'll get an **F**. To solve this, modify your `nginx.config` to add security headers.
 
 [source,nginx]
-.notes/nginx.conf
+.notes/nginx.config
 ----
 server {
     listen       ${PORT:-80};
@@ -271,7 +282,7 @@ server {
         try_files $$uri /index.html;
     }
 
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.okta.com https://*.herokuapp.com";
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; frame-ancestors 'none'; connect-src 'self' https://*.auth0.com https://*.herokuapp.com; frame-src 'self' https://*.auth0.com";
     add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin";
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
     add_header X-Content-Type-Options nosniff;
@@ -294,20 +305,9 @@ Now you should get an **A**!
 .Nginx in Docker score from securityheaders.com
 image::angular-docker/angular-docker-securityheaders.png[Nginx in Docker score from securityheaders.com, 800, scaledwidth="100%", align=center]
 
-You might want to commit your changes to Git like you did for the previous deployment options.
-
-[source,shell]
-----
-git checkout -b docker
-git add .
-git commit -m "Add Docker for Angular"
-----
-
 == Combine Angular and Spring Boot in a Single Artifact
 
 In the previous sections, you learned how to deploy your Angular and Spring Boot apps separately. Now I'll show you how to combine them into a single JAR for production. You'll still be able to run them independently in development, but deploying them to production will be easier because you won't have to worry about CORS (cross-origin resource sharing). I'll also convert the OAuth flows so they all happen server-side, which is more secure as the access token won't be stored in the browser.
-
-NOTE: Most client-side OAuth libraries keep access tokens in local storage. However, there is an https://gitlab.com/jimdigriz/oauth2-worker[oauth2-worker] project that allows you to store them in a web worker. There are also folks that think https://pragmaticwebsecurity.com/articles/oauthoidc/localstorage-xss.html[avoiding LocalStorage for tokens is the wrong solution].
 
 === Update Your Angular App's Authentication Mechanism
 
@@ -337,19 +337,19 @@ export class AuthService {
   }
 
   getUser(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}).pipe( // <.>
-      map((response: User) => {
-        if (response !== null) {
-          this.$authenticationState.next(true);
-        }
-        return response;
-      })
-    );
+    return this.http.get<User>(`${environment.apiUrl}/user`, {headers}) // <.>
+      .pipe(map((response: User) => {
+          if (response !== null) {
+            this.$authenticationState.next(true);
+          }
+          return response;
+        })
+      );
   }
 
   async isAuthenticated(): Promise<boolean> {
     const user = await lastValueFrom(this.getUser());
-    return user !== undefined;
+    return user !== null;
   }
 
   login(): void { // <.>
@@ -357,18 +357,15 @@ export class AuthService {
   }
 
   logout(): void { // <.>
-    const redirectUri = `${location.origin}${this.location.prepareExternalUrl('/')}`;
-
     this.http.post(`${environment.apiUrl}/api/logout`, {}).subscribe((response: any) => {
-      location.href = response.logoutUrl + '?id_token_hint=' + response.idToken
-        + '&post_logout_redirect_uri=' + redirectUri;
+      location.href = response.logoutUrl;
     });
   }
 }
 ----
-<.> Talk to the `/user` endpoint to determine authenticated status. A username will be returned if the user is logged in.
+<.> Talk to the `/user` endpoint to determine authenticated status. A user object will be returned if the user is logged in.
 <.> When the user clicks a login button, redirect them to a Spring Security endpoint to do the OAuth dance.
-<.> Logout using the `/api/logout` endpoint, which returns the Okta Logout API URL and a valid ID token.
+<.> Logout using the `/api/logout` endpoint, which returns the Auth0 Logout API URL with required parameters.
 ====
 
 Create a `user.ts` file in the same directory to hold your `User` model.
@@ -382,7 +379,7 @@ export class User {
 }
 ----
 
-Update `app.component.ts` to use your new `AuthService` in favor of `OktaAuth`.
+Update `app.component.ts` to use your new `AuthService` in favor of Auth0's `AuthService`.
 
 [source,typescript]
 .notes/src/app/app.component.ts
@@ -405,14 +402,11 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe(
-      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
-    );
   }
 }
 ----
 
-Remove `OktaAuthModule` and its related code from `app.component.spec.ts` and `home.component.spec.ts`. You'll also need to add `HttpClientTestingModule` to their `TestBed` imports.
+Remove `AuthModule` and its related code from `app.component.spec.ts` and `home.component.spec.ts`. You'll also need to add `HttpClientTestingModule` to their `TestBed` imports.
 
 Change the buttons and link in `app.component.html` to reference the `isAuthenticated` property instead of `oktaAuth`.
 
@@ -451,9 +445,6 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit() {
     this.isAuthenticated = await this.auth.isAuthenticated();
-    this.auth.$authenticationState.subscribe(
-      (isAuthenticated: boolean) => this.isAuthenticated = isAuthenticated
-    );
   }
 }
 ----
@@ -466,7 +457,7 @@ Update `home.component.html` so it reads the `isAuthenticated` property.
 <p><a routerLink="/notes" *ngIf="isAuthenticated">View Notes</a></p>
 ----
 
-Delete `notes/src/app/auth-routing.module.ts` and `notes/src/app/shared/okta`.
+Delete `notes/src/app/auth-routing.module.ts`.
 
 Modify `app.module.ts` to remove the `AuthRoutingModule` import, add `HomeComponent` as a declaration, and import `HttpClientModule`.
 
@@ -501,7 +492,7 @@ import { HttpClientModule } from '@angular/common/http';
 export class AppModule { }
 ----
 
-Update `notes/src/app/note/note.routes.ts` to remove the `OktaAuthGuard`.
+Update `notes/src/app/note/note.routes.ts` to remove the `AuthGuard`.
 
 Add the route for `HomeComponent` to `app-routing.module.ts`.
 
@@ -519,7 +510,7 @@ const routes: Routes = [
 ];
 ----
 
-Change both `environments.ts` and `environments.prod.ts` to use a blank `apiUrl`.
+Change both `environment.development.ts` and `environment.ts` to use a blank `apiUrl`.
 
 [source,typescript]
 ----
@@ -562,16 +553,128 @@ Add this file as a `proxyConfig` option in `angular.json`.
 },
 ----
 
-Remove Okta's SDKs and OktaDev Schematics from your Angular project.
+Remove Auth0's Angular SDK and OktaDev Schematics:
 
 [source,shell]
 ----
-npm uninstall @okta/okta-angular @okta/okta-auth-js @oktadev/schematics
+npm uninstall @auth0/auth0-angular @oktadev/schematics
 ----
 
-At this point, your Angular app doesn't contain any Okta-specific code for authentication. Instead, it relies on your Spring Boot app to provide that.
+At this point, your Angular app doesn't contain any Auth0-specific code for authentication. Instead, it relies on your Spring Boot app to provide that.
 
-You should still be able to run `ng serve` in your Angular app and `source .okta.env && ./gradlew bootRun` in your Spring Boot app for local development. However, you'll need to make some adjustments to your Spring Boot app to include Angular for production.
+In the Spring Boot app, you'll need to adjust how the email is retrieved from the user's profile. The easiest way to do this is to add the following property to `application-dev.properties` and `application-prod.properties`.
+
+[source,properties]
+----
+spring.security.oauth2.client.provider.okta.user-name-attribute=preferred_username
+----
+
+Then in `DemoApplication.kt`, change the `AddUserToNote` class to use `principal.name` to get the email.
+
+[source,kotlin]
+----
+class AddUserToNote {
+
+    @HandleBeforeCreate
+    fun handleCreate(note: Note) {
+        val email = SecurityContextHolder.getContext().authentication.name
+        note.username = email
+        println("Creating note: $note")
+    }
+}
+----
+
+You'll need to make the same change to the `email` variable in `UserController.kt`.
+
+[source,kotlin]
+----
+class UserController(val repository: NotesRepository) {
+
+    @GetMapping("/user/notes")
+    fun notes(principal: Principal, title: String?, pageable: Pageable): Page<Note> {
+        val email = principal.name
+        ...
+    }
+
+    ...
+}
+----
+
+In order to log in from your Angular app, you'll need to modify the Spring Boot app on Auth0 to allow callback and logout URLs from the Angular app's. Run `auth0 apps open`, select your Spring Boot app, and it'll open in the Auth0 dashboard. Then, add the following URLs:
+
+- Callback: `http://localhost:4200/login/oauth2/code/okta`
+- Logout: `http://localhost:4200`
+
+Now you can run `ng serve` in your Angular app and `source .okta.env && ./gradlew bootRun` in your Spring Boot app, and log in as you did before. You will not be able to log out since you haven't added the `/api/logout` endpoint to do so. You also won't be able to add notes because (cross-site request forgery) CSRF needs to be configured. You'll do that in the next section.
+
+=== Configure Spring Boot for CSRF
+
+In order to add notes, you'll need to configure Spring Boot to use CSRF. CSRF is a security measure that prevents cross-site request forgery. It works by requiring a token to be sent with every request. This token is stored in a cookie, and is sent back to the server with every request. The server then checks that the token matches the one in the cookie. If it doesn't, the request is rejected.
+
+To configure Spring Boot for CSRF, modify your `SecurityConfiguration.kt` file to add CSRF support.
+
+[source,kotlin]
+.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+----
+...
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
+
+@Configuration
+class SecurityConfiguration {
+
+    @Bean
+    fun webSecurity(http: HttpSecurity): SecurityFilterChain {
+        ...
+
+        http.csrf()
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler())
+
+        http.addFilterAfter(CookieCsrfFilter(), BasicAuthenticationFilter::class.java)
+
+        ...
+    }
+}
+----
+
+Create a `CookieCsrfFilter.kt` file in the same package to add the CSRF token to the response.
+
+[source,kotlin]
+----
+package com.okta.developer.notes
+
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.web.csrf.CsrfToken
+import org.springframework.web.filter.OncePerRequestFilter
+import java.io.IOException
+
+/**
+ * Spring Security 6 doesn't set a XSRF-TOKEN cookie by default.
+ * This solution is <a href="https://bit.ly/3MDwjnj">recommended</a> by Spring Security.
+ */
+class CookieCsrfFilter : OncePerRequestFilter() {
+    /** {@inheritDoc}  */
+    @Throws(ServletException::class, IOException::class)
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val csrfToken = request.getAttribute(CsrfToken::class.java.name) as CsrfToken
+        response.setHeader(csrfToken.headerName, csrfToken.token)
+        filterChain.doFilter(request, response)
+    }
+}
+----
+
+Angular's `HttpClient` has built-in support for the client-side half of the CSRF protection. It'll read the cookie sent by Spring Boot and return it in an `X-XSRF-TOKEN` header. You can read more about this at https://angular.io/guide/http#security-xsrf-protection[Angular's Security docs].
+
+Now you'll need to make some adjustments to your Spring Boot app to include Angular for production.
 
 === Configure Spring Boot to Include Your Angular SPA
 
@@ -579,28 +682,48 @@ In your Spring Boot app, you'll need to change several things. You'll need to co
 
 To begin, delete `src/main/kotlin/com/okta/developer/notes/HomeController.kt`. You'll no longer need this because your Angular app will be served up at the `/` path.
 
-Next, create a `RouteController.kt` that routes all requests to `index.html`.
+Next, create a `SpaWebFilter.kt` that routes all requests to `index.html`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/RouteController.kt
+.notes-api/src/main/kotlin/com/okta/developer/notes/SpaWebFilter.kt
 ----
 package com.okta.developer.notes
 
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestMapping
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.web.filter.OncePerRequestFilter
+import java.io.IOException
 
-@Controller
-class RouteController {
+class SpaWebFilter : OncePerRequestFilter() {
 
-    @RequestMapping(value = ["/{path:[^\\.]*}"])
-    fun redirect(request: HttpServletRequest): String {
-        return "forward:/"
+    /**
+     * Forwards any unmapped paths (except those containing a period) to `index.html`.
+     */
+    @Throws(ServletException::class, IOException::class)
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val path = request.requestURI
+        if (!path.startsWith("/api") &&
+            !path.startsWith("/login") &&
+            !path.startsWith("/oauth2") &&
+            !path.startsWith("/user") &&
+            !path.contains(".") &&
+            path.matches("/(.*)".toRegex())
+        ) {
+            request.getRequestDispatcher("/index.html").forward(request, response)
+            return
+        }
+        filterChain.doFilter(request, response)
     }
 }
 ----
 
-Modify `SecurityConfiguration.kt` to allow anonymous access to static web files, the `/user` info endpoint, and to add additional security headers.
+Modify `SecurityConfiguration.kt` to allow anonymous access to static web files, the `/user` info endpoint, add the `SpaWebFilter`, and to add additional security headers.
 
 [source%autofit,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
@@ -610,9 +733,17 @@ package com.okta.developer.notes
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
+import org.springframework.security.oauth2.core.OAuth2Error
+import org.springframework.security.oauth2.core.OAuth2TokenValidator
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult
+import org.springframework.security.oauth2.jwt.*
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
@@ -622,19 +753,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class SecurityConfiguration {
 
-    @Value("#{ @environment['allowed.origins'] ?: {} }")
-    private lateinit var allowedOrigins: List<String>
-
     @Bean
     fun webSecurity(http: HttpSecurity): SecurityFilterChain {
         http
-            .authorizeHttpRequests { authorize ->
-                authorize.antMatchers("/**/*.{js,html,css}").permitAll()
-                authorize.antMatchers("/", "/user").permitAll()
-                authorize.anyRequest().authenticated()
+            .authorizeHttpRequests { authz ->
+                authz.requestMatchers("/", "/index.html", "/*.js", "/*.css", "/assets/**").permitAll()
+                authz.requestMatchers("/user").permitAll()
+                authz.anyRequest().authenticated()
             }
-            .oauth2Login()
-            .and()
+            .oauth2Login(withDefaults())
             .oauth2ResourceServer().jwt()
 
         http.cors()
@@ -645,30 +772,29 @@ class SecurityConfiguration {
 
         http.csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(CsrfTokenRequestAttributeHandler())
 
-        http.headers()
-            .contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
-                .and()
-            .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-                .and()
-            .permissionsPolicy().policy("geolocation=(self), microphone=(), accelerometer=(), camera=()")
+        http.addFilterAfter(SpaWebFilter(), BasicAuthenticationFilter::class.java)
+        http.addFilterAfter(CookieCsrfFilter(), BasicAuthenticationFilter::class.java)
 
-        return http.build();
+        http.headers { headers ->
+            headers.contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
+            headers.frameOptions { frameOptions -> frameOptions.sameOrigin() }
+            headers.referrerPolicy { referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
+            headers.permissionsPolicy { permissions ->
+                permissions.policy("camera=(), fullscreen=(self), geolocation=(), gyroscope=(), " +
+                        "magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()")
+            }
+        }
+
+        return http.build()
     }
 
-    @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource { ... }
+    ...
 }
-
 ----
 
-////
-unsafe-line required for app to load CSS
-Content Security Policy blocks inline execution of scripts and stylesheets
-Console error: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present.
-////
-
-TIP: See https://docs.spring.io/spring-security/site/docs/current/reference/html5/#headers[Spring Security's headers] documentation to see default security headers and other options.
+TIP: See https://docs.spring.io/spring-security/reference/features/exploits/headers.html#headers[Spring Security's headers] documentation to see default security headers and other options.
 
 With Kotlin, you can mark parameters and return values as optional by adding `?` to their type. Update the `user()` method in `UserController.kt` to make `OidcUser` optional. It will be `null` when the user is not authenticated, that's why this change is needed.
 
@@ -677,54 +803,42 @@ With Kotlin, you can mark parameters and return values as optional by adding `?`
 ----
 @GetMapping("/user")
 fun user(@AuthenticationPrincipal user: OidcUser?): OidcUser? {
-    return user;
+    return user
 }
 ----
 
-Previously, Angular handled logout. Add a `LogoutController` that will handle expiring the session as well as sending information back to Angular so it can sign out from Okta.
+Previously, Angular handled logout. Add a `LogoutController` that will handle expiring the session as well as sending a logout URL back to Angular so it can sign out from Auth0.
 
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/LogoutController.kt
 ----
 package com.okta.developer.notes
 
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.core.oidc.OidcIdToken
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.servlet.http.HttpServletRequest
 
 @RestController
 class LogoutController(clientRegistrationRepository: ClientRegistrationRepository) {
 
-    val registration: ClientRegistration = clientRegistrationRepository.findByRegistrationId("okta");
+    val registration: ClientRegistration = clientRegistrationRepository.findByRegistrationId("okta")
 
     @PostMapping("/api/logout")
-    fun logout(request: HttpServletRequest,
-               @AuthenticationPrincipal(expression = "idToken") idToken: OidcIdToken): ResponseEntity<*> {
-        val logoutUrl = this.registration.providerDetails.configurationMetadata["end_session_endpoint"]
-        val logoutDetails: MutableMap<String, String> = HashMap()
-        logoutDetails["logoutUrl"] = logoutUrl.toString()
-        logoutDetails["idToken"] = idToken.tokenValue
+    fun logout(request: HttpServletRequest): ResponseEntity<*> {
+        val issuerUri = registration.providerDetails.issuerUri
+        val originUrl = request.getHeader(HttpHeaders.ORIGIN)
+        val logoutUrl = "${issuerUri}v2/logout?client_id=${registration.clientId}&returnTo=${originUrl}"
         request.session.invalidate()
-        return ResponseEntity.ok().body<Map<String, String>>(logoutDetails)
+        return ResponseEntity.ok().body(java.util.Map.of("logoutUrl", logoutUrl))
     }
 }
 ----
 
-NOTE: In https://developer.okta.com/blog/2020/03/27/spring-oidc-logout-options[OpenID Connect Logout Options with Spring Boot], Brian Demers describes this as RP-Initiated Logout. He also shows how you can configure Spring Security's `OidcClientInitiatedLogoutSuccessHandler` to log out. I tried this technique but decided against it because it doesn't allow me to redirect back to my Angular app in dev mode. I also encountered some CORS errors that I was unable to solve.
-
-When you access the `/user/notes` endpoint with Angular, the `${principal.name}` expression correctly resolves to the user's email. However, when you access this endpoint after logging in directly to Spring Boot, it resolves to the `sub` claim. To make these values consistent, add the following property to `application-dev.properties` and `application-prod.properties`.
-
-[source,properties]
-----
-spring.security.oauth2.client.provider.okta.user-name-attribute=preferred_username
-----
-
-You can also remove the `allowed.origins` property from both files since Angular will proxy the request in development (eliminating the need for CORS) and there won't be cross-domain requests in production.
+You can also remove the `allowed.origins` property from the `application-dev.properties` and `application-prod.properties` files since Angular will proxy the request in development (eliminating the need for CORS) and there won't be cross-domain requests in production.
 
 Add a `server.port` property to `application-prod.properties` that uses a `PORT` environment variable, if it's set.
 
@@ -733,7 +847,7 @@ Add a `server.port` property to `application-prod.properties` that uses a `PORT`
 server.port=${PORT:8080}
 ----
 
-Because there won't be any cross-domain requests, you can remove the `corsConfigurationSource` bean and `allowedOrigins` variable in `SecurityConfigurationZ.kt`, too.
+Because there won't be any cross-domain requests, you can remove the `corsConfigurationSource` bean, the `allowedOrigins` variable, and associated imports in `SecurityConfiguration.kt`, too.
 
 === Modify Gradle to Build a JAR with Angular Included
 
@@ -742,25 +856,25 @@ Now that your Spring Boot app is ready to serve up your Angular app, you need to
 Start by importing `NpxTask` and adding the Node Gradle plugin.
 
 [source,kotlin]
-.notes/build.gradle.kts
+.notes-api/build.gradle.kts
 ----
 import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     ...
-    id("com.github.node-gradle.node") version "3.2.0"
+    id("com.github.node-gradle.node") version "3.5.1"
     ...
 }
 ----
 
-Then, define the location of your Angular app and configuration for the Node plugin.
+Then, define the location of your Angular app and configuration for the Node plugin. I added this at the bottom of the file.
 
 [source,kotlin]
 ----
-val spa = "${projectDir}/../notes";
+val spa = "${projectDir}/../notes"
 
 node {
-    version.set("16")
+    version.set("18")
     nodeProjectDir.set(file(spa))
 }
 ----
@@ -794,7 +908,7 @@ tasks.processResources {
 }
 ----
 
-Now you should be able to combine both apps when running `./gradlew bootJar -Pprod` in the `notes-api` directory. Once it's built, run it with the following commands to ensure everything works.
+Now you should be able to combine both apps when running `./gradlew bootJar -Pprod` in the `notes-api` directory. Once it's built, run it with the following commands and ensure everything works. You should be able to log in, create notes, and log out.
 
 [source,shell]
 ----
@@ -804,6 +918,9 @@ java -jar build/libs/*.jar
 ----
 
 Congrats! You modified your Angular and Spring Boot apps to be packaged together and implemented the most secure form of OAuth 2.0 to boot!
+ifndef::backend-pdf[]
+🥳
+endif::[]
 
 == Build a Docker Image with Jib
 
@@ -812,11 +929,11 @@ Since everything is done via Gradle now, you can use plugins to build a Docker c
 To add Jib support, add its Gradle plugin.
 
 [source,kotlin]
-.notes/build.gradle.kts
+.notes-api/build.gradle.kts
 ----
 plugins {
     ...
-    id("com.google.cloud.tools.jib") version "3.2.0"
+    id("com.google.cloud.tools.jib") version "3.3.1"
 }
 ----
 
@@ -825,6 +942,14 @@ Then, at the end of this file, add `jib` configuration to specify your image nam
 [source,kotlin]
 ----
 jib {
+    from {
+        platforms {
+            platform {
+                architecture = (project.properties["jibArchitecture"] ?: "amd64").toString()
+                os = "linux"
+            }
+        }
+    }
     to {
         image = "<your-username>/bootiful-angular"
     }
@@ -840,6 +965,8 @@ Run the following command to build a Docker image with Jib.
 ----
 ./gradlew jibDockerBuild -Pprod
 ----
+
+WARNING: If you're building on a Mac with Apple Silicon, you'll need to specify the architecture. For example, `./gradlew jibDockerBuild -Pprod -PjibArchitecture=arm64`.
 
 TIP: If you want to override the image name in `build.gradle.kts`, you can pass in an `--image` parameter. For example, `./gradlew jibDockerBuild -Pprod --image=bootiful-ng`.
 
@@ -858,20 +985,26 @@ You can https://docs.docker.com/compose/compose-file/#env_file[use Docker Compos
 
 Copy `notes-api/.okta.env` to `src/main/docker/.env`.
 
+[source,shell]
+----
+cp .okta.env src/main/docker/.env
+----
+
 Remove `export` at the beginning of each line. It should resemble something like the following after this change:
 
 [source,shell]
 ----
-OKTA_OAUTH2_ISSUER=https://dev-133337.okta.com/oauth2/default
-OKTA_OAUTH2_CLIENT_ID=0oaa7psy...
-OKTA_OAUTH2_CLIENT_SECRET=FJcSFpTC6N...
+export OKTA_OAUTH2_ISSUER=https://dev-1337.us.auth0.com/
+export OKTA_OAUTH2_CLIENT_ID=eEhk09l...
+export OKTA_OAUTH2_CLIENT_SECRET=YIEnmp8c...
+export OKTA_OAUTH2_AUDIENCE=https://dev-1337.us.auth0.com/api/v2/
 ----
 
 Create a `src/main/docker/app.yml` file that configures your app to set environment variables and leverages your existing PostgreSQL container. Make sure to replace the `<your-username>` placeholder and make the image match what's in your `build.gradle.kts` file.
 
 [source,yaml]
 ----
-version: '3'
+version: '3.8'
 services:
   boot-app:
     image: <your-username>/bootiful-angular
@@ -880,6 +1013,7 @@ services:
       - OKTA_OAUTH2_ISSUER=${OKTA_OAUTH2_ISSUER}
       - OKTA_OAUTH2_CLIENT_ID=${OKTA_OAUTH2_CLIENT_ID}
       - OKTA_OAUTH2_CLIENT_SECRET=${OKTA_OAUTH2_CLIENT_SECRET}
+      - OKTA_OAUTH2_AUDIENCE=${OKTA_OAUTH2_AUDIENCE}
     ports:
       - 8080:8080
     depends_on:
@@ -910,14 +1044,6 @@ Option #2 looks like:
 docker-compose -f src/main/docker/app.yml up
 ----
 
-Once you've verified everything works, commit your changes to Git.
-
-[source,shell]
-----
-git add .
-git commit -m "Add Jib to build Docker images"
-----
-
 === Deploy Your Spring Boot + Angular Container to Docker Hub
 
 Jib makes it incredibly easy to deploy your container to Docker Hub. If you don't already have a Docker Hub account, you can https://hub.docker.com/signup[create one].
@@ -941,7 +1067,7 @@ heroku create
 git remote add jib https://git.heroku.com/<your-new-app>.git
 ----
 
-At this point, you can use the PostgreSQL and Okta add-ons you've already configured. If you'd like to do this, use `addons:attach` instead of `addons:create` in the following commands. Since both add-ons are free, I'm just going to show how to create new ones.
+At this point, you can use the PostgreSQL add-on you already configured. If you'd like to do this, use `addons:attach` instead of `addons:create` in the following command. Since the PostgreSQL add-on is free, I'm just going to show how to create a new one.
 
 Add PostgreSQL to this app and configure it for Spring Boot using the following commands:
 
@@ -957,25 +1083,23 @@ heroku config:set SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver --re
 
 NOTE: This fine-grained configuration is not necessary when you use Heroku's buildpacks to deploy your Spring Boot app. It injects scripts that set `SPRING_*` environment variables for you. In this case, Heroku doesn't know you're using Spring Boot since it's running in a container.
 
-Add Okta to your app.
+Add environment variables for Auth0 to your app.
 
 [source,shell]
 ----
-heroku addons:create okta --remote jib
+source .okta.env
+heroku config:set --remote jib \
+  OKTA_OAUTH2_ISSUER=$OKTA_OAUTH2_ISSUER \
+  OKTA_OAUTH2_CLIENT_ID=$OKTA_OAUTH2_CLIENT_ID \
+  OKTA_OAUTH2_CLIENT_SECRET=$OKTA_OAUTH2_CLIENT_SECRET \
+  OKTA_OAUTH2_AUDIENCE=$OKTA_OAUTH2_AUDIENCE
 ----
 
-To see your database and Okta environment variables, run:
+To see your database and Auth0 environment variables, run:
 
 [source,shell]
 ----
 heroku config --remote jib
-----
-
-You might have to wait 30 seconds or more for the Okta variables to be added. Modify the Okta environment variables to remove the `_WEB` on the two keys that have it.
-
-[source,shell]
-----
-heroku config:edit --remote jib
 ----
 
 Run the commands below to deploy the image you deployed to Docker Hub. Be sure to replace the `<...>` placeholders with your username and app name.
@@ -991,8 +1115,8 @@ For example, I used:
 
 [source,shell]
 ----
-docker tag mraible/bootiful-angular registry.heroku.com/rocky-fortress-74038/web
-docker push registry.heroku.com/rocky-fortress-74038/web
+docker tag mraible/bootiful-angular registry.heroku.com/damp-thicket-56433/web
+docker push registry.heroku.com/damp-thicket-56433/web
 heroku container:release web --remote jib
 ----
 
@@ -1010,16 +1134,19 @@ Once you've verified it has started OK, set the Hibernate configuration so it on
 heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote jib
 ----
 
-Since the Okta Add-on for Heroku configures everything for you, you should be able to open your app, click the **Login** button, and authenticate!
+You'll need to add this app's URL to Auth0 as an allowed callback URL. Run `auth0 apps open` or log in to your Auth0 management dashboard and open the Spring Boot app. Add the following URLs:
+
+- Callback: `\https://<heroku-app>.herokuapp.com/login/oauth2/code/okta
+- Logout: `\https://<heroku-app>.herokuapp.com`
+
+Now, you should be able to open your app, click the **Login** button, and authenticate!
 
 [source,shell]
 ----
 heroku open --remote jib
 ----
 
-TIP: You can see your Okta credentials by running `heroku config --remote jib`.
-
-If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A+**!
+If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A**!
 
 .Security Headers with Jib
 image::angular-docker/heroku-jib-headers-a.png[A Security Headers with Jib, 800, scaledwidth="100%", align=center]
@@ -1030,11 +1157,7 @@ Heroku is awesome, but sometimes people want more control over their infrastruct
 
 With Heroku, when companies reach the limitations of the platform, they have to go elsewhere to host their services. With Knative, you can just drop down to Kubernetes. It's Heroku for Kubernetes in a sense, but you don't have to switch to a different universe when you need additional functionality.
 
-IMPORTANT: Using Knative for a monolith is probably a bit excessive. However, I figured I'd include it anyway because it wasn't easy to figure out how to configure HTTPS, PostgreSQL, and Okta. You can skip to the xref:buildpacks[Cloud Native Buildpacks] section if you like.
-
-The https://knative.dev/[Knative website] says it'll make your developers more productive.
-
-> Knative components build on top of Kubernetes, abstracting away the complex details and enabling developers to focus on what matters. Built by codifying the best practices shared by successful real-world implementations, Knative solves the "`boring but difficult`" parts of deploying and managing cloud-native services, so you don't have to.
+IMPORTANT: Using Knative for a monolith is probably a bit excessive. However, I figured I'd include it anyway because it wasn't easy to figure out how to configure HTTPS, PostgreSQL, and Auth0. You can skip to the xref:buildpacks[Cloud Native Buildpacks] section if you like.
 
 You'll need a Google Cloud account for this section. Go to https://cloud.google.com/[cloud.google.com] and click **Get started for free**.
 
@@ -1084,10 +1207,10 @@ Now, you should be able to install Knative!
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/knative-v1.2.0/serving-crds.yaml
+ https://github.com/knative/serving/releases/download/knative-v1.9.3/serving-crds.yaml
 
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/knative-v1.2.0/serving-core.yaml
+ https://github.com/knative/serving/releases/download/knative-v1.9.3/serving-core.yaml
 ----
 
 Then, install Istio:
@@ -1095,16 +1218,16 @@ Then, install Istio:
 [source,shell]
 ----
 kubectl apply -l knative.dev/crd-install=true -f \
- https://github.com/knative/net-istio/releases/download/knative-v1.2.0/istio.yaml
+ https://github.com/knative/net-istio/releases/download/knative-v1.9.2/istio.yaml
 kubectl apply -f \
- https://github.com/knative/net-istio/releases/download/knative-v1.2.0/istio.yaml
+ https://github.com/knative/net-istio/releases/download/knative-v1.9.2/istio.yaml
 
 while [[ $(kubectl get crd gateways.networking.istio.io -o jsonpath='{.status.conditions[?(@.type=="Established")].status}') != 'True' ]]; do
   echo "Waiting on Istio CRDs"; sleep 1
 done
 
 kubectl apply -f \
- https://github.com/knative/net-istio/releases/download/knative-v1.2.0/net-istio.yaml
+ https://github.com/knative/net-istio/releases/download/knative-v1.9.2/net-istio.yaml
 ----
 
 You'll need a domain to enable HTTPS, so set up a default domain name.
@@ -1112,7 +1235,7 @@ You'll need a domain to enable HTTPS, so set up a default domain name.
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/knative/serving/releases/download/knative-v1.2.0/serving-default-domain.yaml
+ https://github.com/knative/serving/releases/download/knative-v1.9.3/serving-default-domain.yaml
 ----
 
 Install https://cert-manager.io/[cert-manager] to automatically provision and manage TLS certificates in Kubernetes.
@@ -1120,7 +1243,7 @@ Install https://cert-manager.io/[cert-manager] to automatically provision and ma
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.yaml
+ https://github.com/jetstack/cert-manager/releases/download/v1.11.1/cert-manager.yaml
 
 kubectl wait --for=condition=Available -n cert-manager deployments/cert-manager-webhook
 ----
@@ -1130,7 +1253,7 @@ Connect Knative with `cert-manager`:
 [source,shell]
 ----
 kubectl apply -f \
- https://github.com/knative/net-certmanager/releases/download/knative-v1.2.0/release.yaml
+ https://github.com/knative/net-certmanager/releases/download/knative-v1.9.3/release.yaml
 ----
 
 And configure free TLS certificate issuing with https://letsencrypt.org/[Let's Encrypt].
@@ -1162,7 +1285,6 @@ metadata:
   name: config-certmanager
   namespace: knative-serving
   labels:
-    serving.knative.dev/release: v1.2.0
     networking.knative.dev/certificate-provider: cert-manager
 data:
   issuerRef: |
@@ -1178,22 +1300,22 @@ metadata:
   namespace: knative-serving
 data:
   auto-tls: Enabled
-  http-protocol: Enabled
 EOF
 ----
 
 _Phew!_ That was a lot of `kubectl` and YAML, don't you think?! The good news is you're ready to deploy PostgreSQL and your Spring Boot app.
 
-First, you'll need to set environment variables to match your Docker and Okta settings.
+First, you'll need to set environment variables to match your Docker and Auth0 settings.
 
 [source,shell]
 ----
 # generate a random password for PostgreSQL
 DB_PASSWORD=$(head -c 16 /dev/urandom | base64 -w0)
 DOCKER_USERNAME=<your-dockerhub-username>
-OKTA_ISSUER=<your-okta-issuer>
-OKTA_CLIENT_ID=<your-okta-client-id>
-OKTA_CLIENT_SECRET=<your-okta-client-secret>
+OKTA_ISSUER=<your-auth0-issuer>
+OKTA_CLIENT_ID=<your-auth0-client-id>
+OKTA_CLIENT_SECRET=<your-auth0-client-secret>
+OKTA_AUDIENCE=<your-auth0-audience>
 ----
 
 Then, run:
@@ -1229,7 +1351,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:14.1
+          image: postgres:15.2
           ports:
             - containerPort: 5432
           env:
@@ -1270,18 +1392,20 @@ spec:
       containers:
         - image: $DOCKER_USERNAME/bootiful-angular
           env:
-          - name: SPRING_DATASOURCE_URL
-            value: jdbc:postgresql://pgservice:5432/bootiful-angular
-          - name: SPRING_DATASOURCE_USERNAME
-            value: bootiful-angular
-          - name: SPRING_DATASOURCE_PASSWORD
-            value: $DB_PASSWORD
-          - name: OKTA_OAUTH2_ISSUER
-            value: $OKTA_ISSUER
-          - name: OKTA_OAUTH2_CLIENT_ID
-            value: $OKTA_CLIENT_ID
-          - name: OKTA_OAUTH2_CLIENT_SECRET
-            value: $OKTA_CLIENT_SECRET
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://pgservice:5432/bootiful-angular
+            - name: SPRING_DATASOURCE_USERNAME
+              value: bootiful-angular
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: $DB_PASSWORD
+            - name: OKTA_OAUTH2_ISSUER
+              value: $OKTA_ISSUER
+            - name: OKTA_OAUTH2_CLIENT_ID
+              value: $OKTA_CLIENT_ID
+            - name: OKTA_OAUTH2_CLIENT_SECRET
+              value: $OKTA_CLIENT_SECRET
+            - name: OKTA_OAUTH2_AUDIENCE
+              value: $OKTA_AUDIENCE
 EOF
 ----
 
@@ -1300,20 +1424,22 @@ spec:
       containers:
         - image: $DOCKER_USERNAME/bootiful-angular
           env:
-          - name: SPRING_DATASOURCE_URL
-            value: jdbc:postgresql://pgservice:5432/bootiful-angular
-          - name: SPRING_DATASOURCE_USERNAME
-            value: bootiful-angular
-          - name: SPRING_DATASOURCE_PASSWORD
-            value: $DB_PASSWORD
-          - name: OKTA_OAUTH2_ISSUER
-            value: $OKTA_ISSUER
-          - name: OKTA_OAUTH2_CLIENT_ID
-            value: $OKTA_CLIENT_ID
-          - name: OKTA_OAUTH2_CLIENT_SECRET
-            value: $OKTA_CLIENT_SECRET
-          - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-            value: validate
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://pgservice:5432/bootiful-angular
+            - name: SPRING_DATASOURCE_USERNAME
+              value: bootiful-angular
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: $DB_PASSWORD
+            - name: OKTA_OAUTH2_ISSUER
+              value: $OKTA_ISSUER
+            - name: OKTA_OAUTH2_CLIENT_ID
+              value: $OKTA_CLIENT_ID
+            - name: OKTA_OAUTH2_CLIENT_SECRET
+              value: $OKTA_CLIENT_SECRET
+            - name: OKTA_OAUTH2_AUDIENCE
+              value: $OKTA_AUDIENCE
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: validate
 EOF
 ----
 
@@ -1321,7 +1447,7 @@ If everything works correctly, you should be able to run the following command t
 
 [source,shell]
 ----
-kubectl get ksvc bootiful-angular
+kubectl get ksvc
 ----
 
 The result should look similar to this:
@@ -1329,13 +1455,13 @@ The result should look similar to this:
 [source,shell]
 ----
 NAME               URL
-bootiful-angular   https://bootiful-angular.default.34.70.153.132.sslip.io
+bootiful-angular   https://bootiful-angular.default.34.72.191.176.sslip.io
 ----
 
-You'll need to add this URL as a **Sign-in redirect URI** and a **Sign-out redirect URI** to the `Web` app in the Okta Admin Console in order to log in.
+You'll need to add this URL as an **Allowed Callback URL** and an **Allowed Logout URL** to your Spring Boot app in the Auth0 management console in order to log in. Access it with ease using `auth0 apps open`. Then, add the following URLs:
 
-- Sign-in: `\https://bootiful-angular.default.34.70.153.132.sslip.io/login/oauth2/code/okta`
-- Sign-out: `\https://bootiful-angular.default.34.70.153.132.sslip.io`
+- Callback: `\https://bootiful-angular.default.34.72.191.176.sslip.io/login/oauth2/code/okta`
+- Logout: `\https://bootiful-angular.default.34.72.191.176.sslip.io`
 
 Then, you'll be able to sign in to your app running on Knative! Add a note or two to prove it all works.
 
@@ -1357,7 +1483,7 @@ https://buildpacks.io/[Cloud Native Buildpacks] is an initiative that was starte
 
 Unfortunately, `pack` doesn't have great support for monorepos (especially in sub-directories) yet. I was unable to make it work with this app structure.
 
-On the upside, Spring Boot 2.3's built-in support for creating Docker images works splendidly!
+On the upside, Spring Boot built-in support for creating Docker images works splendidly!
 
 === Easy Docker Images with Spring Boot 2.3
 
@@ -1382,8 +1508,8 @@ docker-compose -f src/main/docker/app.yml up
 
 You should be able to navigate to `http://localhost:8080`, log in, and add notes.
 
-.Spring Boot 2.6 app running
-image::angular-docker/spring-boot-2.6-notes.png[Spring Boot 2.6 app running, 800, scaledwidth="100%", align=center]
+.Spring Boot has awesome Docker support
+image::angular-docker/spring-boot-3-notes.png[Spring Boot has awesome Docker support, 800, scaledwidth="100%", align=center]
 
 Pretty neat, don't you think!?
 
@@ -1398,6 +1524,9 @@ This final section showed you a lot of options when it comes to deploying your A
 
 TIP: You can download the code for this book's examples from InfoQ. The `angular-docker` directory has this chapter's completed example.
 
-As a developer, you probably don't want to read a book to get a baseline to start a project. The good news is https://jhipster.tech[JHipster] does everything in this book. It allows you to run your Angular and Spring Boot apps separately, use Kotlin on the server, package your apps together for production, and use Docker for distribution. If you're interested in JHipster, you're in luck: there's a https://www.infoq.com/minibooks/jhipster-mini-book/[JHipster Mini-Book]! 🤓
+As a developer, you probably don't want to read a book to get a baseline to start a project. The good news is https://jhipster.tech[JHipster] does everything in this book. It allows you to run your Angular and Spring Boot apps separately, use Kotlin on the server, package your apps together for production, and use Docker for distribution. If you're interested in JHipster, you're in luck: there's a https://www.infoq.com/minibooks/jhipster-mini-book/[JHipster Mini-Book]!
+ifndef::backend-pdf[]
+🤓
+endif::[]
 
 In the meantime, I hope you enjoy your journey developing with Angular and Spring Boot! Please hit me up at @mraible { on Twitter, LinkedIn, and GitHub } if you have any questions.

@@ -19,7 +19,10 @@ Developers like to see things working in minutes. I'm a developer and I like to 
 
 Rather than explain all the concepts in Angular, I'll show you how to build a basic application. You'll learn how to write unit tests, integration tests, add authentication, and deploy to production.
 
-NOTE: I should warn you about my teaching style. My words will tell you to do things that cause errors to happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading. 🙂
+NOTE: I should warn you about my teaching style. My words will tell you to do things that cause errors to happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading.
+ifndef::backend-pdf[]
+🙂
+endif::[]
 
 ifeval::["{media}" != "prepress"]
 <<<
@@ -1926,7 +1929,12 @@ To make it so you can run your e2e tests with authentication, add a `signIn()` C
 ----
 Cypress.Commands.add('signIn', (username, password) => {
   Cypress.log({
+ifndef::backend-pdf[]
     message: [`🔐 Authenticating: ${username}`],
+endif::[]
+ifdef::backend-pdf[]
+    message: [`Authenticating: ${username}`],
+endif::[]
     autoEnd: false,
   })
 
