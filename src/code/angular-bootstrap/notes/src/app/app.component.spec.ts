@@ -1,29 +1,26 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { OKTA_CONFIG, OktaAuthModule } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+import { AuthModule } from '@auth0/auth0-angular';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 describe('AppComponent', () => {
   const config = {
-    issuer: 'https://not-real.okta.com',
+    domain: 'https://not-real.auth0.com',
     clientId: 'fake-client-id',
     redirectUri: 'http://localhost:4200'
   };
-  const oktaAuth = new OktaAuth(config);
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        OktaAuthModule,
+        AuthModule.forRoot(config),
         NgbModule
       ],
       declarations: [
         AppComponent
-      ],
-      providers: [{provide: OKTA_CONFIG, useValue: { oktaAuth }}]
+      ]
     }).compileComponents();
   }));
 

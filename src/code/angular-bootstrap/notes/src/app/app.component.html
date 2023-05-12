@@ -5,7 +5,8 @@
            class="d-inline-block align-top" alt="Angular">
       {{ title }}
     </a>
-    <button (click)="isCollapsed = !isCollapsed" class="navbar-toggler" type="button" data-toggle="collapse"
+    <button (click)="isCollapsed = !isCollapsed"
+            class="navbar-toggler" type="button" data-toggle="collapse"
             data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
             aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -24,11 +25,11 @@
         </li>
       </ul>
       <form class="d-flex">
-        <button *ngIf="!(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signInWithRedirect()" type="button"
+        <button *ngIf="(auth.isAuthenticated$ | async) === false"
+                (click)="login()" type="button"
                 class="btn btn-outline-primary">Login</button>
-        <button *ngIf="(authService.authState$ | async)?.isAuthenticated"
-                (click)="oktaAuth.signOut()" type="button"
+        <button *ngIf="auth.isAuthenticated$ | async"
+                (click)="logout()" type="button"
                 class="btn btn-outline-secondary">Logout</button>
       </form>
     </div>
@@ -36,6 +37,6 @@
 </nav>
 
 <div class="container-fluid pt-3">
-  <a *ngIf="!(authService.authState$ | async)?.isAuthenticated">Please log in to manage your notes.</a>
+  <a *ngIf="(auth.isAuthenticated$ | async) === false">Please log in to manage your notes.</a>
   <router-outlet></router-outlet>
 </div>
