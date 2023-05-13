@@ -1,8 +1,9 @@
 name: Upgrade to Angular 16 and Spring Boot 3.1
 
-on: [pull_request]
-  branches:
-    - 'upgrade**'
+on:
+  push:
+    branches:
+      - 'upgrade**'
 
 jobs:
   upgrade:
