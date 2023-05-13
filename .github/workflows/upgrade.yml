@@ -3,6 +3,7 @@ name: Upgrade to Angular 16 and Spring Boot 3.1
 on: [pull_request]
 
 jobs:
+  if: contains('upgrade', github.ref)
   upgrade:
     name: Upgrade and test
     runs-on: ubuntu-latest
