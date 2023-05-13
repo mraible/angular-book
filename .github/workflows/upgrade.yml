@@ -1,4 +1,4 @@
-name: Update examples to use Angular 16 and Spring Boot 3.1
+name: Upgrade to Angular 16 and Spring Boot 3.1
 
 on: [pull_request]
 
