@@ -5,7 +5,6 @@ on: [pull_request]
     - 'upgrade**'
 
 jobs:
-  if: contains('upgrade', github.ref)
   upgrade:
     name: Upgrade and test
     runs-on: ubuntu-latest
