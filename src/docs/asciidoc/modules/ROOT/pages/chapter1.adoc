@@ -19,7 +19,10 @@ Developers like to see things working in minutes. I'm a developer and I like to 
 
 Rather than explain all the concepts in Angular, I'll show you how to build a basic application. You'll learn how to write unit tests, integration tests, add authentication, and deploy to production.
 
-NOTE: I should warn you about my teaching style. My words will tell you to do things that cause errors to happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading. 🙂
+NOTE: I should warn you about my teaching style. My words will tell you to do things that cause errors to happen. You'll think you did something wrong. However, if you return to my instructions, you'll find that error was expected. When you see errors happen, make sure to keep reading.
+ifndef::backend-pdf[]
+🙂
+endif::[]
 
 ifeval::["{media}" != "prepress"]
 <<<
@@ -317,25 +320,25 @@ export class Address {
   state: string;
   zip: string;
 
-  constructor(obj?: any) {
-    this.street = obj?.street || null;
-    this.city = obj?.city || null;
-    this.state = obj?.state || null;
-    this.zip = obj?.zip || null;
+  constructor(address: Partial<Address> = {}) {
+    this.street = address?.street || '';
+    this.city = address?.city || '';
+    this.state = address?.state || '';
+    this.zip = address?.zip || '';
   }
 }
 
 export class Person {
-  id: number;
+  id: number | null;
   name: string;
   phone: string;
   address: Address;
 
-  constructor(obj?: any) {
-    this.id = obj?.id || null;
-    this.name = obj?.name || null;
-    this.phone = obj?.phone || null;
-    this.address = obj?.address || null;
+  constructor(person: Partial<Person> = {}) {
+    this.id = person?.id || null;
+    this.name = person?.name || '';
+    this.phone = person?.phone || '';
+    this.address = person?.address || new Address();
   }
 }
 ----
@@ -633,15 +636,14 @@ export class EditComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    this.sub = this.route.params.subscribe(params => {
-      const id = +params['id']; // (+) converts string 'id' to a number
-      this.service.get(id).subscribe(person => {
-        if (person) {
-          this.person = person;
-        } else {
-          this.gotoList();
-        }
-      });
+    const params = this.route.snapshot.params;
+    const id = +params['id']; // (+) converts string 'id' to a number
+    this.sub = this.service.get(id).subscribe(person => {
+      if (person) {
+        this.person = person;
+      } else {
+        this.gotoList();
+      }
     });
   }
 
@@ -662,7 +664,7 @@ export class EditComponent implements OnInit, OnDestroy {
 
   async gotoList() {
     if (this.person) {
-      await this.router.navigate(['/search', {term: this.person.name} ]);
+      await this.router.navigate(['/search', {term: this.person.name}]);
     } else {
       await this.router.navigate(['/search']);
     }
@@ -728,11 +730,11 @@ The `<form>` in `src/app/edit/edit.component.html` calls a `save()` function to 
 [source,typescript]
 .src/app/edit/edit.component.ts
 ----
-gotoList() {
+async gotoList() {
   if (this.person) {
-    this.router.navigate(['/search', {term: this.person.name} ]);
+    await this.router.navigate(['/search', {term: this.person.name}]);
   } else {
-    this.router.navigate(['/search']);
+    await this.router.navigate(['/search']);
   }
 }
 ----
@@ -743,39 +745,17 @@ Since the `SearchComponent` doesn't execute a search automatically when you exec
 .src/app/search/search.component.ts
 ----
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
 ...
-
-  sub!: Subscription;
 
   constructor(private searchService: SearchService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.sub = this.route.params.subscribe(params => {
-      if (params['term']) {
-        this.query = decodeURIComponent(params['term']);
-        this.search();
-      }
-    });
-  }
-----
-
-You'll want to implement `OnDestroy` and define the `ngOnDestroy` method to clean up this subscription.
-
-[source,typescript]
-.src/app/search/search.component.ts
-----
-import { Component, OnDestroy, OnInit } from '@angular/core';
-
-export class SearchComponent implements OnInit, OnDestroy {
-  ...
-
-  ngOnDestroy(): void {
-    if (this.sub) {
-      this.sub.unsubscribe();
+    const params = this.route.snapshot.params;
+    if (params['term']) {
+      this.query = decodeURIComponent(params['term']);
+      this.search();
     }
   }
-}
 ----
 
 After making all these changes, you should be able to search/edit/update a person's information. If it works—nice job!
@@ -915,12 +895,12 @@ NullInjectorError: R3InjectorError(DynamicTestModule)[ActivatedRoute -> Activate
 
 `HttpTestingController` allows you to mock requests and use its `flush()` method to provide response values. Since the HTTP request methods return an `Observable`, you can subscribe to it and create expectations in the callback methods. Add the first test of `getAll()` to `search.service.spec.ts`.
 
-The test below should be on the same level as `beforeEach`.
+The test below should be on the same level as `beforeEach`. Passing the `done` function into the test ensures the test doesn't complete and exit prior to all the asserts running.
 
 [source,typescript]
 .src/app/shared/search/search.service.spec.ts
 ----
-it('should retrieve all search results', () => {
+it('should retrieve all search results', (done) => {
   const mockResponse = [
     {name: 'Nikola Jokić'},
     {name: 'Mike Malone'}
@@ -930,6 +910,7 @@ it('should retrieve all search results', () => {
     expect(people.length).toBe(2);
     expect(people[0].name).toBe('Nikola Jokić');
     expect(people).toEqual(mockResponse);
+    done();
   });
 
   const req = httpMock.expectOne('assets/data/people.json');
@@ -953,12 +934,13 @@ Add a couple more tests for filtering by search term and fetching by id.
 [source,typescript]
 .src/app/shared/search/search.service.spec.ts
 ----
-it('should filter by search term', () => {
+it('should filter by search term', (done) => {
   const mockResponse = [{name: 'Nikola Jokić'}];
 
   service.search('nik').subscribe((people: any) => {
     expect(people.length).toBe(1);
     expect(people[0].name).toBe('Nikola Jokić');
+    done();
   });
 
   const req = httpMock.expectOne('assets/data/people.json');
@@ -966,7 +948,7 @@ it('should filter by search term', () => {
   req.flush(mockResponse);
 });
 
-it('should fetch by id', () => {
+it('should fetch by id', (done) => {
   const mockResponse = [
     {id: 1, name: 'Nikola Jokić'},
     {id: 2, name: 'Mike Malone'}
@@ -974,6 +956,7 @@ it('should fetch by id', () => {
 
   service.get(2).subscribe((person: any) => {
     expect(person.name).toBe('Mike Malone');
+    done();
   });
 
   const req = httpMock.expectOne('assets/data/people.json');
@@ -986,29 +969,7 @@ it('should fetch by id', () => {
 
 To unit test the `SearchComponent`, you can mock the methods in `SearchService` with http://angular-tips.com/blog/2021/07/unit-testing-spies-and-mocks/[spies]. These allow you to _spy_ on functions to check if they were called.
 
-Create `src/app/shared/search/mocks/routes.ts` to mock Angular's `Router` and `ActivatedRoute`.
-
-[source,typescript]
-.src/app/shared/search/mocks/routes.ts
-----
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
-
-export class MockActivatedRoute extends ActivatedRoute {
-
-  constructor(parameters?: { [key: string]: any; }) {
-    super();
-    // @ts-ignore
-    this.params = of(parameters);
-  }
-}
-
-export class MockRouter {
-  navigate = jasmine.createSpy('navigate');
-}
-----
-
-With this mock in place, you can `TestBed.configureTestingModule()` to set up `SearchComponent` to use it as a provider. In the second `beforeEach()`, you can see that the `search()` method is spied on and its results are mocked. The response isn't important in this case because you're just unit testing the `SearchComponent`.
+You can use `TestBed.configureTestingModule()` to set up `ActivatedRoute` to have a specific parameter. In the second `beforeEach()`, you can see that the `search()` method is spied on and its results are mocked. The response isn't important in this case because you're just unit testing the `SearchComponent`.
 
 [source,typescript]
 .src/app/search/search.component.spec.ts
@@ -1019,7 +980,6 @@ import { SearchService } from '../shared';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
-import { MockActivatedRoute } from '../shared/search/mocks/routes';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -1027,15 +987,19 @@ describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
   let mockSearchService: SearchService;
-  let mockActivatedRoute: MockActivatedRoute;
 
   beforeEach(async () => {
-    mockActivatedRoute = new MockActivatedRoute({term: 'nikola'});
-
     await TestBed.configureTestingModule({
       declarations: [SearchComponent],
       providers: [
-        {provide: ActivatedRoute, useValue: mockActivatedRoute}
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {term: 'nikola'}
+            }
+          }
+        }
       ],
       imports: [FormsModule, RouterTestingModule, HttpClientTestingModule]
     }).compileComponents();
@@ -1084,26 +1048,26 @@ Update the test for `EditComponent`, verifying fetching a single record works. N
 import { EditComponent } from './edit.component';
 import { TestBed } from '@angular/core/testing';
 import { Address, Person, SearchService } from '../shared';
-import { MockActivatedRoute, MockRouter } from '../shared/search/mocks/routes';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('EditComponent', () => {
   let mockSearchService: SearchService;
-  let mockActivatedRoute: MockActivatedRoute;
-  let mockRouter: MockRouter;
 
   beforeEach(async () => {
-    mockActivatedRoute = new MockActivatedRoute({id: 1});
-    mockRouter = new MockRouter();
-
     await TestBed.configureTestingModule({
       declarations: [EditComponent],
       providers: [
-        {provide: ActivatedRoute, useValue: mockActivatedRoute},
-        {provide: Router, useValue: mockRouter}
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {id: 1}
+            }
+          }
+        }
       ],
       imports: [FormsModule, HttpClientTestingModule]
     }).compileComponents();
@@ -1936,14 +1900,16 @@ Modify `home.component.html` to display a welcome message to the user and provid
 [source,html]
 .src/app/home/home.component.html
 ----
-<div>
-  <button *ngIf="(auth.isAuthenticated$ | async) === false" (click)="login()" id="login">Login</button>
+<ng-container *ngIf="(auth.isAuthenticated$ | async) === false; else signout">
+  <button (click)="login()" id="login">Login</button>
+</ng-container>
+<ng-template #signout>
   <div *ngIf="auth.user$ | async as user">
     <h2>Welcome, {{user?.name}}!</h2>
     <p><a routerLink="/search" routerLinkActive="active">Search</a></p>
   </div>
-  <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()" id="logout">Logout</button>
-</div>
+  <button (click)="logout()" id="logout">Logout</button>
+</ng-template>
 ----
 
 Refresh your app, and you should see your name with a link to *Search*.
@@ -1963,7 +1929,12 @@ To make it so you can run your e2e tests with authentication, add a `signIn()` C
 ----
 Cypress.Commands.add('signIn', (username, password) => {
   Cypress.log({
+ifndef::backend-pdf[]
     message: [`🔐 Authenticating: ${username}`],
+endif::[]
+ifdef::backend-pdf[]
+    message: [`Authenticating: ${username}`],
+endif::[]
     autoEnd: false,
   })
 

@@ -1,26 +1,26 @@
 import { EditComponent } from './edit.component';
 import { TestBed } from '@angular/core/testing';
 import { Address, Person, SearchService } from '../shared';
-import { MockActivatedRoute, MockRouter } from '../shared/search/mocks/routes';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('EditComponent', () => {
   let mockSearchService: SearchService;
-  let mockActivatedRoute: MockActivatedRoute;
-  let mockRouter: MockRouter;
 
   beforeEach(async () => {
-    mockActivatedRoute = new MockActivatedRoute({id: 1});
-    mockRouter = new MockRouter();
-
     await TestBed.configureTestingModule({
       declarations: [EditComponent],
       providers: [
-        {provide: ActivatedRoute, useValue: mockActivatedRoute},
-        {provide: Router, useValue: mockRouter}
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {id: 1}
+            }
+          }
+        }
       ],
       imports: [FormsModule, HttpClientTestingModule]
     }).compileComponents();

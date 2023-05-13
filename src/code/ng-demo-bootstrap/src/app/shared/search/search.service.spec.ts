@@ -24,7 +24,7 @@ describe('SearchService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should retrieve all search results', () => {
+  it('should retrieve all search results', (done) => {
     const mockResponse = [
       {name: 'Nikola Jokić'},
       {name: 'Mike Malone'}
@@ -34,6 +34,7 @@ describe('SearchService', () => {
       expect(people.length).toBe(2);
       expect(people[0].name).toBe('Nikola Jokić');
       expect(people).toEqual(mockResponse);
+      done();
     });
 
     const req = httpMock.expectOne('assets/data/people.json');
@@ -41,12 +42,13 @@ describe('SearchService', () => {
     req.flush(mockResponse);
   });
 
-  it('should filter by search term', () => {
+  it('should filter by search term', (done) => {
     const mockResponse = [{name: 'Nikola Jokić'}];
 
     service.search('nik').subscribe((people: any) => {
       expect(people.length).toBe(1);
       expect(people[0].name).toBe('Nikola Jokić');
+      done();
     });
 
     const req = httpMock.expectOne('assets/data/people.json');
@@ -54,7 +56,7 @@ describe('SearchService', () => {
     req.flush(mockResponse);
   });
 
-  it('should fetch by id', () => {
+  it('should fetch by id', (done) => {
     const mockResponse = [
       {id: 1, name: 'Nikola Jokić'},
       {id: 2, name: 'Mike Malone'}
@@ -62,6 +64,7 @@ describe('SearchService', () => {
 
     service.get(2).subscribe((person: any) => {
       expect(person.name).toBe('Mike Malone');
+      done();
     });
 
     const req = httpMock.expectOne('assets/data/people.json');

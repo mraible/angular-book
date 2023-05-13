@@ -40,6 +40,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Install latest Chrome
+        run: |
+          sudo apt update
+          sudo apt --only-upgrade install google-chrome-stable
+          google-chrome --version
       - name: Install dependencies
         run: npm ci
       - name: Run unit tests

@@ -43,10 +43,8 @@ class SecurityConfiguration {
             headers.frameOptions { frameOptions -> frameOptions.sameOrigin() }
             headers.referrerPolicy { referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
             headers.permissionsPolicy { permissions ->
-                permissions.policy(
-                    "camera=(), fullscreen=(self), geolocation=(), gyroscope=(), " +
-                        "magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()"
-                )
+                permissions.policy("camera=(), fullscreen=(self), geolocation=(), gyroscope=(), " +
+                        "magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()")
             }
         }
 
