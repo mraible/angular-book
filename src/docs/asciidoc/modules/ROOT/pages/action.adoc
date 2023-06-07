@@ -19,7 +19,7 @@ https://www.packtpub.com/product/angular-projects-second-edition/9781800205260[_
 
 Learn how Spring Boot simplifies cloud-native application development and deployment with https://www.oreilly.com/library/view/spring-boot-up/9781492076971/[_Spring Boot: Up and Running_] by Mark Heckler (O'Reilly Media, Inc., February 2021).
 
-I wrote https://www.infoq.com/minibooks/jhipster-mini-book[_The JHipster Mini-Book_] (InfoQ, November 2018). JHipster automates the generation of Angular + Spring Boot apps with best practices and security baked in by default!
+I wrote https://www.infoq.com/minibooks/jhipster-mini-book[_The JHipster Mini-Book_] (InfoQ, March 2023). JHipster automates the generation of Angular + Spring Boot apps with best practices and security baked in by default!
 
 == Folks to follow
 
