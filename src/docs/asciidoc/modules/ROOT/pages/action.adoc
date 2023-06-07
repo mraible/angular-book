@@ -13,13 +13,13 @@ image::action/angular-rocket.png[Go forth and develop amazing applications!, 400
 
 If you want to learn more, here are some suggestions.
 
-One of the most complete books I've read on Angular is https://www.ng-book.com/2/[_ng-book: The Complete Book on Angular_] by Nathan Murray, Felipe Coury, Ari Lerner, and Carlos Taborda) (Fullstack.io, continuously updated).
+One of the most comprehensive books I've read on Angular is https://www.ng-book.com/2/[_ng-book: The Complete Book on Angular_] by Nathan Murray, Felipe Coury, Ari Lerner, and Carlos Taborda) (Fullstack.io, continuously updated).
 
 https://www.packtpub.com/product/angular-projects-second-edition/9781800205260[_Angular Projects_] by Aristeidis Bampakos (Packt, July 2021) covers Angular and its ecosystem, including Angular Router, Scully, Electron, PWAs, Nx monorepo tools, NgRx, and more.
 
 Learn how Spring Boot simplifies cloud-native application development and deployment with https://www.oreilly.com/library/view/spring-boot-up/9781492076971/[_Spring Boot: Up and Running_] by Mark Heckler (O'Reilly Media, Inc., February 2021).
 
-I wrote https://www.infoq.com/minibooks/jhipster-mini-book[_The JHipster Mini-Book_] (InfoQ, November 2018). JHipster automates the generation of Angular + Spring Boot apps with best practices and security baked in by default! I plan to update this book for JHipster 7 in 2022.
+I wrote https://www.infoq.com/minibooks/jhipster-mini-book[_The JHipster Mini-Book_] (InfoQ, November 2018). JHipster automates the generation of Angular + Spring Boot apps with best practices and security baked in by default!
 
 == Folks to follow
 
