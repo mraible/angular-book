@@ -7,11 +7,11 @@ However, no CSS frameworks took the world by storm like Bootstrap. Back then, it
 
 > Our goal is to provide a refined, well-documented, and extensive library of flexible design components built with HTML, CSS, and JavaScript for others to build and innovate on.
 
-They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it. Bootstrap was different from previous CSS frameworks because they embraced mobile-first design and made responsiveness the norm for web design. Before Bootstrap, we were building UIs for mobile apps with specialized frameworks like https://jquerymobile.com/[jQuery Mobile].
+They released Bootstrap on August 19, 2011, and it quickly became _the_ most popular project on GitHub. Developers like myself all over the world started using it. Bootstrap differed from previous CSS frameworks because it embraced mobile-first design and made responsiveness the norm for web design. Before Bootstrap, we built UIs for mobile apps with specialized frameworks like https://jquerymobile.com/[jQuery Mobile].
 
 Another web framework took the world by storm the following year: AngularJS. AngularJS (v0.9) first appeared on GitHub in October 2010. The creators released version 1.0 on June 14, 2012.
 
-Together, these frameworks have had quite a run. It's hard to believe that they've lasted so long, especially considering both projects have had major rewrites!
+Together, these frameworks have had quite a run. It's hard to believe they've lasted so long, especially considering both projects have had major rewrites!
 
 I've heard many developers say that Angular is dead. As a veteran Java developer, I've heard this said about Java many times over the years as well. Yet it continues to thrive. Angular is similar in that it's become somewhat boring. Some people call boring frameworks "`legacy.`" Others call them "`revenue-generating.`"
 
@@ -22,7 +22,7 @@ image::angular-bootstrap/angular-bootstrap.png[Beautiful Angular 😍, 800, scal
 
 == Angular Loves Bootstrap
 
-You might think that Angular Material is more popular than Bootstrap these days. You might be right, but I believe that who you follow on Twitter shapes your popularity perspective. Of the fabulous folks that answered my recent poll, Bootstrap and Angular Material were both quite popular. https://twitter.com/mraible/status/1196894737870938113[In 2019], 53% answered Bootstrap and 33% answered Angular Material.
+You might think that Angular Material is more popular than Bootstrap these days. You may be right, but who you follow on Twitter shapes your popularity perspective. Bootstrap and Angular Material were quite popular among the fabulous folks that answered my recent poll. https://twitter.com/mraible/status/1196894737870938113[In 2019]; 53% answered Bootstrap, and 33% answered Angular Material.
 
 .What's your preferred CSS framework with Angular?
 [link=https://twitter.com/mraible/status/1643925994015981568]
@@ -32,13 +32,13 @@ image::angular-bootstrap/css-framework-tweet.png[CSS framework tweet, 500, scale
 
 == Integrate Bootstrap with Angular
 
-Integrating Bootstrap into an Angular application is fairly easy thanks to NG Bootstrap. I'll start with the note-taking example from the last section. If you follow along, you'll convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds hard, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA FTW!
+Integrating Bootstrap into an Angular application is fairly easy, thanks to NG Bootstrap. I'll start with the note-taking example from the last section. If you follow along, you'll convert the app to use Sass (because CSS is more fun with Sass), make the app look good, add form validation, and write some code to develop a searchable, sortable, and pageable data table. The last part sounds complex, but it only requires < 10 lines of code on the Spring Boot side of things. Kotlin and Spring Data JPA—FTW!
 
-If you're following along, you should have an `angular-spring-boot` directory with an Angular and a Spring Boot app in it.
+If you're following along, you should have an `angular-spring-boot` directory containing an Angular and a Spring Boot app.
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-spring-boot` directory has the previous section's completed example. Copy it to `angular-bootstrap` in your favorite code location.
 
-In a terminal, navigate into this new directory and its `notes` folder. Then install the dependencies for the Angular app.
+Navigate into this new directory and its `notes` folder in a terminal. Then install the dependencies for the Angular app.
 
 [source,shell]
 ----
@@ -66,7 +66,7 @@ Let's fix that!
 
 .Security Configuration [[security-configuration]]
 ****
-Both app's should have their security configured to use OIDC from the last chapter. If you need to register apps for them, you can use the Auth0 CLI.
+Both apps should have their security configured to use OIDC from the last chapter. If you need to register apps for them, you can use the Auth0 CLI.
 
 [source,shell]
 ----
@@ -136,7 +136,7 @@ You'll notice it looks _pretty good_, but things aren't quite _beautiful_. Yet..
 
 === Use Sass to Customize Bootstrap
 
-Before you make things awesome, I'd like to show you how to convert from using CSS with Angular to using Sass. Why? Because https://sass-lang.com/[Sass] is completely compatible with CSS, and it makes CSS more like programming. It also allows you to customize Bootstrap by overriding its variables.
+Before you make things awesome, I'd like to show you how to convert from CSS with Angular to Sass. Why? Because https://sass-lang.com/[Sass] is completely compatible with CSS, and it makes CSS more like programming. It also allows you to customize Bootstrap by overriding its variables.
 
 NOTE: If you're not into Sass, you can <<#make-angular-beautiful, skip this section>>. Everything will still work without it.
 
@@ -189,7 +189,7 @@ And change `styles.scss` to import Bootstrap's Sass.
 @import 'bootstrap/scss/bootstrap.scss';
 ----
 
-To demonstrate how you can override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.2.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
+To demonstrate how to override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.2.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
 
 *todo*: check to see if `sass` renders in all formats
 
@@ -219,7 +219,7 @@ anchor:make-angular-beautiful[]
 
 == Make Your Angular App Beautiful with Bootstrap
 
-You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's start by adding a https://getbootstrap.com/docs/5.2/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
+You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's add a https://getbootstrap.com/docs/5.2/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
 
 [source,html]
 .src/app/app.component.html
@@ -347,7 +347,7 @@ If you reduce the width of your browser window, you'll see the menu collapse to 
 .Navbar squished
 image::angular-bootstrap/navbar-squished.png[Navbar squished, 600, scaledwidth="70%", align=center]
 
-However, if you click on it, the menu doesn't expand. To fix that, you need to use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
+However, if you click on it, the menu doesn't expand. To fix that, you must use the `ngbCollapse` directive from NG Bootstrap. Modify `app.component.html` to have a click handler on the navbar toggle and add `ngbCollapse` to the menu.
 
 [source,html]
 .src/app/app/app.component.html
@@ -448,7 +448,7 @@ image::angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwid
 
 === Add Validation and Bootstrap to the Note Edit Template
 
-If you click the **New** button, you'll see the form needs some work too. Bootstrap has excellent support for https://getbootstrap.com/docs/5.2/forms/overview/[stylish forms] using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
+If you click the **New** button, you'll see the form needs some work, too. Bootstrap has excellent support for https://getbootstrap.com/docs/5.2/forms/overview/[stylish forms] using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
 
 The following HTML will add floating labels to your form using the `form-floating` class and add more spacing with `mb-3`.
 
@@ -492,7 +492,7 @@ That's an improvement!
 .Styled Notes Form
 image::angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwidth="100%", align=center]
 
-To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name, so it can be referenced in an error message.
+To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so that it can be referenced in an error message.
 
 [source%autofit,html]
 ----
@@ -509,7 +509,7 @@ To make the `title` field required, add a `required` attribute to its `<input>` 
 
 You might notice the expression on the `[ngClass]` attribute. This adds CSS classes to the element as validation rules pass and fail. It's a cool feature that web developers love!
 
-Now when you add a new note, it'll let you know that it requires a title.
+When you add a new note, it'll let you know it requires a title.
 
 .Title is required
 image::angular-bootstrap/notes-edit-required-title.png[Title is required, 800, scaledwidth="100%", align=center]
@@ -798,7 +798,7 @@ _Make sure to replace `<your email>` with the email address you use to log in to
 
 [IMPORTANT]
 ====
-The `principal.name` will not resolve to the user's email address by default. To fix this, you need to add an Action in Auth0 that will add the email address to the access token. Log in to your Auth0 management dashboard and go to *Actions* > *Library* > *Build Custom*.
+The `principal.name` will not default to the user's email address. To fix this, you need to add an Action in Auth0 that will add the email address to the access token. Log in to your Auth0 management dashboard and go to *Actions* > *Library* > *Build Custom*.
 
 Name it "Add email claim" and click *Create*. Replace the code with the following:
 
@@ -818,7 +818,7 @@ Now go to *Actions* > *Flows* > *Login* and add the action to the flow from the 
 
 image::angular-bootstrap/login-flow-with-email-claim.png[Login flow with email claim, 350, scaledwidth="50%", align=center]
 
-Now, when you log in, the email address will be added to the access token.
+When you log in, the email address will be added to the access token.
 
 Adjust the `UserController` to use the email address from the access token instead of the `principal.name`.
 
@@ -898,7 +898,7 @@ At the bottom of `note-list.component.html` (just after `</table>`), add the pag
 </div>
 ----
 
-In this code, you might notice `"total$ | async"` and wonder what it means? This is an https://angular.io/api/common/AsyncPipe[`async` pipe] that subscribes to an `Observable` or `Promise` and returns the last value produced. It's a handy way to subscribe to real-time updates.
+You might notice `"total$ | async"` in this code and wonder what it means. This is an https://angular.io/api/common/AsyncPipe[`async` pipe] that subscribes to an `Observable` or `Promise` and returns the last value produced. It's a handy way to subscribe to real-time updates.
 
 Add `NgbModule` as an import to `note.module.ts`.
 

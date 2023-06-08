@@ -1,21 +1,21 @@
 [[chapter-1]]
 = Build an Angular App
 
-Before you start creating an Angular app, I think it's useful to know a bit about the history of Angular. It's first version was called AngularJS. Then, from its second version until today, it's been called Angular.
+Before you start creating an Angular app, I think it's useful to know a bit about the history of Angular. Its first version was called AngularJS. Then, from its second version until today, it's been called Angular.
 
 == A Brief History of Angular
 
-AngularJS was started by Miško Hevery in 2009. He was working on a project that was using GWT (Google Web Toolkit). Three developers had been developing the product for six months, and Miško rewrote the whole thing in AngularJS in three weeks. At that time, AngularJS was a side project he'd created. It didn't require you to write much in JavaScript as you could program most of the logic in HTML. The GWT version of the product contained 17,000 lines of code. The AngularJS version was only 1,000 lines of code!
+AngularJS was started by Miško Hevery in 2009. He was working on a project that was using GWT (Google Web Toolkit). Three developers had been developing the product for six months, and Miško rewrote the whole thing in AngularJS in three weeks. At that time, AngularJS was a side project he'd created. It didn't require you to write much in JavaScript, as you could program most of the logic in HTML. The GWT version of the product contained 17,000 lines of code. The AngularJS version was only 1,000 lines of code!
 
-In October 2014, the AngularJS team announced they were building http://www.infoq.com/news/2014/10/angular-2-atscript[Angular 2.0]. The announcement led to a bit of upheaval in the Angular developer community. The API for writing Angular applications was going to change and it was to be based on a new language, AtScript. There would be no migration path and users would have to continue using 1.x or rewrite their applications for 2.x.
+In October 2014, the AngularJS team announced they were building http://www.infoq.com/news/2014/10/angular-2-atscript[Angular 2.0]. The announcement led to a bit of upheaval in the Angular developer community. The API for writing Angular applications would change, and it would be based on a new language, AtScript. There would be no migration path, and users would have to continue using 1.x or rewrite their applications for 2.x.
 
 In March 2015, the Angular team http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns], announced they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "`Angular`" instead of Angular 2.0].
 
-Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project tries to release two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and to have a predictable schedule. They released Angular 13 on November 3, 2021.
+Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project releases two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and have a predictable schedule. They released Angular 15 on November 18, 2022.
 
 You can find the Angular project at https://angular.io[angular.io].
 
-Developers like to see things working in minutes. I'm a developer and I like to evaluate software with a "`10-minute test.`" If I can get it working in 10 minutes, sign me up!
+Developers like to see things working in minutes. I'm a developer, and I like to evaluate software with a "`10-minute test.`" If I can get it working in 10 minutes, sign me up!
 
 Rather than explain all the concepts in Angular, I'll show you how to build a basic application. You'll learn how to write unit tests, integration tests, add authentication, and deploy to production.
 
@@ -34,13 +34,13 @@ endif::[]
 * http://nodejs.org/[Node.js] and npm installed.
 * https://angular.io/cli[Angular CLI] installed.
 
-If you don't have the Angular CLI installed, install it:
+If you don't have the Angular CLI installed, please install it:
 
 ----
 npm install -g @angular/cli@15
 ----
 
-NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, checkout https://code.visualstudio.com/[Visual Studio Code].
+NOTE: IntelliJ IDEA Ultimate Edition has the best support for TypeScript. If you'd rather not pay for your IDE, check out https://code.visualstudio.com/[Visual Studio Code].
 
 == Create a new Angular project
 
@@ -52,7 +52,7 @@ ng new ng-demo
 
 When prompted to install Angular routing, type "`Y`". For the stylesheet format, choose "`CSS`" (the default).
 
-This will create a `ng-demo` project and run `npm install` in it. It takes about a minute to complete, but will vary based on your internet connection speed.
+This will create a `ng-demo` project and run `npm install` in it. It takes about a minute to complete but will vary based on your internet connection speed.
 
 You can see the version of Angular CLI you're using with the `ng version` command.
 
@@ -233,11 +233,11 @@ If you want to add styling for this component, open `src/app/search/search.compo
 }
 ----
 
-IMPORTANT: The `:host` allows you to target the container of the component. It's the only way to target the host element. You can't reach the host element from inside the component with other selectors because it's not part of the component's own template.
+IMPORTANT: The `:host` allows you to target the container of the component. It's the only way to target the host element. You can't reach the host element inside the component with other selectors because it's not part of the component's template.
 
-This section has shown you how to generate a new component and add it to a basic Angular application with Angular CLI. The next section shows you how to create and use a JSON file and `localStorage` to create a fake API.
+This section has shown you how to generate and add a new component to a basic Angular application with the Angular CLI. The next section shows you how to create and use a JSON file and `localStorage` to create a fake API.
 
-=== The Backend
+=== The Back end
 
 To get search results, create a `SearchService` that makes HTTP requests to a JSON file. Start by generating a new service.
 
@@ -293,7 +293,7 @@ mkdir -p src/assets/data
 
 Modify `src/app/shared/search/search.service.ts` and provide `HttpClient` as a dependency in its constructor.
 
-In this same file, create a `getAll()` method to gather all the people. Also, define the `Address` and `Person` classes that JSON will be marshalled to.
+In this same file, create a `getAll()` method to gather all the people. Also, define the `Address` and `Person` classes to which JSON will be marshaled.
 
 [source,typescript]
 .src/app/shared/search/search.service.ts
@@ -351,7 +351,7 @@ To make these classes easier to consume by your components, create `src/app/shar
 export * from './search/search.service';
 ----
 
-The reason for creating this file is so you can import multiple classes on a single line rather than having to import each individual class on separate lines.
+The reason for creating this file is so you can import multiple classes on a single line rather than having to import each class on separate lines.
 
 In `search.component.ts`, add imports for these classes.
 
@@ -541,9 +541,9 @@ Since `query` will always be assigned (even if it's empty), change its variable 
 query!: string; // query: string = ''; will also work
 ----
 
-This is called a https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions[definite assignment assertion]. It's a way to tell TypeScript "`I know what I'm doing, the variable will be assigned.`"
+This is called a https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions[definite assignment assertion]. It's a way to tell TypeScript, "`I know what I'm doing; the variable will be assigned.`"
 
-Now the search results will be filtered by the query value you type in.
+Now, the search results will be filtered by the query value you type in.
 
 This section showed you how to fetch and display search results. The next section builds on this and shows how to edit and save a record.
 
@@ -705,7 +705,7 @@ save(person: Person) {
 }
 ----
 
-You can add CSS to `src/app/edit/edit.component.css` if you want to make the form look a bit better.
+You can add CSS to `src/app/edit/edit.component.css` to make the form look a bit better.
 
 [source,css]
 .src/app/edit/edit.component.css
@@ -762,9 +762,9 @@ After making all these changes, you should be able to search/edit/update a perso
 
 === Add Form Validation
 
-One thing you might notice is you can clear any input element in the form and save it. At the very least, the `name` field should be required. Otherwise, there's nothing to click on in the search results.
+You might notice that you can clear any input element in the form and save it. At the very least, the `name` field should be required. Otherwise, there's nothing to click on in the search results.
 
-To make name required, modify `edit.component.html` to add a `required` attribute to the name `<input>` and bind it to Angular's validation with `#name="ngModel"`. Add a `<div>` next to the field to display an error message when validation fails.
+To make the name field required, modify `edit.component.html` to add a `required` attribute to the name `<input>` and bind it to Angular's validation with `#name="ngModel"`. Add a `<div>` next to the field to display an error message when validation fails.
 
 [source,html]
 .src/app/edit/edit.component.html
@@ -793,7 +793,7 @@ After making these changes, the name field will be required.
 .Edit form with validation
 image::ng-demo/edit-form-validation.png[Edit form with validation, 800, scaledwidth="100%", align=center]
 
-In this screenshot, you might notice the address fields are blank and the save button is enabled. This is explained by the error in your console.
+In this screenshot you might notice the address fields are blank, and the save button is enabled. The error in your console explains this.
 
 ----
 If ngModel is used within a form tag, either the name attribute must be set or the form control must be defined as 'standalone' in ngModelOptions.
@@ -830,9 +830,9 @@ In this section, you'll learn to use http://jasmine.github.io/[Jasmine] for unit
 
 === Fix the Tests
 
-If you run `ng test`, you'll likely get failures for the components and service you created. These failures will be solved as you complete the section below. The `ng test` command will start a process that listens for changes so all you need to do is edit/save files and tests will be automatically run again.
+If you run `ng test`, you'll likely get failures for the components and service you created. These failures will be solved as you complete the section below. The `ng test` command will start a process that listens for changes, so all you need to do is edit/save files, and tests will be automatically run again.
 
-TIP: You can use `x` and `f` prefixes in front of `describe` and `it` functions to _exclude_ or _only_ run a particular test.
+TIP: You can use `x` and `f` prefixes before `describe` and `it` functions to _exclude_ or _only_ run a particular test.
 
 === Fix the `AppComponent` test
 
@@ -895,7 +895,7 @@ NullInjectorError: R3InjectorError(DynamicTestModule)[ActivatedRoute -> Activate
 
 `HttpTestingController` allows you to mock requests and use its `flush()` method to provide response values. Since the HTTP request methods return an `Observable`, you can subscribe to it and create expectations in the callback methods. Add the first test of `getAll()` to `search.service.spec.ts`.
 
-The test below should be on the same level as `beforeEach`. Passing the `done` function into the test ensures the test doesn't complete and exit prior to all the asserts running.
+The test below should be on the same level as `beforeEach`. Passing the `done` function into the test ensures the test doesn't complete and exit before all the asserts are run.
 
 [source,typescript]
 .src/app/shared/search/search.service.spec.ts
@@ -969,7 +969,7 @@ it('should fetch by id', (done) => {
 
 To unit test the `SearchComponent`, you can mock the methods in `SearchService` with http://angular-tips.com/blog/2021/07/unit-testing-spies-and-mocks/[spies]. These allow you to _spy_ on functions to check if they were called.
 
-You can use `TestBed.configureTestingModule()` to set up `ActivatedRoute` to have a specific parameter. In the second `beforeEach()`, you can see that the `search()` method is spied on and its results are mocked. The response isn't important in this case because you're just unit testing the `SearchComponent`.
+You can use `TestBed.configureTestingModule()` to set up `ActivatedRoute` to have a specific parameter. In the second `beforeEach()`, you can see that the `search()` method is spied on, and its results are mocked. The response isn't important in this case because you're just unit testing the `SearchComponent`.
 
 [source,typescript]
 .src/app/search/search.component.spec.ts
@@ -1105,13 +1105,13 @@ You should see "`Executed 11 of 11 [green]#SUCCESS#" in the shell window that's 
 
 === Integration test the search UI
 
-To test if the application works end-to-end, you can write tests with http://www.cypress.io/[Cypress]. These are also known as integration tests since they test the _integration_ between all layers of your application.
+To test if the application works end-to-end, you can write tests with http://www.cypress.io/[Cypress]. These are also known as integration tests since they test the _integration_ between all application layers.
 
-If you're an experienced Angular developer, you might be wondering, "`What happened to Protractor?`" Protractor support was https://github.com/angular/protractor/issues/5502[removed in Angular 12] and other options such as Cypress, WebdriverIO, and TestCafe are being considered for future versions.
+If you're an experienced Angular developer, you might be wondering, "`What happened to Protractor?`" Protractor support was https://github.com/angular/protractor/issues/5502[removed in Angular 12], and other options such as Cypress, WebdriverIO, and TestCafe are being considered for future versions.
 
 TIP: If you're experienced with Protractor, see https://docs.cypress.io/guides/migrating-to-cypress/protractor[Migrating from Protractor to Cypress].
 
-You can use the official https://www.npmjs.com/package/@cypress/schematic[Cypress Angular Schematic] to add Cypress to your Angular project.
+To add Cypress to your Angular project, you can use the official https://www.npmjs.com/package/@cypress/schematic[Cypress Angular Schematic].
 
 ----
 ng add @cypress/schematic
@@ -1140,7 +1140,7 @@ image::ng-demo/cypress-electron-app.png[Cypress Electron App, 800, scaledwidth="
 
 If you click on the file name, it'll launch a browser and run the test. You can use this feature to step through your tests, find selectors for elements, and much more. You can learn more about Cypress' features at https://armno.in.th/2020/02/26/cypress-angular-integration-testing/[Setting up Cypress for an Angular Project].
 
-Personally, I prefer the Protractor experience where you could just run the command, it'd run all the tests, and the user doesn't need to interact. You can do this with Cypress too!
+I prefer the Protractor experience, where you could just run the command, it would run all the tests, and the user doesn't need to interact. You can do this with Cypress too!
 
 The Cypress Angular Schematic added a few scripts to your `package.json`:
 
@@ -1180,11 +1180,11 @@ export default defineConfig({
 ----
 ====
 
-The `npm run cypress:run` command will run a headless browser, so you won't see anything happening on your screen.
+The `npm run cypress:run` command will run a headless browser so that you won't see anything happening on your screen.
 
-If you want to see the tests run, append `-- --browser chrome --headed` to the command. Add this to your `package.json` if you want to make it the default. See Cypress' https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation to see a list of supported browsers.
+If you want to see the tests run, append `-- --browser chrome --headed` to the command. Add this to your `package.json` if you want to make it the default. See Cypress' https://docs.cypress.io/guides/guides/launching-browsers[launching browsers] documentation for a list of supported browsers.
 
-You can also install https://www.npmjs.com/package/concurrently[concurrently] so you can run multiple tasks with one command.
+You can also install https://www.npmjs.com/package/concurrently[concurrently] to run multiple tasks with one command.
 
 [source,shell]
 ----
@@ -1269,7 +1269,7 @@ If you made it this far and have all your specs passing—congratulations! You'r
 
 You can see the test coverage of your project by running `ng test --no-watch --code-coverage`.
 
-You'll see a print out of code coverage in your terminal window.
+You'll see a printout of code coverage in your terminal window.
 
 ----
 =============================== Coverage summary ===============================
@@ -1282,14 +1282,14 @@ Lines        : 78.46% ( 51/65 )
 
 You can also open `coverage/ng-demo/index.html` in your browser.
 
-You might notice that the `EditComponent` could use some additional coverage. If you feel the need to improve this coverage, please create a pull request!
+You might notice that the `EditComponent` could use some additional coverage. If you need to improve this coverage, please create a pull request!
 
 .Test coverage
 image::ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%", align=center]
 
 == Continuous Integration
 
-At the time of this writing, Angular CLI did not have any continuous integration support. This section shows you how to set up continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
+At the time of this writing, Angular CLI had no continuous integration support. This section shows you how to set up continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
 
 [CAUTION]
 ====
@@ -1393,7 +1393,7 @@ node {
 
 == Deployment to Heroku
 
-This section shows you how to deploy an Angular app to https://heroku.com[Heroku].
+This section shows how to deploy an Angular app to https://heroku.com[Heroku].
 
 https://signup.heroku.com/[Create a Heroku account], https://devcenter.heroku.com/articles/heroku-cli[install the heroku CLI], and run `heroku login`.
 
@@ -1637,7 +1637,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 })
 ----
 
-Then, change your HTML templates to use Material components. For example, change `<h1>` in `app.component.html` to be `<mat-toolbar>`.
+Then, change your HTML templates to use Material components. For example, change `<h1>` in `app.component.html` to `<mat-toolbar>`.
 
 [source,html]
 .src/app/app.component.html
@@ -1814,7 +1814,7 @@ image::ng-demo/angular-material.png[Angular Material, 800, scaledwidth="100%", a
 
 Run `npm test` to confirm your unit tests pass.
 
-For Cypress tests, you'll need to modify the list reference in `search.spec.ts` and `edit.spec.ts` to look for Material components instead of table rows.
+For Cypress tests, you must modify the list reference in `search.spec.ts` and `edit.spec.ts` to look for Material components instead of table rows.
 
 [source,typescript]
 ----
@@ -1835,7 +1835,7 @@ ng add @oktadev/schematics --auth0
 
 You'll be prompted for an issuer and client ID. You should have these from the OIDC app you just created.
 
-This process will perform the following steps for you:
+This process will perform the following steps:
 
 1. Install the https://github.com/auth0/auth0-angular[Auth0 Angular SDK].
 2. Add `src/app/auth-routing.module.ts` with your OIDC configuration and initialization logic.
@@ -1886,7 +1886,7 @@ After making these changes, you should be able to run `ng serve` and see a login
 .Auth0 login button
 image::ng-demo/auth0-login-button.png[Login button, 800, scaledwidth="100%", align=center]
 
-Click the *Login* button and sign in with one of the users that's configured in your Auth0 application or sign up as a new user.
+Click the *Login* button and sign in with one of the users that are configured in your Auth0 application or sign up as a new user.
 
 .Auth0 login form
 image::ng-demo/auth0-login-form.png[Auth0 login form, 800, scaledwidth="100%", align=center]
@@ -1941,8 +1941,7 @@ endif::[]
   cy.origin(Cypress.env('E2E_DOMAIN'), {args: {username, password}},
     ({username, password}) => {
       cy.get('input[name=username]').type(username);
-      cy.get('input[name=password]').type(password, {log: false});
-      cy.get('button[type=submit]').first().click();
+      cy.get('input[name=password]').type(`${password}{enter}`, {log: false});
     }
   )
 
@@ -2012,7 +2011,7 @@ Add `*.env.json` to your `.gitignore` file to prevent this file from being check
 
 Then, remove the `env` key from `cypress.config.ts`.
 
-Now, `npm run cypress:run` should work the same as before.
+Now, `npm run cypress:run` should work as before.
 
 === Update GitHub Actions
 
@@ -2035,7 +2034,7 @@ If you're using GitHub Actions to test your project, you'll need to update the C
 
 Then, create repository secrets on GitHub for `E2E_DOMAIN`, `E2E_USERNAME` and `E2E_PASSWORD`.
 
-You also might find it useful to upload screenshots of your test failures to GitHub. Add the following to your workflow.
+It is also useful to upload screenshots of your test failures to GitHub. Add the following to your workflow.
 
 [source,yaml]
 ----
@@ -2051,8 +2050,8 @@ You can then download the screenshots by going to a job's summary. From there, s
 
 == Summary
 
-I hope you've enjoyed this introduction to Angular. You learned how to create a basic application without worrying about the backend.
+I hope you've enjoyed this introduction to Angular. You learned how to create a basic application without worrying about the back end.
 
 TIP: You can download the code for this book's examples from InfoQ. The `ng-demo` directory has this chapter's completed example. There are also examples for Angular Material, Bootstrap, and Auth0.
 
-In the next section, I'll show you how to use a modern backend to provide you data, security, and production-ready features.
+In the next section, I'll show you how to use a modern back end to provide data, security, and production-ready features.
