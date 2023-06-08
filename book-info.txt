@@ -6,7 +6,7 @@ The Angular Mini-Book is a guide to getting started with Angular. You'll learn h
 
 Spring Boot is a popular framework for building REST APIs. You'll learn how to integrate Angular with Spring Boot and use security best practices like HTTPS and a content security policy. What about deploying your Angular app to the cloud? Yep, it covers that too!
 
-This second edition (v2.0) uses Angular 13 and Spring Boot 2.6.
+This second edition (v3.0) uses Angular 15 and Spring Boot 3.0.
 
 Follow @mraible on Twitter for book updates.
 
