@@ -1,32 +1,32 @@
 = Preface
 
-I've been developing websites and web applications since the 1990s. Along the way, I've become a web framework aficionado. I appreciate web frameworks because of their patterns, the testability they offer, and the flourishing communities that tend to sprout up around them.
+I've been developing websites and web applications since the 1990s. Along the way, I've become a web framework aficionado. I appreciate web frameworks because of their patterns, their testability, and the flourishing communities that tend to sprout around them.
 
-I started working with open source web frameworks, notably Struts and Spring MVC, in the early 2000s. I spent a few years developing with them (mainly doing server-side MVC) then returned to UI development with HTML, JavaScript, and CSS. Boy, did I have good timing!
+I started working with open source web frameworks, notably Struts and Spring MVC, in the early 2000s. I spent a few years developing with them (mainly doing server-side MVC), then returned to UI development with HTML, JavaScript, and CSS. Boy, did I have good timing!
 
 The JavaScript Renaissance started in the mid-2000s with jQuery. jQuery leveled the playing field to write code that would work on most popular browsers and freed developers from the browser wars burden. From there, full-fledged JavaScript frameworks like Ember.js, Backbone.js, and AngularJS took the developer world by storm.
 
-Java didn't have much innovation while the JavaScript Renaissance was happening. I was a Java developer at LinkedIn in 2007-2008, then moved to full-time frontend development with GWT and jQuery at Evite in 2009. The frontend landscape flourished for the next few years while the Java ecosystem languished.
+Java didn't have much innovation while the JavaScript Renaissance was happening. I was a Java developer at LinkedIn from 2007-2008, then moved to full-time front-end development with GWT and jQuery at Evite in 2009. The front-end landscape flourished for the next few years while the Java ecosystem languished.
 
-In 2009, Node.js was created and the first version of npm. Node allows you to run JavaScript outside a browser, and JavaScript found itself well-positioned on the server.
+In 2009, Node.js was created as well as the first version of npm. Node allows you to run JavaScript outside a browser, and JavaScript found itself well-positioned on the server.
 
-In 2013, GitHub created Electron and introduced a way to write multi-platform desktop applications with JavaScript. Some of the most often-used software developers use today (Slack and VS Code) are powered by Electron!
+In 2013, GitHub created Electron and introduced a way to write multi-platform desktop applications with JavaScript. Some of the most often-used software that developers use today (Slack and VS Code) are powered by Electron!
 
 In 2014++, along came React, Angular (with TypeScript), and Vue. They continue to be the dominant frameworks for writing browser-based applications.
 
 Another notable release happened in 2014: Spring Boot 1.0. Spring Boot was a breath of fresh air for those using the Spring framework with its starters and simplified configuration. Spring Boot led to Spring Cloud, and both helped fuel the microservices boom that continues today.
 
-I wanted to write this book because I think Angular and Spring Boot are among the most powerful combinations for writing web apps today. You can use JHipster to generate an app with both frameworks, but if you really want to learn how something works, it's important to learn the building blocks.
+I wanted to write this book because Angular and Spring Boot are among the most powerful combinations for writing web apps today. You can use JHipster to generate an app with both frameworks, but if you want to learn how something works, it's essential to know the building blocks.
 
 == What is in an InfoQ mini-book?
 
-InfoQ mini-books are designed to be concise, intending to serve technical architects looking to get a firm conceptual understanding of new technology or techniques in a quick yet in-depth fashion. You can think of these books as covering a topic strategically or essentially. After reading a mini-book, the reader should have a fundamental understanding of a technology, including when and where to apply it, how it relates to other technologies, and an overall feeling that they have assimilated the combined knowledge of other professionals who have already figured out what this technology is about. The reader will then be able to make intelligent decisions about the technology once their projects require it, and can delve into sources of more detailed information (such as larger books or tutorials) at that time.
+InfoQ mini-books are concise, intending to serve technical architects looking to get a firm conceptual understanding of new technology or techniques in a quick yet in-depth fashion. These books cover a topic strategically or essentially. After reading a mini-book, the reader should have a fundamental understanding of the technology, including when and where to apply it, how it relates to other technologies, and an overall feeling that they have assimilated the combined knowledge of other professionals who have already figured out what this technology is about. The reader will then be able to make intelligent decisions about the technology, once their projects require it, and can delve into sources of more detailed information (such as larger books or tutorials) at that time.
 
-== Who this book is for
+== Who is this book for?
 
 This book is aimed specifically at web or Java developers who want a rapid introduction to Angular, Bootstrap, and Spring Boot.
 
-== What you need for this book
+== What do you need for this book?
 
 To try code samples in this book, you will need a computer running an up-to-date operating system (Windows, Linux, or Mac OS X). You will need Node.js and Java installed. The book code was tested against Node.js v14 and JDK 11, but newer versions should also work.
 
@@ -34,12 +34,12 @@ To try code samples in this book, you will need a computer running an up-to-date
 
 We use several typographical conventions within this book that distinguish between different kinds of information.
 
-Code in the text, including commands, variables, file names, CSS class names, and property names are shown as follows:
+Code in the text, including commands, variables, file names, CSS class names, and property names, are shown as follows:
 
 [example]
 The Angular CLI will create a `ng-demo` project and run `npm install` in it.
 
-A block of code is set out as follows. It may be colored, depending on the format in which you're reading this book.
+A block of code is set out as follows. It may be colored, depending on the reader format you're using.
 
 [source,html]
 .src/app/search/search.component.html
@@ -91,7 +91,7 @@ WARNING: Warnings are shown using callouts like this.
 
 .Sidebar
 ****
-Additional information about a certain topic may be displayed in a sidebar like this one.
+Additional information about a certain topic may be displayed in a sidebar like this.
 ****
 
 Finally, this text shows what a quote looks like:
@@ -101,7 +101,7 @@ Finally, this text shows what a quote looks like:
 
 == Reader feedback
 
-We always welcome feedback from our readers. Let us know what you thought about this book—what you liked or disliked. Reader feedback helps us develop titles that deliver the most value to you.
+We always welcome feedback from our readers. Tell us what you thought about this book—what you liked or disliked. Reader feedback helps us develop titles that deliver the most value to you.
 
 [.text-left]
 To send us feedback, e-mail us at feedback@infoq.com, send a tweet to @mraible, or post a question on Stack Overflow using the "`angular`" tag.

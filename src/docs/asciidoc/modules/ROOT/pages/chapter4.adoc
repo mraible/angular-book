@@ -1,18 +1,18 @@
 [[chapter-4]]
 = Angular Deployment
 
-One of the more popular combinations of frontend and backend frameworks is Angular + Spring Boot. It's possible to combine the two—from keeping them as separate apps to combining them into a single artifact. But, what about deployment?
+One of the more popular combinations of front-end and back-end frameworks is Angular + Spring Boot. Combining the two is possible—from keeping them as separate apps to combining them into a single artifact. But what about deployment?
 
 Developers ask me from time to time, "`What's the best way to do Angular deployment?`" In this section, I'll show you several options. I'll start by showing you how to deploy a Spring Boot app to Heroku. Then, I'll show how to deploy a separate Angular app to Heroku.
 
-There are lots of tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
+There are many tutorials and information in the Java community on how to deploy Spring Boot apps, so I'll leave the Spring Boot API on Heroku and show other Angular deployment options, including Firebase, Netlify, and AWS S3.
 
 .Angular Deployment with a Side of Spring Boot
 image::angular-deployment/angular-deployment.png[Angular Deployment with a Side of Spring Boot, 800, scaledwidth="100%", align=center]
 
 == Create an Angular + Spring Boot App
 
-If you're following along, you should have an `angular-bootstrap` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the backend and Angular on the frontend. It's secured with OpenID Connect (OIDC).
+If you're following along, you should have an `angular-bootstrap` directory with an Angular and a Spring Boot app in it. It's a note-taking app that uses Kotlin and Spring Boot on the back end and Angular on the front end. It's secured with OpenID Connect (OIDC).
 
 If you'd rather start from this point, download the examples for this book from InfoQ. The `angular-bootstrap` directory has the previous section's completed example. Copy it to `angular-deployment` in your favorite code location.
 
@@ -23,17 +23,17 @@ image::angular-bootstrap/notes-list-with-sorting.png[Notes list with sorting, 80
 
 === Secure Your Angular + Spring Boot App with OIDC
 
-To begin, you'll need to https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log in to it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
+To begin, you must https://signup.heroku.com/login[create a Heroku account]. If you already have a Heroku account, https://id.heroku.com/login[log in to it]. Once you're logged in, create a new app. I named mine `bootiful-angular`.
 
 .Create Heroku app
 image::angular-deployment/heroku-create-app.png[Create Heroku app, 700, scaledwidth="80%", align=center]
 
-After creating your app, you _could_ select the **Resources** tab and add the https://elements.heroku.com/addons/auth0[Auth0 add-on]. However, this will create a new Auth0 tenant for you and configure your Heroku app to use it. I think it's easier to use the tenant you already configured.
+After creating your app, you _could_ select the **Resources** tab and add the https://elements.heroku.com/addons/auth0[Auth0 add-on]. However, this will create a new Auth0 tenant for you and configure your Heroku app to use it. It's easier to use the tenant you already configured.
 
-Both your Angular and Spring Boot app should have their security configured to use OIDC from the
+Your Angular and Spring Boot apps should have their security configured to use OIDC from the
 ifdef::backend-epub3[last chapter.]
 ifndef::backend-epub3[<<#security-configuration, last chapter>>.]
-However, you'll need to configure Auth0 for both the Angular app and Spring Boot app to allow Heroku URLs.
+However, you'll need to configure Auth0 for both the Angular and Spring Boot apps to allow Heroku URLs.
 
 You can run `auth0 apps list` to get the client IDs for your Auth0 apps. Then, update the URLs for your Spring Boot app, replacing `bootiful-angular` with your Heroku app's name.
 
@@ -46,7 +46,7 @@ auth0 apps update <spring-boot-client-id> \
   --web-origins http://localhost:8080,https://bootiful-angular.herokuapp.com
 ----
 
-Now you'll need to set the `OKTA_*` environment variables on Heroku for your Spring Boot app. You can do this by running `heroku config:set` or by using the **Settings** tab in the Heroku dashboard. You can also use the following command from the `angular-deployment/notes-api` directory. If you don't have an `.okta.env` file in this directory, copy the one from the `angular-bootstrap/notes-api` directory.
+Now you'll need to set the `OKTA_*` environment variables on Heroku for your Spring Boot app. You can do this by running `heroku config:set` or using the **Settings** tab in the Heroku dashboard. You can also use the following command from the `angular-deployment/notes-api` directory. If you don't have an `.okta.env` file in this directory, copy the one from the `angular-bootstrap/notes-api` directory.
 
 [source,shell]
 ----
@@ -58,7 +58,7 @@ heroku config:set -a bootiful-angular \
   OKTA_OAUTH2_AUDIENCE=$OKTA_OAUTH2_AUDIENCE
 ----
 
-Now, go to your Heroku app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you just set.
+Go to your Heroku app's **Settings** tab and click the **Reveal Config Vars** button. The Config Vars displayed are the environment variables you just set.
 
 .Heroku environment variables
 image::angular-deployment/heroku-config-vars.png[Heroku environment variables, 800, scaledwidth="100%", align=center]
@@ -76,7 +76,7 @@ source .okta.env
 [TIP]
 .Environment Variables in IntelliJ IDEA
 ====
-If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration, go to **Modify options** > **Environment variables**. Then, click on the **Browse** icon on the right-side of **Environment variables**.
+If you're using IntelliJ IDEA, you can copy the contents of `.okta.env` and paste its values as environment variables. Edit the **DemoApplication** configuration, go to **Modify options** > **Environment variables**. Then, click the **Browse** icon on the right side of **Environment variables**.
 
 .Edit DemoApplication Configuration
 image::angular-deployment/idea-edit-configuration.png[Edit DemoApplication Configuration, 800, scaledwidth="100%", align=center]
@@ -87,7 +87,7 @@ Next, click the paste icon. You'll need to delete `export` in the Name column. N
 image::angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="60%", align=center]
 ====
 
-Your Angular app should already be configured for OIDC authentication from the last chapter. However, if you registered a new SPA app on Auth0, you'll need to modify `auth-routing.module.ts` to use the new client ID.
+Your Angular app should already be configured for OIDC authentication from the last chapter. However, if you registered a new SPA app on Auth0, you must modify `auth-routing.module.ts` to use the new client ID.
 
 [source,typescript]
 .notes/src/app/auth-routing.module.ts
@@ -99,7 +99,7 @@ const config = {
 };
 ----
 
-Install your Angular app's dependencies if you haven't already and start the application.
+Install your Angular app's dependencies if you haven't already, and start the application.
 
 [source,shell]
 ----
@@ -112,14 +112,14 @@ Open `http://localhost:4200` in your browser.
 .Angular Home
 image::angular-deployment/angular-home.png[Angular Home, 800, scaledwidth="100%", align=center]
 
-Click the **Login** button in the top right corner. You should be logged in straight away since you're already logged in to Auth0. If you want to see the full authentication flow, log out, or try it in a private window. Create a note and search for its title to make sure everything works.
+Click the **Login** button in the top right corner. You should be logged in immediately since you're already logged in to Auth0. If you want to see the full authentication flow, log out, or try it in a private window. Create a note and search for its title to make sure everything works.
 
 .First note
 image::angular-deployment/first-note.png[First note, 800, scaledwidth="100%", align=center]
 
 === Prepare Angular + Spring Boot for Production
 
-There are a couple of things you should do to make your app ready for production.
+You should do a couple of things to make your app ready for production.
 
 1. Make sure you're using the latest releases
 2. Configure production URLs
@@ -151,7 +151,7 @@ Then run the following command in the `notes-api` directory to update your depen
 
 You can verify everything still works by running `./gradlew bootRun` and navigating to `http://localhost:8080/api/notes`. You should be redirected to Auth0 to log in, then back to your app.
 
-TIP: If your app fails to start, you need to run `source .okta.env` first.
+TIP: If your app fails to start, you must first run `source .okta.env`.
 
 For the Angular client, you can use https://www.npmjs.com/package/npm-check-updates[npm-check-updates] to upgrade npm dependencies.
 
@@ -160,7 +160,7 @@ For the Angular client, you can use https://www.npmjs.com/package/npm-check-upda
 npx npm-check-updates
 ----
 
-At the time of this writing, `npx npm-check-updates -u` will upgrade `auth0-angular` from version 2.0.1 to 2.1.0 and TypeScript to version ~5.0.4. Since Angular 15 does not support TypeScript 5, you'll need to downgrade it to version 4.9.5.
+At the time of this writing, `npx npm-check-updates -u` will upgrade `auth0-angular` from version 2.0.1 to 2.1.0 and TypeScript to version ~5.0.4. Since Angular 15 does not support TypeScript 5, you must downgrade it to version 4.9.5.
 
 [source,json]
 .notes/package.json
@@ -188,9 +188,9 @@ There are a few places where `localhost` is hard-coded:
 2. `notes/src/app/auth-routing.module.ts` has `\http://localhost:8080`
 3. `notes/src/app/note/note.service.ts` has `\http://localhost:8080`
 
-You need to change Spring Boot's code so other origins can make CORS requests too. Angular's code needs updating so access tokens will be sent to production URLs while API requests are sent to the correct endpoint.
+You need to change Spring Boot's code so other origins can make CORS requests, too. Angular's code needs updating, so access tokens will be sent to production URLs while API requests are sent to the correct endpoint.
 
-Open the root directory in your favorite IDE and configure it so it loads `notes-api` as a Gradle project. Open `SecurityConfiguration.kt` and change the `corsConfigurationSource` bean so it configures the allowed origins from your Spring environment.
+Open the root directory in your favorite IDE and configure it to load `notes-api` as a Gradle project. Open `SecurityConfiguration.kt` and change the `corsConfigurationSource` bean so it configures the allowed origins from your Spring environment.
 
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
@@ -289,7 +289,7 @@ export class NoteService {
 
 === Use PostgreSQL for the Production Database
 
-H2 is a SQL database that works nicely for development. In production, you're going to want something a little more robust. Personally, I like PostgreSQL, so I'll use it in this example.
+H2 is a SQL database that works nicely for development. In production, you're going to want something a little more robust. I like PostgreSQL, so I'll use it in this example.
 
 Similar to Angular's environments, Spring and Maven have profiles that allow you to enable different behavior for different environments.
 
@@ -304,7 +304,7 @@ if (project.hasProperty("prod")) {
 }
 ----
 
-At the bottom of the file, add the following code to make the `prod` profile the default when `-Pprod` is included in Gradle commands.
+Add the following code at the bottom of the file to make the `prod` profile the default when `-Pprod` is included in Gradle commands.
 
 [source,kotlin]
 ----
@@ -405,11 +405,11 @@ Open a terminal and log in to your Heroku account.
 heroku login
 ----
 
-Heroku expects you to have one Git repo per application. However, in this particular example, there are multiple apps in the same repo. This is called a "`monorepo,`" where many projects are stored in the same repository.
+Heroku expects you to have one Git repo per application. However, in this particular example, multiple apps exist in the same repo. This is called a "`monorepo.`"
 
 Luckily, there's a https://elements.heroku.com/buildpacks/lstoll/heroku-buildpack-monorepo[heroku-buildpack-monorepo] that allows you to deploy multiple apps from the same repo.
 
-You should already have a Heroku app that you configured with Auth0 environment variables. Let's use it for hosting Spring Boot. Run `heroku apps` and you'll see the one you created.
+You should already have a Heroku app configured with Auth0 environment variables. Let's use it for hosting Spring Boot. Run `heroku apps` to see the one you created.
 
 [source,shell]
 ----
@@ -451,9 +451,9 @@ Attach a PostgreSQL database to your app.
 heroku addons:create heroku-postgresql
 ----
 
-As part of this process, Heroku will create a `DATABASE_URL` configuration variable. It will also automatically detect Spring Boot and set variables for `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, AND `SPRING_DATASOURCE_PASSWORD`. These values will override what you have in `application-prod.properties`.
+Heroku will create a `DATABASE_URL` configuration variable as part of this process. It will also automatically detect Spring Boot and set variables for `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, AND `SPRING_DATASOURCE_PASSWORD`. These values will override what you have in `application-prod.properties`.
 
-By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku[Heroku's Gradle support] runs `./gradlew build -x test`. Since you want it to run `./gradlew bootJar -Pprod`, you'll need to override it by setting a `GRADLE_TASK` config var.
+By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku[Heroku's Gradle support] runs `./gradlew build -x test`. Since you want it to run `./gradlew bootJar -Pprod`, you must override it by setting a `GRADLE_TASK` config var.
 
 [source,shell]
 ----
@@ -557,16 +557,16 @@ image::angular-deployment/heroku-hello.png[Hello, Matt Raible, 800, scaledwidth=
 
 == Deploy Angular to Heroku with Secure Headers
 
-An Angular app is composed of JavaScript, CSS, and HTML when built for production. It's extremely portable because it's just a set of static files. If you run `ng build`, the production-ready files will be created in `dist/<app-name>`. In this section, you'll learn how you can use your `package.json` scripts to hook into Heroku's lifecycle and how to deploy them with a simple `git push`.
+An Angular app is composed of JavaScript, CSS, and HTML when built for production. It's extremely portable because it's just a set of static files. If you run `ng build`, the production-ready files will be created in `dist/<app-name>`. In this section, you'll learn how to use your `package.json` scripts to hook into Heroku's lifecycle and deploy them with a simple `git push`.
 
-You'll need to create another app on Heroku for the Angular frontend.
+You'll need to create another app on Heroku for the Angular front end.
 
 [source,shell]
 ----
 heroku create
 ----
 
-Set the `APP_BASE` config variable and add the necessary buildpacks to the app that was just created.
+Set the `APP_BASE` config variable and add the necessary buildpacks to the newly created app.
 
 [source,shell]
 ----
@@ -620,7 +620,7 @@ auth0 apps update <angular-client-id> \
   --web-origins http://localhost:4200,https://$APP_NAME.herokuapp.com
 ----
 
-You should be able to log in now, but you won't be able to add any notes. This is because you need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
+You should be able to log in now, but you won't be able to add any notes. You need to update the allowed origins in your Spring Boot app. Run the following command to add an `ALLOWED_ORIGINS` variable in your Spring Boot app.
 
 [source,shell]
 ----
@@ -631,7 +631,7 @@ Now you should be able to add a note. Pat yourself on the back for a job well do
 
 // todo: the configuration below did not seem necessary since data was still present after a restart.
 
-One issue you'll experience is that you're going to lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
+One issue you'll experience is that you'll lose your data between restarts. This is because Hibernate is configured to update your database schema each time. Change it to simply validate your schema by overriding the `ddl-auto` value in `application-prod.properties`.
 
 [source,shell]
 ----
@@ -640,7 +640,7 @@ heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote heroku
 
 === Secure Angular Apps on Heroku
 
-You've deployed your app to Heroku, but there are still a couple of security issues. The first is that if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Auth0 Angular SDK in your browser's console.
+You've deployed your app to Heroku, but there are still a couple of security issues. First, if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Auth0 Angular SDK in your browser's console.
 
 The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
 
@@ -745,7 +745,7 @@ image::angular-deployment/heroku-headers.png[Security Report Summary with an A, 
 
 == Use `ng deploy` with Firebase, Netlify, and AWS
 
-In Angular CLI v8.3.0, an `ng deploy` command was introduced that allows you to automate deploying to many different cloud providers. I thought it'd be fun to try a few of these out and see if it's possible to optimize the headers to get the same **A** rating that you were able to get with Heroku.
+In Angular CLI v8.3.0, an `ng deploy` command was introduced to automate deploying to many different cloud providers. I thought it would be fun to try a few of these out and see if it's possible to optimize the headers to get the same **A** rating that you were able to get with Heroku.
 
 Below are the https://angular.io/guide/deployment[current providers and packages] supported by this command.
 
@@ -793,7 +793,7 @@ npm install -g firebase-tools
 firebase login --reauth
 ----
 
-Run `ng add @angular/fire` in the `notes` directory and your new project should show up in the list. When prompted for features to set up, select **ng deploy -- hosting**.
+Run `ng add @angular/fire` in the `notes` directory, and your new project should appear in the list. When prompted for features to set up, select **ng deploy -- hosting**.
 
 [source,shell]
 ----
@@ -837,7 +837,7 @@ UPDATE firebase.json (783 bytes)
 
 Now you can run `ng deploy` and everything should work.
 
-You'll need to add the project's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command:
+You must add the project's URL as an allowed origin in your Spring Boot app on Heroku. Copy the printed `Hosting URL` value and run the following command:
 
 [source,shell]
 ----
@@ -851,7 +851,7 @@ Add the new URL after your existing Heroku one, separating them with a comma. Fo
 ALLOWED_ORIGINS='https://sleepy-hamlet-76750.herokuapp.com,https://notes-ed93c.web.app'
 ----
 
-You'll also need to modify your Auth0 SPA app to add your Firebase URL as an Allowed Callback URL, Allowed Logout URL, and Allowed Web Origin. You can use the Auth0 CLI and `auth0 apps open` to quickly access it. For mine, I added:
+You'll also need to modify your Auth0 SPA app to add your Firebase URL as an Allowed Callback URL, Allowed Logout URL, and Allowed Web Origin. You can use the Auth0 CLI and `auth0 apps open` to quickly access it. For mine, I added the following:
 
 * Allowed Callback URL: `\https://notes-ed93c.web.app/home`
 * Allowed Logout URL: `\https://notes-ed93c.web.app`
@@ -928,7 +928,7 @@ git commit -m "Add Firebase deployment"
 
 === Angular Deployment to Netlify
 
-Netlify is a hosting provider for static sites that I've enjoyed using in the past. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality.
+Netlify is a hosting provider for static sites that I've enjoyed using. They offer continuous integration, HTML forms, AWS Lambda functions, and CMS functionality.
 
 Check out your `main` branch and create a new `netlify` one.
 
@@ -938,7 +938,7 @@ git checkout main
 git checkout -b netlify
 ----
 
-Before running the command to add Netlify support, you'll need to https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site by selecting **Add new site** > **Deploy Manually**. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
+Before running the command to add Netlify support, you must https://app.netlify.com/signup[create a Netlify account]. Once you're signed in, create a new site by selecting **Add new site** > **Deploy Manually**. Netlify makes it easy to connect a site via Git, but since I want to demonstrate `ng deploy`, you'll need to create a temporary directory with an `index.html` file in it. I put "`Hello, World`" in the HTML file, then dragged the directory into my browser window.
 
 .Netlify create site
 image::angular-deployment/netlify-create-site.png[Netlify create site, 800, scaledwidth="100%", align=center]
@@ -970,7 +970,7 @@ ALLOWED_ORIGINS='...,https://dapper-baklava-050b77.netlify.app'
 
 You'll also need to update your Auth0 Angular app to allow the URL as a callback, login, and web origin.
 
-If you try to log in, you'll get a `Page Not Found` error stemming from Auth0 trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its own routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents:
+If you try to log in, you'll get a `Page Not Found` error stemming from Auth0 trying to redirect back to your app. This happens because Netlify doesn't know your app is a SPA that manages its routes. To fix this, create a `_redirects` file in the `notes/src` directory with the following contents:
 
 [source,shell]
 ----
@@ -994,9 +994,9 @@ Run `ng deploy` again, and you should be able to log in successfully.
 
 === Better Security Headers on Netlify
 
-If you test your new Netlify site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers] to improve your score.
+If you test your new Netlify site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. To improve your score, Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers].
 
-Create a `src/_headers` file with the following contents. Note that the first line in this file is used to indicate "`all paths under `/``".
+Create a `src/_headers` file with the following contents. Note that the first line in this file indicates "`all paths under `/``".
 
 [source,text]
 ----
@@ -1057,7 +1057,7 @@ I was notified of this issue by https://gitguardian.com/[GitGuardian], which I u
 
 === Angular Deployment to AWS S3
 
-Amazon Simple Storage Service (Amazon S3) is an object storage service that is a popular option for hosting static sites.
+Amazon Simple Storage Service (Amazon S3) is an object storage service popular for hosting static sites.
 
 Check out your `main` branch and create a new `aws` one.
 
@@ -1076,7 +1076,7 @@ Before running the command to add S3 deployment support, you'll need a few thing
 
 You'll also need to https://portal.aws.amazon.com/billing/signup[create an AWS account]. After creating an account, go to the https://s3.console.aws.amazon.com/[Amazon S3 console]. Click **Create Bucket** and give it a name you'll remember. Use the default region selected for you and click **Create Bucket**.
 
-To create the secret access key, go to your https://console.aws.amazon.com/iam/home?nc2=h_m_sc#/security_credentials[security credentials page]. Scroll down to the **Access keys** section, and then select **Create access key**. Click **Show** and copy the key name and value into a text editor.
+To create the secret access key, go to your https://console.aws.amazon.com/iam/home?nc2=h_m_sc#/security_credentials[security credentials page]. Scroll down to the **Access keys** section and select **Create access key**. Click **Show** and copy the key name and value into a text editor.
 
 TIP: If you have trouble creating a secret access key, see https://aws.amazon.com/blogs/security/how-to-find-update-access-keys-password-mfa-aws-management-console/[this blog post].
 
@@ -1087,7 +1087,7 @@ Add the `@jefiozie/ngx-aws-deploy` package to deploy to S3:
 ng add @jefiozie/ngx-aws-deploy
 ----
 
-You won't be prompted for your AWS settings because of the authors have realized it's not a good idea to add secrets to `angular.json`.
+You won't be prompted for your AWS settings because the authors have realized it's not a good idea to add secrets to `angular.json`.
 
 Run `ng deploy` with your AWS setting to deploy your Angular app to your AWS S3 bucket.
 
@@ -1106,7 +1106,7 @@ image::angular-deployment/aws-static-website.png[AWS static website, 684, scaled
 
 By default, Amazon S3 blocks public access to your buckets. Go to the **Permissions** tab. Click the **Edit** button, clear **Block all public access**, and click **Save changes**.
 
-The last step you need to do to make it public is add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `<your-bucket-name>` with your bucket's name.
+The last step you need to do to make it public is to add a bucket policy. Go to **Permissions** > **Bucket Policy** > **Edit** and paste the following into the editor, replacing `<your-bucket-name>` with your bucket's name.
 
 [source,json]
 ----
@@ -1146,11 +1146,11 @@ Add a Custom header for `Permissions-Policy`:
 
 Select **Origin override** if it's not selected for any headers by default. Click **Create**.
 
-Back on your distribution page, refresh the **Response headers policy** options and select the policy you just created.
+On your distribution page, refresh the **Response headers policy** options, and select the policy you just created.
 
-Near the bottom, enter `index.html` as the **Default Root Object**, and select **Create Distribution**. When the Last modified column changes from `Deploying` to today's date, navigate to the domain in your browser.
+Enter `index.html` near the bottom as the **Default Root Object**, and select **Create Distribution**. When the Last modified column changes from `Deploying` to today's date, navigate to the domain in your browser.
 
-NOTE: Once you've created your distribution, it can take 20 minutes for it to deploy.
+NOTE: Once you've created your distribution, it can take 20 minutes to deploy.
 
 After your distribution is deployed, update your Spring Boot app on Heroku to allow your CloudFront URL:
 
@@ -1168,7 +1168,7 @@ ALLOWED_ORIGINS='...,https://d1j8r5b1hr0ai8.cloudfront.net'
 
 Update your Auth0 Angular app to allow the URL as a redirect, too.
 
-Now you should be able to authenticate to your Angular app on AWS successfully!
+Now you can authenticate to your Angular app on AWS successfully!
 
 === Awesome Security Headers with AWS CloudFront + S3
 

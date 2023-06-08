@@ -1,7 +1,7 @@
 [[chapter-2]]
 = Integrate Angular with Spring Boot
 
-In the first section, you learned about Angular and how to use it without having a backend. In this section, I'll show you how to use it with a Spring Boot backend.
+In the first section, you learned about Angular and how to use it without having a back end. In this section, I'll show you how to use it with a Spring Boot back end.
 
 Spring Boot is one of the most popular frameworks for developing Java applications and REST APIs. It also has first-class support for Kotlin!
 
@@ -36,7 +36,7 @@ Spring Boot 3.0 was released in November 2022. It requires Java 17, supports nat
 
 In this chapter, I'll show you how to build a note-taking application with Angular 15 and Spring Boot 3. Along the way, I'll do my best to weave in security tips and advice on how to make your apps more secure.
 
-The Angular and Spring Boot projects release major versions every six months. Since Java does too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
+The Angular and Spring Boot projects release major versions every six months. Since Java does, too, this book might be a release or two behind when you're reading this. Both projects have great track records for backward compatibility, so there's a good chance everything will work on newer versions.
 
 Please try newer versions at your own risk and email me if you find issues and/or solutions! I've been known to trade t-shirts for contributions.
 ifndef::backend-pdf[]
@@ -67,7 +67,7 @@ sdk install java
 // when last tested, this installs 17.0.6-tem
 If you like to live on the bleeding edge, the latest version of the JDK should work too.
 
-The previous section served as an intro to Angular and showed you how it works without a backend. In this section, you'll create a new app that's more of a _real-world_ application.
+The previous section was an intro to Angular and showed you how it works without a back end. In this section, you'll create a new app that's more of a _real-world_ application.
 
 == Create an Angular App
 
@@ -78,16 +78,16 @@ You should have installed the Angular CLI in the previous section. If you did no
 npm install -g @angular/cli@15
 ----
 
-Then, create a directory on your hard drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run `ng new` command from Angular CLI to create a new Angular application.
+Then, create a directory on your hard drive called `angular-spring-boot`. Open a terminal window and navigate to this directory. Run the `ng new` command from Angular CLI to create a new Angular application.
 
 [source,shell]
 ----
 ng new notes --routing --style css
 ----
 
-In this command, `--routing` installs the Angular router and `--style css` makes it use CSS (as opposed to Sass and Less) for stylesheets.
+In this command, `--routing` installs the Angular router, and `--style css` makes it use CSS (as opposed to Sass and Less) for stylesheets.
 
-This process will take a minute or two to complete depending on your internet speed and hardware. Once it's finished, navigate into the directory and run `ng serve`.
+Depending on your internet speed and hardware, this process will take a minute or two. Once it's finished, navigate into the directory and run `ng serve`.
 
 [source,shell]
 ----
@@ -104,9 +104,9 @@ Stop the `ng serve` process using kbd:[Ctrl+C] in your terminal.
 
 === Add Authentication using OpenID Connect
 
-OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Let's continue that path because Auth0 is excellent, and one of the easiest identity providers to use.
+OpenID Connect (also called OIDC) is an identity layer based on the OAuth 2.0 specification. It leverages JSON Web Tokens (JWT) to provide an ID token and other features like discoverability and a `/userinfo` endpoint. In the first section, I showed you how to use Auth0 as an identity provider. Let's continue that path because Auth0 is excellent and one of the easiest identity providers to use.
 
-To add OIDC login support to your Angular app, you'll first need a https://auth0.com/signup[free Auth0 account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to authorize your device.
+To add OIDC login support to your Angular app, you'll need a https://auth0.com/signup[free Auth0 account]. Install the https://github.com/auth0/auth0-cli[Auth0 CLI] and run `auth0 login` to authorize your device.
 
 Then, create a new OIDC app with `auth0 apps create`. Specify the name, type, callback URls, and logout redirect URL.
 
@@ -126,7 +126,7 @@ When you create Single Page Applications (SPAs) with the Auth0 CLI, authorizatio
 
 TIP: To learn more about PKCE (pronounced "`pixy`"), see link:https://developer.okta.com/blog/2019/08/22/okta-authjs-pkce[Implement the OAuth 2.0 Authorization Code with PKCE Flow].
 
-Copy your client ID and your issuer URI (from the Auth0 CLI's output) into the following command.
+Copy your client ID and issuer URI (from the Auth0 CLI's output) into the following command.
 
 [source,shell]
 ----
@@ -233,11 +233,11 @@ Now that you've created a secure Angular app let's create a Spring Boot app to s
 
 == Create a Spring Boot App
 
-The good folks at VMWare created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app that has a REST API you can talk to with HTTPie.
+The good folks at VMWare created https://start.spring.io[start.spring.io] to help you create Spring Boot apps quickly with minimal fuss. This site is a Spring Boot app with a REST API you can use with HTTPie.
 
 Kotlin is an intriguing language for Spring developers because it reduces boilerplate code and allows succinct, effective code. Kotlin is 100% interoperable with Java, so you can continue to use the Java libraries and frameworks you know and love. Not only that, but Spring has first-class support for Kotlin.
 
-Create a new Spring Boot app that uses Kotlin, Gradle, and has the necessary dependencies to create a secure CRUD API.
+Create a new Spring Boot app that uses Kotlin and Gradle, and has the necessary dependencies to create a secure CRUD API.
 
 [source,shell]
 ----
@@ -248,7 +248,7 @@ packageName==com.okta.developer.notes dependencies==h2,data-jpa,data-rest,okta,v
 
 NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version, and it _should_ work. The value used here has been QA'd and is guaranteed to work.
 
-Run this command in a terminal and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
+Run this command in a terminal, and a `notes-api.zip` file will be downloaded. Expand it into the `angular-spring-boot/notes-api` directory.
 
 [source,shell]
 ----
@@ -264,7 +264,7 @@ image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 
 
 Because you selected Okta as a dependency, you'll need to create an OIDC app for it to authenticate with OpenID Connect. You could use the client ID from your Angular app, but if you ever want to allow people to log in to your Spring Boot app, it'll need its own OIDC app.
 
-The OIDC integration you added to your Angular app allows you to authenticate a user and receive an access token. You can use this access token to securely communicate with a backend that is configured to use the same issuer. This is done by using an HTTP interceptor that adds it in an `Authorization` header as a bearer token.
+The OIDC integration you added to your Angular app allows you to authenticate a user and receive an access token. You can use this access token to securely communicate with a back end that is configured to use the same issuer. This is done by using an HTTP interceptor that adds it in an `Authorization` header as a bearer token.
 
 Open a terminal and navigate to your Spring Boot app's directory. Create an OIDC app for Spring Boot with the following command:
 
@@ -371,7 +371,7 @@ Create a `NotesRepository` for persisting the data in your notes. Add the follow
 interface NotesRepository : JpaRepository<Note, Long>
 ----
 
-The `extends` syntax differs from Java and is a lot more concise (a colon instead of `extends`). If your IDE doesn't automatically add imports, you'll need to add the following at the top of the file.
+The `extends` syntax differs from Java and is a lot more concise (a colon instead of `extends`). If your IDE doesn't automatically add imports, you must add the following at the top of the file.
 
 [source,kotlin]
 ----
@@ -488,7 +488,7 @@ Restart your Spring Boot app, navigate to `http://localhost:8080/user`, and you'
 
 === CORS Integration
 
-In order for your Angular app (on port 4200) to communicate with your Spring Boot app (on port 8080), you have to enable CORS (cross-origin resource sharing). You can do this by updating your `SecurityConfiguration` to have `http.cors()` and defining a `corsConfigurationSource` bean.
+For your Angular app (on port 4200) to communicate with your Spring Boot app (on port 8080), you have to enable CORS (cross-origin resource sharing). You can do this by updating your `SecurityConfiguration` to have `http.cors()` and defining a `corsConfigurationSource` bean.
 
 [source,kotlin]
 ----
@@ -526,7 +526,7 @@ class SecurityConfiguration {
 
 Restart your Spring Boot app after adding this bean.
 
-Now that your API is working, it's time to develop a UI for it with Angular!
+Now that your API is working, it's time to develop a UI with Angular!
 
 == CRUD in Angular
 
@@ -548,7 +548,7 @@ Then create a `src/app/note` directory.
 mkdir -p src/app/note
 ----
 
-Then, create a `model.json` file in it that defines metadata that's used when generating files.
+Then, in that directory, create a `model.json` file that defines metadata used when generating files.
 
 [source,json]
 .src/app/note/model.json
@@ -643,7 +643,6 @@ Add a link to the `NoteListComponent` in `src/app/home/home.component.html`.
   <p><a routerLink="/notes" *ngIf="auth.isAuthenticated$ | async">View Notes</a></p>
   <button *ngIf="auth.isAuthenticated$ | async" (click)="logout()">Logout</button>
 </div>
-
 ----
 
 Change `src/app/app.component.html` to be as simple as it can be.
@@ -657,7 +656,7 @@ Change `src/app/app.component.html` to be as simple as it can be.
 
 TIP: If you want `npm test` to pass after modifying this template, you'll need to change `app.component.spec.ts` to look for `querySelector('h1')` instead of `querySelector('.content span')`.
 
-Run `ng serve` (and make sure your Spring Boot app is running too).
+Run `ng serve` (and make sure your Spring Boot app is running, too).
 
 .Notes App Login
 image::angular-spring-boot/notes-login.png[Notes App Login, 800, scaledwidth="100%", align=center]
@@ -667,7 +666,7 @@ Log in, and you should see a **View Notes** link.
 .Notes Link
 image::angular-spring-boot/notes-link.png[Notes Link, 800, scaledwidth="100%", align=center]
 
-Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes that are tied to your user.
+Click on the link, and you'll see a list screen like the one below. No notes are displayed because you haven't created any notes tied to your user.
 
 .Notes List
 image::angular-spring-boot/notes-list.png[Notes List, 800, scaledwidth="100%", align=center]
@@ -677,7 +676,7 @@ Click on the **New** link to add a new note.
 .Notes Detail
 image::angular-spring-boot/notes-detail.png[Notes Detail, 800, scaledwidth="100%", align=center]
 
-Add a new note, and you'll see a message like this in your backend console.
+Add a new note, and you'll see a message like this in your back-end console.
 
 [source%autofit,shell]
 ----
@@ -703,7 +702,7 @@ Now you'll see your notes listed. Nice work!
 .Notes User List
 image::angular-spring-boot/notes-user-list.png[Notes User List, 800, scaledwidth="100%", align=center]
 
-You might be wondering how the `NoteListComponent` works. It loads the user's notes from the `NoteService` when the component initializes, and also contains `select()` and `delete()` methods. The reason it's able to talk to your secured Spring Boot API is that the aforementioned `AuthInterceptor` adds an access token to the request.
+You might be wondering how the `NoteListComponent` works. It loads the user's notes from the `NoteService` when the component initializes and also contains `select()` and `delete()` methods. It can talk to your secured Spring Boot API because the aforementioned `AuthInterceptor` adds an access token to the request.
 
 [source,typescript]
 .src/app/note/note-list/note-list.component.ts
@@ -1044,12 +1043,12 @@ class SecurityConfiguration {
 <.> Configure a CSP that only allows local scripts
 ====
 
-In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it'd come in handy.
+In this particular example, the CSP won't be used since Angular is a separate app. However, if you were to include the Angular app in your Spring Boot artifact, it would come in handy.
 ////
 
 == Summary
 
-In this chapter, I showed you how to create an Angular app, a Spring Boot app, and how to secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the backend; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
+In this chapter, I showed you how to create Angular and Spring Boot apps and secure communication between them with OAuth 2.0 and OIDC. You used Kotlin on the back end; a language loved by many. You used Angular Schematics to generate code for authentication and CRUD, improving your efficiency as a developer.
 
 This section did not show you how to make your Angular app look good, add validation, or how to deploy it to a public server. I'll tackle those topics in the next section.
 
