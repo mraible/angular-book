@@ -6,7 +6,7 @@ To Miško Hevery, thank you for inventing Angular and changing the lives of fron
 
 Thanks to Phil Webb and Dave Syer for creating Spring Boot and simplifying Java for everyone. Hats off to the whole Spring team for their tireless dedication to quality open source projects.
 
-I want to thank this book's tech editor, Deepu K Sasidharan. I looked to him for his deep experience with both TypeScript and JavaScript. Many sections are more streamlined because of his advice.
+I want to thank this book's tech editors, Alisa Duncan and Deepu K Sasidharan. I looked to them for their deep experience with Angular, TypeScript, and JavaScript. Many sections are more streamlined because of their advice.
 
 This book's copy editor, Maureen Spencer, helped correct my grammar and make this book easier on the eyes. I'm thankful for your help, Maureen.
 
