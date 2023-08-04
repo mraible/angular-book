@@ -240,11 +240,16 @@ Kotlin is an intriguing language for Spring developers because it reduces boiler
 
 Create a new Spring Boot app that uses Kotlin and Gradle, and has the necessary dependencies to create a secure CRUD API.
 
+ifeval::["{media}" == "prepress"]
+<<<
+endif::[]
 [source,shell]
 ----
-https start.spring.io/starter.zip type==gradle-project-kotlin language==kotlin \
-bootVersion==3.0.4 artifactId==notes-api groupId==com.okta.developer \
-packageName==com.okta.developer.notes dependencies==h2,data-jpa,data-rest,okta,validation,web -d
+https start.spring.io/starter.zip type==gradle-project-kotlin \
+  language==kotlin bootVersion==3.0.4 \
+  artifactId==notes-api groupId==com.okta.developer \
+  packageName==com.okta.developer.notes \
+  dependencies==h2,data-jpa,data-rest,okta,validation,web -d
 ----
 
 NOTE: You can remove the `bootVersion` parameter to use the latest version of Spring Boot. Or, you can change it to a newer version, and it _should_ work. The value used here has been QA'd and is guaranteed to work.
@@ -256,10 +261,12 @@ Run this command in a terminal, and a `notes-api.zip` file will be downloaded. E
 unzip notes-api.zip -d angular-spring-boot/notes-api
 ----
 
+ifeval::["{media}" != "prepress"]
 You can also use https://start.spring.io/#!type=gradle-project-kotlin&language=kotlin&platformVersion=3.0.4&packaging=jar&jvmVersion=17&groupId=com.okta.developer&artifactId=demo&name=demo&description=Notes%20API%20for%20Spring%20Boot&packageName=com.okta.developer.notes&dependencies=h2,data-jpa,data-rest,okta,validation,web[start.spring.io] in your browser to create this same app.
 
 .Create app with start.spring.io
-image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="100%", align=center]
+image::angular-spring-boot/start.spring.io.png[Create app with start.spring.io, 800, scaledwidth="85%", align=center]
+endif::[]
 
 === Secure Spring Boot with Spring Security
 
@@ -330,11 +337,11 @@ class SecurityConfiguration {
 }
 ----
 
-NOTE: The `oauth2Login(...)` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
+NOTE: The `oauth2Login()` configuration is not necessary for this example to work. It's only needed if you want to require authentication from a browser and can be useful to test logging in without a client.
 
 === Spring Data REST
 
-Start by creating a new `Note` entity in `src/main/kotlin/.../notes/DemoApplication.kt`.
+Start by creating a new `Note` entity in `DemoApplication.kt`.
 
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
