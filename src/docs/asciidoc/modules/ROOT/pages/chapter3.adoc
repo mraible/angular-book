@@ -22,7 +22,14 @@ image::angular-bootstrap/angular-bootstrap.png[Beautiful Angular 😍, 800, scal
 
 == Angular Loves Bootstrap
 
-You might think that Angular Material is more popular than Bootstrap these days. You may be right, but who you follow on Twitter shapes your popularity perspective. Bootstrap and Angular Material were quite popular among the fabulous folks that answered my recent poll. https://twitter.com/mraible/status/1196894737870938113[In 2019]; 53% answered Bootstrap, and 33% answered Angular Material.
+You might think that Angular Material is more popular than Bootstrap these days. You may be right, but who you follow on Twitter shapes your popularity perspective. Bootstrap and Angular Material were quite popular among the fabulous folks that answered my recent poll.
+ifeval::["{media}" != "prepress"]
+https://twitter.com/mraible/status/1196894737870938113[In 2019];
+endif::[]
+ifeval::["{media}" == "prepress"]
+In 2019;
+endif::[]
+53% answered Bootstrap, and 33% answered Angular Material.
 
 .What's your preferred CSS framework with Angular?
 [link=https://twitter.com/mraible/status/1643925994015981568]
@@ -89,8 +96,9 @@ auth0 apps create \
   --logout-urls http://localhost:8080 \
   --reveal-secrets
 
-# Copy the results of this command into notes-api/.okta.env or copy .okta.env
-# from the angular-spring-boot project and update the client ID and secret.
+# Copy the results of this command into notes-api/.okta.env or
+# copy .okta.env from the angular-spring-boot project and
+# update the client ID and secret.
 ----
 
 Restart each app:
@@ -191,8 +199,6 @@ And change `styles.scss` to import Bootstrap's Sass.
 
 To demonstrate how to override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.2.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
 
-*todo*: check to see if `sass` renders in all formats
-
 [source,sass]
 ----
 $primary: orange;
@@ -219,7 +225,14 @@ anchor:make-angular-beautiful[]
 
 == Make Your Angular App Beautiful with Bootstrap
 
-You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's add a https://getbootstrap.com/docs/5.2/components/navbar/[Navbar] in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
+You can see from the screenshots above that `angular-crud` generates screens with some styling, but it's not quite right. Let's add a
+ifeval::["{media}" != "prepress"]
+https://getbootstrap.com/docs/5.2/components/navbar/[Navbar]
+endif::[]
+ifeval::["{media}" == "prepress"]
+Navbar
+endif::[]
+in `app.component.html`. Change its HTML to have a collapsible navbar (for mobile devices), add links to useful sites, and add login/logout buttons. While you're at it, display a message to the user when they aren't authenticated.
 
 [source,html]
 .src/app/app.component.html
@@ -267,7 +280,14 @@ You can see from the screenshots above that `angular-crud` generates screens wit
 </div>
 ----
 
-Download the `angular.svg` file from https://angular.io/presskit[angular.io/presskit] and add it to your project. You can do this quickly by running the following command from the `notes` directory.
+Download the `angular.svg` file from
+ifeval::["{media}" != "prepress"]
+https://angular.io/presskit[angular.io/presskit]
+endif::[]
+ifeval::["{media}" == "prepress"]
+angular.io/presskit
+endif::[]
+and add it to your project. You can do this quickly by running the following command from the `notes` directory.
 
 [source,shell]
 ----
@@ -335,6 +355,7 @@ export class HomeComponent {
 }
 ----
 
+[.text-left]
 Run `ng serve` and you'll be able to see your stylish app at `http://localhost:4200`.
 
 .Notes app with navbar
@@ -423,7 +444,7 @@ describe('AppComponent', () => {
 
 Modify the `note-list.component.html` so the search form is all on one line.
 
-[source%autofit,html]
+[source,html]
 .src/app/note/note-list/note-list.component.html
 ----
 ...
@@ -434,8 +455,10 @@ Modify the `note-list.component.html` so the search form is all on one line.
            placeholder="Title" class="form-control ml-2 mr-2">
   </div>
   <div class="col-auto">
-    <button (click)="search($event)" [disabled]="!f?.valid" class="btn btn-primary">Search</button>
-    <a [routerLink]="['../notes', 'new' ]" class="btn btn-default ml-2">New</a>
+    <button (click)="search($event)" [disabled]="!f?.valid"
+            class="btn btn-primary">Search</button>
+    <a [routerLink]="['../notes', 'new' ]"
+            class="btn btn-default ml-2">New</a>
   </div>
 </form>
 ...
@@ -448,11 +471,18 @@ image::angular-bootstrap/styled-notes-list.png[Styled Notes List, 800, scaledwid
 
 === Add Validation and Bootstrap to the Note Edit Template
 
-If you click the **New** button, you'll see the form needs some work, too. Bootstrap has excellent support for https://getbootstrap.com/docs/5.2/forms/overview/[stylish forms] using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
+If you click the **New** button, you'll see the form needs some work, too. Bootstrap has excellent support for
+ifeval::["{media}" != "prepress"]
+https://getbootstrap.com/docs/5.2/forms/overview/[stylish forms]
+endif::[]
+ifeval::["{media}" == "prepress"]
+stylish forms
+endif::[]
+using its `form-label` and `form-control` classes. `note-edit.component.html` already uses these classes, but there are updates needed for Bootstrap 5.
 
 The following HTML will add floating labels to your form using the `form-floating` class and add more spacing with `mb-3`.
 
-[source%autofit,html]
+[source,html]
 .src/app/note/note-edit/note-edit.component.html
 ----
 <nav aria-label="breadcrumb">
@@ -462,8 +492,10 @@ The following HTML will add floating labels to your form using the `form-floatin
   </ol>
 </nav>
 <h2>Notes Detail</h2>
-<div *ngIf="feedback.message" class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
-<form *ngIf="note" #editForm="ngForm" (ngSubmit)="save()" class="form-floating">
+<div *ngIf="feedback.message"
+     class="alert alert-{{feedback.type}}">{{ feedback.message }}</div>
+<form *ngIf="note" #editForm="ngForm" (ngSubmit)="save()"
+      class="form-floating">
 
   <div class="mb-3">
     <label>Id</label>
@@ -471,18 +503,22 @@ The following HTML will add floating labels to your form using the `form-floatin
   </div>
 
   <div class="form-floating mb-3">
-    <input [(ngModel)]="note.title" id="title" name="title" class="form-control" placeholder="title">
+    <input [(ngModel)]="note.title" id="title" name="title"
+           class="form-control" placeholder="title">
     <label for="title">Title</label>
   </div>
 
   <div class="form-floating mb-3">
-    <input [(ngModel)]="note.text" id="text" name="text" class="form-control" placeholder="text">
+    <input [(ngModel)]="note.text" id="text" name="text"
+           class="form-control" placeholder="text">
     <label for="text">Text</label>
   </div>
 
   <div class="btn-group mt-3" role="group">
-    <button type="submit" class="btn btn-primary" [disabled]="!editForm.form.valid">Save</button>
-    <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancel</button>
+    <button type="submit" class="btn btn-primary"
+            [disabled]="!editForm.form.valid">Save</button>
+    <button type="button" class="btn btn-secondary ml-2"
+            (click)="cancel()">Cancel</button>
   </div>
 </form>
 ----
@@ -494,12 +530,16 @@ image::angular-bootstrap/styled-notes-form.png[Styled Notes Form, 800, scaledwid
 
 To make the `title` field required, add a `required` attribute to its `<input>` tag, along with a name so that it can be referenced in an error message.
 
-[source%autofit,html]
+ifeval::["{media}" == "prepress"]
+<<<
+endif::[]
+[source,html]
 ----
 <div class="form-floating mb-3">
-  <input [(ngModel)]="note.title" id="title" name="title" class="form-control"
-         placeholder="title" required #name="ngModel"
-         [ngClass]="{'is-invalid': name.touched && name.invalid, 'is-valid': name.touched && name.valid}">
+  <input [(ngModel)]="note.title" id="title" name="title" #name="ngModel"
+         class="form-control" placeholder="title" required
+         [ngClass]="{'is-invalid': name.touched && name.invalid,
+                     'is-valid': name.touched && name.valid}">
   <div [hidden]="name.valid" style="display: block" class="invalid-feedback">
     Title is required
   </div>
@@ -614,7 +654,7 @@ import { SortableHeaderDirective } from './note-list/sortable.directive';
 Add a `headers` variable to `note-list.component.ts` and an `onSort()` method.
 
 [source,typescript]
-.src/app/note/node.module.ts
+.src/app/note/note-list/note-list.component.ts
 ----
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { SortableHeaderDirective, SortEvent } from './sortable.directive';
@@ -686,8 +726,10 @@ Update `note-list.component.html` so it uses the `sortable` directive and calls 
 <thead>
   <tr>
     <th class="border-top-0" scope="col">#</th>
-    <th class="border-top-0" scope="col" sortable="title" (sort)="onSort($event)">Title</th>
-    <th class="border-top-0" scope="col" sortable="text" (sort)="onSort($event)">Text</th>
+    <th class="border-top-0" scope="col" sortable="title"
+        (sort)="onSort($event)">Title</th>
+    <th class="border-top-0" scope="col" sortable="text"
+        (sort)="onSort($event)">Text</th>
     <th class="border-top-0" scope="col" style="width:120px"></th>
   </tr>
 </thead>
@@ -723,7 +765,14 @@ th[sortable].desc:before {
 
 === Add Sorting and Paging in Spring Boot with Spring Data JPA
 
-On the server, you can use https://docs.spring.io/spring-data/rest/docs/current/reference/html/#paging-and-sorting[Spring Data's support for paging and sorting]. Add a `Pageable` argument to `UserController#notes()` and return a `Page` instead of a `List`.
+On the server, you can use
+ifeval::["{media}" != "prepress"]
+https://docs.spring.io/spring-data/rest/docs/current/reference/html/#paging-and-sorting[Spring Data's support for paging and sorting].
+endif::[]
+ifeval::["{media}" == "prepress"]
+Spring Data's support for paging and sorting.
+endif::[]
+Add a `Pageable` argument to `UserController#notes()` and return a `Page` instead of a `List`.
 
 [source,kotlin]
 .notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
@@ -796,8 +845,6 @@ class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
 
 _Make sure to replace `<your email>` with the email address you use to log in to Auth0._
 
-[IMPORTANT]
-====
 The `principal.name` will not default to the user's email address. To fix this, you need to add an Action in Auth0 that will add the email address to the access token. Log in to your Auth0 management dashboard and go to *Actions* > *Library* > *Build Custom*.
 
 Name it "Add email claim" and click *Create*. Replace the code with the following:
@@ -856,7 +903,6 @@ class AddUserToNote {
     }
 }
 ----
-====
 
 Restart your Spring Boot app to make the data available for searching. Click on the **Title** column to see sorting in action!
 
@@ -885,8 +931,9 @@ At the bottom of `note-list.component.html` (just after `</table>`), add the pag
 .notes/src/app/note/note-list/note-list.component.html
 ----
 <div class="d-flex justify-content-between p-2">
-  <ngb-pagination [maxSize]="10" [collectionSize]="total$ | async" [(page)]="filter.page"
-                  [pageSize]="filter.size" (pageChange)="onPageChange(filter.page)">
+  <ngb-pagination [maxSize]="10" [collectionSize]="total$ | async"
+                  [(page)]="filter.page" [pageSize]="filter.size"
+                  (pageChange)="onPageChange(filter.page)">
   </ngb-pagination>
 
   <select class="custom-select" style="width: auto" name="pageSize"
@@ -1010,8 +1057,6 @@ image::angular-bootstrap/notes-list-with-pagination.png[Notes with pagination, 8
 
 Phew! That was a lot of code. I hope this section has helped you see how powerful Angular and Spring Boot with Bootstrap can be!
 
-TIP: You can download the code for this book's examples from InfoQ. The `angular-bootstrap` directory has this chapter's completed example.
-
 I also wanted to let you know you can get a lot of this functionality for free with http://jhipster.tech[JHipster]. It even has https://github.com/jhipster/jhipster-kotlin[Kotlin support]. You can generate a Notes CRUD app that uses Angular, Bootstrap, Spring Boot, and Kotlin in just three steps.
 
 1. Install Node 16 for JHipster 7. If you're using https://github.com/nvm-sh/nvm[nvm], run `nvm use 16`.
@@ -1065,6 +1110,8 @@ TIP: Want to make JHipster work with Auth0? See https://www.jhipster.tech/securi
 
 == Summary
 
+In this chapter, I showed you how to use Bootstrap to make your Angular app look good, configure form validation, and add a searchable, sortable, and pageable data table feature.
+
 I used the following resources to gather historical information about Angular and Bootstrap.
 
 * https://raibledesigns.com/rd/entry/refreshing_appfuse_s_ui_with[Refreshing AppFuse's UI with Twitter Bootstrap]
@@ -1073,3 +1120,5 @@ I used the following resources to gather historical information about Angular an
 * https://medium.com/dailyjs/angular-1-0-turns-five-years-old-4d7108a5e412[Angular 1.0 Turns Five Years Old]
 
 In the next section, I'll show you how to deploy your Angular app to production. Buckle up!
+
+TIP: You can download the code for this book's examples from InfoQ. The `angular-bootstrap` directory has this chapter's completed example.
