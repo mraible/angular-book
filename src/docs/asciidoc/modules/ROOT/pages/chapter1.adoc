@@ -7,13 +7,39 @@ Before you start creating an Angular app, I think it's useful to know a bit abou
 
 AngularJS was started by Miško Hevery in 2009. He was working on a project that was using GWT (Google Web Toolkit). Three developers had been developing the product for six months, and Miško rewrote the whole thing in AngularJS in three weeks. At that time, AngularJS was a side project he'd created. It didn't require you to write much in JavaScript, as you could program most of the logic in HTML. The GWT version of the product contained 17,000 lines of code. The AngularJS version was only 1,000 lines of code!
 
-In October 2014, the AngularJS team announced they were building http://www.infoq.com/news/2014/10/angular-2-atscript[Angular 2.0]. The announcement led to a bit of upheaval in the Angular developer community. The API for writing Angular applications would change, and it would be based on a new language, AtScript. There would be no migration path, and users would have to continue using 1.x or rewrite their applications for 2.x.
+In October 2014, the AngularJS team announced they were building
+ifeval::["{media}" != "prepress"]
+http://www.infoq.com/news/2014/10/angular-2-atscript[Angular 2.0].
+endif::[]
+ifeval::["{media}" == "prepress"]
+Angular 2.0.
+endif::[]
+The announcement led to a bit of upheaval in the Angular developer community. The API for writing Angular applications would change, and it would be based on a new language, AtScript. There would be no migration path, and users would have to continue using 1.x or rewrite their applications for 2.x.
 
-In March 2015, the Angular team http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns], announced they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "`Angular`" instead of Angular 2.0].
+In March 2015, the Angular team
+ifeval::["{media}" != "prepress"]
+http://www.infoq.com/news/2015/03/angular-2-concerns-addressed[addressed community concerns],
+endif::[]
+ifeval::["{media}" == "prepress"]
+addressed community concerns,
+endif::[]
+announced they would be using TypeScript over AtScript and that they would provide a migration path for Angular 1.x users. They also adopted semantic versioning and
+ifeval::["{media}" != "prepress"]
+http://angularjs.blogspot.com/2017/01/branding-guidelines-for-angular-and.html[recommended people call it "`Angular`" instead of Angular 2.0].
+endif::[]
+ifeval::["{media}" == "prepress"]
+recommended people call it "`Angular`" instead of Angular 2.0
+endif::[]
 
 Angular 2.0 was released in September 2016. Angular 4.0 was released in March 2017. The Angular project releases two major versions each year to keep Angular synchronized with the rest of the JavaScript ecosystem and have a predictable schedule. They released Angular 15 on November 18, 2022.
 
-You can find the Angular project at https://angular.io[angular.io].
+You can find the Angular project at
+ifeval::["{media}" != "prepress"]
+https://angular.io[angular.io].
+endif::[]
+ifeval::["{media}" == "prepress"]
+angular.io.
+endif::[]
 
 Developers like to see things working in minutes. I'm a developer, and I like to evaluate software with a "`10-minute test.`" If I can get it working in 10 minutes, sign me up!
 
@@ -56,6 +82,9 @@ This will create a `ng-demo` project and run `npm install` in it. It takes about
 
 You can see the version of Angular CLI you're using with the `ng version` command.
 
+ifeval::["{media}" == "prepress"]
+<<<
+endif::[]
 ----
 $ ng version
 
@@ -222,7 +251,7 @@ If yours looks different, it's because I trimmed my `app.component.html` to the 
 <router-outlet></router-outlet>
 ----
 
-If you want to add styling for this component, open `src/app/search/search.component.css` and add some CSS. For example:
+If you want to add styling for this component, open `search.component.css` and add some CSS. For example:
 
 [source,css]
 .src/app/search/search.component.css
@@ -439,7 +468,13 @@ Now clicking the search button should work. To make the results look better, rem
 
 .What's up with `*ngIf` and `?.`
 ****
-You might be asking yourself why there's an asterisk in front of `ngIf`. From https://angular.io/docs/ts/latest/guide/structural-directives#asterisk[Angular's docs]:
+You might be asking yourself why there's an asterisk in front of `ngIf`. From
+ifeval::["{media}" != "prepress"]
+https://angular.io/docs/ts/latest/guide/structural-directives#asterisk[Angular's docs]:
+endif::[]
+ifeval::["{media}" == "prepress"]
+Angular's docs:
+endif::[]
 
 ====
 Angular transforms the asterisk in front of a structural directive into an `<ng-template>` that surrounds the host element and its descendants.
@@ -460,7 +495,14 @@ These two HTML snippets render the same output:
 </template>
 ----
 
-As far as the `?.` is concerned, that's how you do null-safe property traversal in TypeScript. It's officially called https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html[optional chaining] and was introduced in TypeScript 3.7.
+As far as the `?.` is concerned, that's how you do null-safe property traversal in TypeScript. It's officially called
+ifeval::["{media}" != "prepress"]
+https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html[optional chaining]
+endif::[]
+ifeval::["{media}" == "prepress"]
+optional chaining
+endif::[]
+and was introduced in TypeScript 3.7.
 ****
 
 Then add some additional CSS to `search.component.css` to improve its table layout.
@@ -541,7 +583,14 @@ Since `query` will always be assigned (even if it's empty), change its variable 
 query!: string; // query: string = ''; will also work
 ----
 
-This is called a https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions[definite assignment assertion]. It's a way to tell TypeScript, "`I know what I'm doing; the variable will be assigned.`"
+This is called a
+ifeval::["{media}" != "prepress"]
+https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions[definite assignment assertion].
+endif::[]
+ifeval::["{media}" == "prepress"]
+definite assignment assertion.
+endif::[]
+It's a way to tell TypeScript, "`I know what I'm doing; the variable will be assigned.`"
 
 Now, the search results will be filtered by the query value you type in.
 
@@ -845,7 +894,8 @@ it('should render title', () => {
   const fixture = TestBed.createComponent(AppComponent);
   fixture.detectChanges();
   const compiled = fixture.nativeElement as HTMLElement;
-  expect(compiled.querySelector('h1')?.textContent).toContain('Welcome to ng-demo!');
+  expect(compiled.querySelector('h1')?.textContent)
+    .toContain('Welcome to ng-demo!');
 });
 ----
 
@@ -853,7 +903,7 @@ Now this test should pass.
 
 === Unit test the SearchService
 
-Modify `src/app/shared/search/search.service.spec.ts` and set up the test's infrastructure (a.k.a. `TestBed`) using `HttpClientTestingModule` and `HttpTestingController`.
+Modify `search.service.spec.ts` and set up the test's infrastructure (a.k.a. `TestBed`) using `HttpClientTestingModule` and `HttpTestingController`.
 
 [source,typescript]
 .src/app/shared/search/search.service.spec.ts
@@ -1040,6 +1090,7 @@ it('should search automatically when a term is on the URL', () => {
 });
 ----
 
+[.text-left]
 Update the test for `EditComponent`, verifying fetching a single record works. Notice how you can access the component directly with `fixture.componentInstance`, or its rendered version with `fixture.nativeElement`.
 
 [source,typescript]
@@ -1096,7 +1147,8 @@ describe('EditComponent', () => {
 
     // verify HTML renders as expected
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('h3').innerHTML).toBe('Michael Porter Jr.');
+    expect(compiled.querySelector('h3').innerHTML)
+      .toBe('Michael Porter Jr.');
   });
 });
 ----
@@ -1272,24 +1324,28 @@ You can see the test coverage of your project by running `ng test --no-watch --c
 You'll see a printout of code coverage in your terminal window.
 
 ----
-=============================== Coverage summary ===============================
+=============================== Coverage summary ============================ifeval::["{media}" != "prepress"]===endif::[]
 Statements   : 79.41% ( 54/68 )
 Branches     : 76.31% ( 29/38 )
 Functions    : 83.33% ( 25/30 )
 Lines        : 78.46% ( 51/65 )
-================================================================================
+=============================================================================ifeval::["{media}" != "prepress"]===endif::[]
 ----
 
-You can also open `coverage/ng-demo/index.html` in your browser.
-
-You might notice that the `EditComponent` could use some additional coverage. If you need to improve this coverage, please create a pull request!
+You can also open `coverage/ng-demo/index.html` in your browser. You might notice that the `EditComponent` could use some additional coverage.
 
 .Test coverage
 image::ng-demo/test-coverage.png[Test coverage, 800, scaledwidth="100%", align=center]
 
 == Continuous Integration
 
-At the time of this writing, Angular CLI had no continuous integration support. This section shows you how to set up continuous integration with https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
+At the time of this writing, Angular CLI had no continuous integration support. This section shows you how to set up continuous integration with
+ifeval::["{media}" != "prepress"]
+https://github.com/features/actions[GitHub Actions] and https://jenkins.io/[Jenkins].
+endif::[]
+ifeval::["{media}" == "prepress"]
+GitHub Actions and Jenkins.
+endif::[]
 
 [CAUTION]
 ====
@@ -1492,7 +1548,7 @@ ng add @ng-bootstrap/ng-bootstrap
 
 This will install Bootstrap, NG Bootstrap, `@angular/localize`, and `@popperjs/core`. It will also configure Angular to use Bootstrap for CSS and import `NgbModule` in `app.module.ts`.
 
-Change HTML to use Bootstrap classes. For example, change `app.component.html` to be the following:
+Then, change your HTML templates to use Bootstrap classes. For example, change `app.component.html` to be the following:
 
 [source,html]
 .src/app/app.component.html
@@ -1512,7 +1568,8 @@ You'll also need to change its test to look for `nav` instead of `h1`.
 [source,typescript]
 .src/app/app.component.spec.ts
 ----
-expect(compiled.querySelector('nav')?.textContent).toContain('Welcome to ng-demo!');
+expect(compiled.querySelector('nav')?.textContent)
+  .toContain('Welcome to ng-demo!');
 ----
 
 Update `search.component.html` to add a top margin to the H2, put the form in a grid layout, and add classes to input/button/table elements.
@@ -1671,7 +1728,8 @@ describe('AppComponent', () => {
   ...
   it('should render title', () => {
      ...
-     expect(compiled.querySelector('mat-toolbar')?.textContent).toContain('Welcome to ng-demo!');
+     expect(compiled.querySelector('mat-toolbar')?.textContent)
+       .toContain('Welcome to ng-demo!');
   });
 }
 ----

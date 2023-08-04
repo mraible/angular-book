@@ -175,7 +175,7 @@ export class HomeComponent {
 .src/app/home/home.component.html
 ----
 <div>
-  <button  *ngIf="(auth.isAuthenticated$ | async) === false"
+  <button *ngIf="(auth.isAuthenticated$ | async) === false"
     (click)="login()">Login</button>
   <button *ngIf="auth.isAuthenticated$ | async"
     (click)="logout()">Logout</button>
@@ -221,9 +221,10 @@ image::angular-spring-boot/angular-login-button.png[Login button, 800, scaledwid
 
 Click on it, and you'll be redirected to Auth0 to log in.
 
-.Okta Login form
+.Auth0 Login form
 image::angular-spring-boot/auth0-login.png[Auth0 Login form, 800, scaledwidth="100%", align=center]
 
+[.text-left]
 Enter valid credentials, and you'll be redirected back to your app. There will now be a **Logout** button, indicating that you've authenticated successfully.
 
 .Logout button
