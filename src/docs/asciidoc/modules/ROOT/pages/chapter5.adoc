@@ -266,7 +266,7 @@ Now you should be able to log in and see the note you created earlier.
 
 === A-Rated Security Headers for Nginx in Docker
 
-If you test your freshly-deployed Angular app with https://securityheaders.com/[securityheaders.com], you'll get an **F**. To solve this, modify your `nginx.config` to add security headers.
+If you test your freshly-deployed Angular app with securityheaders.com, you'll get an **F**. To solve this, modify your `nginx.config` to add security headers.
 
 [source,nginx]
 .notes/nginx.config
@@ -414,9 +414,11 @@ Change the buttons and link in `app.component.html` to reference the `isAuthenti
 .notes/src/app/app.component.html
 ----
 <button *ngIf="!isAuthenticated" (click)="auth.login()"
-        type="button" class="btn btn-outline-primary" id="login">Login</button>
+        type="button" class="btn btn-outline-primary"
+        id="login">Login</button>
 <button *ngIf="isAuthenticated" (click)="auth.logout()"
-        type="button" class="btn btn-outline-secondary" id="logout">Logout</button>
+        type="button" class="btn btn-outline-secondary"
+        id="logout">Logout</button>
 ...
 <div class="container-fluid pt-3">
   <a *ngIf="!isAuthenticated">Please log in to manage your notes.</a>
@@ -569,7 +571,7 @@ In the Spring Boot app, you must adjust how the email is retrieved from the user
 spring.security.oauth2.client.provider.okta.user-name-attribute=preferred_username
 ----
 
-Then in `DemoApplication.kt`, change the `AddUserToNote` class to use `principal.name` to get the email.
+Then in `DemoApplication.kt`, change the `AddUserToNote` class to use the `SecurityContextHolder` to get the email.
 
 [source,kotlin]
 ----
@@ -614,7 +616,7 @@ To add notes, you'll need to configure Spring Boot to use CSRF. CSRF is a securi
 To configure Spring Boot for CSRF, modify your `SecurityConfiguration.kt` file to add CSRF support.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+.notes-api/src/main/kotlin/.../notes/SecurityConfiguration.kt
 ----
 ...
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
@@ -680,7 +682,7 @@ Now you'll need to adjust your Spring Boot app to include Angular for production
 
 In your Spring Boot app, you'll need to change several things. You must configure Gradle to build your Angular app when you pass in `-Pprod`, you must adjust its routes (so it's SPA-aware and routes all 404s to `index.html`), and you must modify Spring Security to allow HTML, CSS, and JavaScript to be anonymously accessed.
 
-To begin, delete `src/main/kotlin/com/okta/developer/notes/HomeController.kt`. You'll no longer need this because your Angular app will be served up at the `/` path.
+To begin, delete `src/main/kotlin/.../notes/HomeController.kt`. You'll no longer need this because your Angular app will be served up at the `/` path.
 
 Next, create a `SpaWebFilter.kt` that routes all requests to `index.html`.
 
@@ -725,8 +727,8 @@ class SpaWebFilter : OncePerRequestFilter() {
 
 Modify `SecurityConfiguration.kt` to allow anonymous access to static web files, the `/user` info endpoint, add the `SpaWebFilter`, and add additional security headers.
 
-[source%autofit,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+[source,kotlin]
+.notes-api/src/main/kotlin/.../notes/SecurityConfiguration.kt
 ----
 package com.okta.developer.notes
 
@@ -780,7 +782,9 @@ class SecurityConfiguration {
         http.headers { headers ->
             headers.contentSecurityPolicy("script-src 'self' 'unsafe-inline'; report-to /csp-report-endpoint/")
             headers.frameOptions { frameOptions -> frameOptions.sameOrigin() }
-            headers.referrerPolicy { referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN) }
+            headers.referrerPolicy { referrer ->
+                referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+            }
             headers.permissionsPolicy { permissions ->
                 permissions.policy("camera=(), fullscreen=(self), geolocation=(), gyroscope=(), " +
                         "magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()")
@@ -799,7 +803,7 @@ TIP: See https://docs.spring.io/spring-security/reference/features/exploits/head
 With Kotlin, you can mark parameters and return values as optional by adding `?` to their type. Update the `user()` method in `UserController.kt` to make `OidcUser` optional. It will be `null` when the user is not authenticated; that's why this change is needed.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
+.notes-api/src/main/kotlin/.../notes/UserController.kt
 ----
 @GetMapping("/user")
 fun user(@AuthenticationPrincipal user: OidcUser?): OidcUser? {
@@ -810,7 +814,7 @@ fun user(@AuthenticationPrincipal user: OidcUser?): OidcUser? {
 Previously, Angular handled logout. Add a `LogoutController` that will handle expiring the session as well as sending a logout URL back to Angular so it can sign out from Auth0.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/LogoutController.kt
+.notes-api/src/main/kotlin/.../notes/LogoutController.kt
 ----
 package com.okta.developer.notes
 
@@ -825,13 +829,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class LogoutController(clientRegistrationRepository: ClientRegistrationRepository) {
 
-    val registration: ClientRegistration = clientRegistrationRepository.findByRegistrationId("okta")
+    val registration: ClientRegistration =
+        clientRegistrationRepository.findByRegistrationId("okta")
 
     @PostMapping("/api/logout")
     fun logout(request: HttpServletRequest): ResponseEntity<*> {
         val issuerUri = registration.providerDetails.issuerUri
         val originUrl = request.getHeader(HttpHeaders.ORIGIN)
-        val logoutUrl = "${issuerUri}v2/logout?client_id=${registration.clientId}&returnTo=${originUrl}"
+        val logoutUrl =
+            "${issuerUri}v2/logout?client_id=${registration.clientId}&returnTo=${originUrl}"
         request.session.invalidate()
         return ResponseEntity.ok().body(java.util.Map.of("logoutUrl", logoutUrl))
     }
@@ -1136,7 +1142,7 @@ heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote jib
 
 You'll need to add this app's URL to Auth0 as an allowed callback URL. Run `auth0 apps open` or log in to your Auth0 management dashboard and open the Spring Boot app. Add the following URLs:
 
-- Callback: `\https://<heroku-app>.herokuapp.com/login/oauth2/code/okta
+- Callback: `\https://<heroku-app>.herokuapp.com/login/oauth2/code/okta`
 - Logout: `\https://<heroku-app>.herokuapp.com`
 
 Now, you should be able to open your app, click the **Login** button, and authenticate!
@@ -1146,6 +1152,7 @@ Now, you should be able to open your app, click the **Login** button, and authen
 heroku open --remote jib
 ----
 
+[.text-left]
 If you test your Dockerfied Angular + Spring Boot app on securityheaders.com, you'll see it scores an **A**!
 
 .Security Headers with Jib
@@ -1159,8 +1166,16 @@ With Heroku, when companies reach the platform's limitations, they have to go el
 
 IMPORTANT: Using Knative for a monolith is a bit excessive. However, I decided to include it anyway because it wasn't easy to figure out how to configure HTTPS, PostgreSQL, and Auth0. You can skip to the xref:buildpacks[Cloud Native Buildpacks] section if you like.
 
-You'll need a Google Cloud account for this section. Go to https://cloud.google.com/[cloud.google.com] and click **Get started for free**.
+You'll need a Google Cloud account for this section. Go to
+ifeval::["{media}" == "prepress"]
+cloud.google.com
+endif::[]
+ifeval::["{media}" != "prepress"]
+https://cloud.google.com/[cloud.google.com]
+endif::[]
+and click **Get started for free**.
 
+[.text-left]
 Once you have an account, go to https://console.cloud.google.com/[Google Cloud Console] and create a new project.
 
 Then, click on the Terminal icon in the top right to open a Cloud Shell terminal for your project.
@@ -1460,8 +1475,8 @@ bootiful-angular   https://bootiful-angular.default.34.72.191.176.sslip.io
 
 You'll need to add this URL as an **Allowed Callback URL** and an **Allowed Logout URL** to your Spring Boot app in the Auth0 management console to log in. Access it with ease using `auth0 apps open`. Then, add the following URLs:
 
-- Callback: `\https://bootiful-angular.default.34.72.191.176.sslip.io/login/oauth2/code/okta`
-- Logout: `\https://bootiful-angular.default.34.72.191.176.sslip.io`
+- Callback: `<app-url>/login/oauth2/code/okta`
+- Logout: `<app-url>`
 
 Then, you can sign in to your app running on Knative! Add a note or two to prove it all works.
 
