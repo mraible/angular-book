@@ -568,7 +568,7 @@ At the beginning of this section, I said I'd show you how to develop a searchabl
 Adding search functionality requires the fewest code modifications. Change the `UserController#notes()` method in your Spring Boot app to accept a title parameter and return notes with the parameter's value in their title.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
+.notes-api/src/main/kotlin/.../notes/UserController.kt
 ----
 @GetMapping("/user/notes")
 fun notes(principal: Principal, title: String?): List<Note> {
@@ -585,7 +585,7 @@ fun notes(principal: Principal, title: String?): List<Note> {
 Add the new repository method to the `NotesRepository` in `DemoApplication.kt`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+.notes-api/src/main/kotlin/.../notes/DemoApplication.kt
 ----
 @RepositoryRestResource
 interface NotesRepository : JpaRepository<Note, Long> {
@@ -775,7 +775,7 @@ endif::[]
 Add a `Pageable` argument to `UserController#notes()` and return a `Page` instead of a `List`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/UserController.kt
+.notes-api/src/main/kotlin/.../notes/UserController.kt
 ----
 package com.okta.developer.notes
 
@@ -811,7 +811,7 @@ class UserController(val repository: NotesRepository) {
 Modify `NotesRepository` to add a `Pageable` argument to its methods and return a `Page`.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DemoApplication.kt
+.notes-api/src/main/kotlin/.../notes/DemoApplication.kt
 ----
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -828,7 +828,7 @@ interface NotesRepository : JpaRepository<Note, Long> {
 While you're updating the Spring Boot side of things, modify `DataInitializer` to create a thousand notes for your user.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/DataInitializer.kt
+.notes-api/src/main/kotlin/.../notes/DataInitializer.kt
 ----
 @Component
 class DataInitializer(val repository: NotesRepository) : ApplicationRunner {
