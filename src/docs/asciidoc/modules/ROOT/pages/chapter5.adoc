@@ -616,7 +616,7 @@ To add notes, you'll need to configure Spring Boot to use CSRF. CSRF is a securi
 To configure Spring Boot for CSRF, modify your `SecurityConfiguration.kt` file to add CSRF support.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+.notes-api/src/main/kotlin/.../notes/SecurityConfiguration.kt
 ----
 ...
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
@@ -1175,6 +1175,7 @@ https://cloud.google.com/[cloud.google.com]
 endif::[]
 and click **Get started for free**.
 
+[.text-left]
 Once you have an account, go to https://console.cloud.google.com/[Google Cloud Console] and create a new project.
 
 Then, click on the Terminal icon in the top right to open a Cloud Shell terminal for your project.
