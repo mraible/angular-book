@@ -39,7 +39,7 @@ jobs:
 
       - name: Upgrade to Spring Boot 3.1
         run: |
-          SPRING_BOOT_VERSION="3.1.1"
+          SPRING_BOOT_VERSION="3.1.2"
           echo "Upgrading to Spring Boot $SPRING_BOOT_VERSION"
           for dir in $(find src/code -name 'build.gradle.kts' -exec dirname {} \;); do
             origin=$(pwd)
