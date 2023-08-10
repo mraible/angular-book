@@ -3,7 +3,14 @@
 
 I hope you've enjoyed learning how Angular can help you develop secure web applications! It's a fantastic open source project that's changed my life as a UI developer. Writing testable MVC code with TypeScript is much easier to maintain than the glob of jQuery code I used to write.
 
-I encourage you to follow the https://blog.angular.io[Angular Blog] and https://twitter.com/angular[@angular] on Twitter.
+I encourage you to follow the https://blog.angular.io[Angular Blog] and
+ifeval::["{media}" != "prepress"]
+https://twitter.com/angular[@angular]
+endif::[]
+ifeval::["{media}" == "prepress"]
+@angular
+endif::[]
+on Twitter.
 
 Now that you've learned how to use Angular, Bootstrap, Spring Boot, and a bit of Kotlin, go forth and develop amazing applications!
 
