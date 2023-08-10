@@ -153,7 +153,7 @@ You can verify everything still works by running `./gradlew bootRun` and navigat
 
 TIP: If your app fails to start, you must first run `source .okta.env`.
 
-For the Angular client, you can use https://www.npmjs.com/package/npm-check-updates[npm-check-updates] to upgrade npm dependencies.
+For the Angular client, you can use npm-check-updates to upgrade npm dependencies.
 
 [source,shell]
 ----
@@ -193,7 +193,7 @@ You need to change Spring Boot's code so other origins can make CORS requests, t
 Open the root directory in your favorite IDE and configure it to load `notes-api` as a Gradle project. Open `SecurityConfiguration.kt` and change the `corsConfigurationSource` bean so it configures the allowed origins from your Spring environment.
 
 [source,kotlin]
-.notes-api/src/main/kotlin/com/okta/developer/notes/SecurityConfiguration.kt
+.notes-api/src/main/kotlin/.../notes/SecurityConfiguration.kt
 ----
 import org.springframework.beans.factory.annotation.Value
 
@@ -214,9 +214,10 @@ class SecurityConfiguration {
 }
 ----
 
-Define the `allowed.origins` property in `notes-api/src/main/resources/application.properties`.
+Define the `allowed.origins` property in `application.properties`.
 
 [source,properties]
+.notes-api/src/main/resources/application.properties
 ----
 allowed.origins=http://localhost:4200
 ----
@@ -252,7 +253,7 @@ export const environment = {
 
 Update `auth-routing.module.ts` to use `environment.apiUrl`.
 
-[source%autofit,typescript]
+[source,typescript]
 .notes/src/app/auth-routing.module.ts
 ----
 import { environment } from '../environments/environment';
@@ -319,9 +320,10 @@ tasks.processResources {
 }
 ----
 
-Rename `notes-api/src/main/resources/application.properties` to `application-dev.properties` and add a URL for H2 so it persists to disk, which retains data through restarts.
+Rename `application.properties` to `application-dev.properties` and add a URL for H2 so it persists to disk, which retains data through restarts.
 
 [source,properties]
+.notes-api/src/main/resources/application-dev.properties
 ----
 allowed.origins=http://localhost:4200
 spring.datasource.url=jdbc:h2:file:./build/h2db/notes;DB_CLOSE_DELAY=-1
@@ -451,6 +453,7 @@ Attach a PostgreSQL database to your app.
 heroku addons:create heroku-postgresql
 ----
 
+[.text-left]
 Heroku will create a `DATABASE_URL` configuration variable as part of this process. It will also automatically detect Spring Boot and set variables for `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, AND `SPRING_DATASOURCE_PASSWORD`. These values will override what you have in `application-prod.properties`.
 
 By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku[Heroku's Gradle support] runs `./gradlew build -x test`. Since you want it to run `./gradlew bootJar -Pprod`, you must override it by setting a `GRADLE_TASK` config var.
@@ -610,7 +613,7 @@ NOTE: If you experience any issues, you can run `heroku logs --remote angular` t
 
 You won't be able to log in to your app until you modify its Allowed Callback URLs on Auth0 to allow Heroku. You can do this with the Auth0 CLI:
 
-[source,shell]
+[source%autofit,shell]
 ----
 auth0 apps list # to get Angular client ID
 auth0 apps update <angular-client-id> \
@@ -642,7 +645,7 @@ heroku config:set SPRING_JPA_HIBERNATE_DDL_AUTO=validate --remote heroku
 
 You've deployed your app to Heroku, but there are still a couple of security issues. First, if you access it using `http` (instead of `https`), it won't work. You'll get an error from the Auth0 Angular SDK in your browser's console.
 
-The second issue is that you'll score an **F** when you test it using https://securityheaders.com[securityheaders.com]. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
+The second issue is that you'll score an **F** when you test it using securityheaders.com. Heroku has a https://blog.heroku.com/using-http-headers-to-secure-your-site[blog post on using HTTP headers to secure your site] that will help you improve your score.
 
 Create a `notes/config/nginx.conf.erb` file with the configuration for secure headers and redirect all HTTP requests to HTTPS.
 
@@ -700,8 +703,6 @@ http {
 	}
 }
 ----
-
-NOTE: In this code, you might notice that some https URLs are allowed in the content security policy. Those are there so this app can make XHR requests to those domains when that functionality is added.
 
 For `config/nginx.conf.erb` to be read, you have to use the https://elements.heroku.com/buildpacks/heroku/heroku-buildpack-nginx[Heroku NGINX buildpack].
 
@@ -783,7 +784,14 @@ Create a `firebase` branch so you can make changes without affecting the work yo
 git checkout -b firebase
 ----
 
-Open a browser and go to https://firebase.google.com/[firebase.google.com]. Log in to your account, go to the console, and create a new project.
+Open a browser and go to
+ifeval::["{media}" != "prepress"]
+https://firebase.google.com/[firebase.google.com].
+endif::[]
+ifeval::["{media}" == "prepress"]
+firebase.google.com.
+endif::[]
+Log in to your account, go to the console, and create a new project.
 
 Install the Firebase CLI and authenticate from your terminal:
 
@@ -861,7 +869,7 @@ Open your Firebase URL in your browser, log in, and you should be able to see th
 
 === Strong Security Headers on Firebase
 
-If you test your new Firebase site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. Luckily, you can https://firebase.google.com/docs/hosting/full-config#headers[configure headers] in your `firebase.json` file. Edit this file and modify the `headers` key like the following:
+If you test your new Firebase site on securityheaders.com, you'll score a **D**. Luckily, you can https://firebase.google.com/docs/hosting/full-config#headers[configure headers] in your `firebase.json` file. Edit this file and modify the `headers` key like the following:
 
 [source,json]
 ----
@@ -994,7 +1002,7 @@ Run `ng deploy` again, and you should be able to log in successfully.
 
 === Better Security Headers on Netlify
 
-If you test your new Netlify site on https://securityheaders.com/[securityheaders.com], you'll score a **D**. To improve your score, Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers].
+If you test your new Netlify site on securityheaders.com, you'll score a **D**. To improve your score, Netlify allows you to add https://docs.netlify.com/routing/headers/[custom headers].
 
 Create a `src/_headers` file with the following contents. Note that the first line in this file indicates "`all paths under `/``".
 
@@ -1172,7 +1180,7 @@ Now you can authenticate to your Angular app on AWS successfully!
 
 === Awesome Security Headers with AWS CloudFront + S3
 
-If you test your new CloudFront + S3 site on https://securityheaders.com/[securityheaders.com], you'll get an **A**.
+If you test your new CloudFront + S3 site on securityheaders.com, you'll get an **A**.
 
 .AWS score from securityheaders.com
 image::angular-deployment/aws-headers.png[AWS score from securityheaders.com, 800, scaledwidth="100%", align=center]

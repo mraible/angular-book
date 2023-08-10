@@ -37,10 +37,17 @@ include::pages/acknowledgments.adoc[]
 include::pages/preface.adoc[]
 
 include::pages/introduction.adoc[]
+
 include::pages/chapter1.adoc[]
+
 include::pages/chapter2.adoc[]
+
 include::pages/chapter3.adoc[]
+
 include::pages/chapter4.adoc[]
+
 include::pages/chapter5.adoc[]
+
 include::pages/action.adoc[]
+
 include::pages/about.adoc[]

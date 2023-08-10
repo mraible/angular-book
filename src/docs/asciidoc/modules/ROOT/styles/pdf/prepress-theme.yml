@@ -85,6 +85,7 @@ literal:
   font_color: 333333 #b12146
   font_family: M+ 1mn
 heading:
+  align: left
   #font_color: 181818
   font_color: $base_font_color
   font_family: $base_font_family

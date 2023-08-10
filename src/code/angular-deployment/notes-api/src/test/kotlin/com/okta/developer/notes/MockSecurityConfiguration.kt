@@ -10,8 +10,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
-import org.springframework.security.oauth2.core.AuthorizationGrantType
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod
+import org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC
 import org.springframework.security.oauth2.jwt.JwtDecoder
 
 @TestConfiguration
@@ -28,8 +28,8 @@ class MockSecurityConfiguration {
         metadata["end_session_endpoint"] = "https://angular.org/logout"
         return ClientRegistration.withRegistrationId("okta")
             .redirectUri("{baseUrl}/{action}/oauth2/code/{registrationId}")
-            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .clientAuthenticationMethod(CLIENT_SECRET_BASIC)
+            .authorizationGrantType(AUTHORIZATION_CODE)
             .scope("read:user")
             .authorizationUri("https://angular.org/login/oauth/authorize")
             .tokenUri("https://angular.org/login/oauth/access_token")
@@ -48,13 +48,15 @@ class MockSecurityConfiguration {
     }
 
     @Bean
-    fun authorizedClientService(clientRegistrationRepository: ClientRegistrationRepository?): OAuth2AuthorizedClientService {
-        return InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository)
+    fun authorizedService(registration: ClientRegistrationRepository?):
+        OAuth2AuthorizedClientService {
+        return InMemoryOAuth2AuthorizedClientService(registration)
     }
 
     @Bean
-    fun authorizedClientRepository(authorizedClientService: OAuth2AuthorizedClientService?): OAuth2AuthorizedClientRepository {
-        return AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService)
+    fun authorizedRepository(client: OAuth2AuthorizedClientService?):
+        OAuth2AuthorizedClientRepository {
+        return AuthenticatedPrincipalOAuth2AuthorizedClientRepository(client)
     }
 
     init {
