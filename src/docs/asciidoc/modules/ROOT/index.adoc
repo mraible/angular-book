@@ -2,7 +2,7 @@
 :book-title: {doctitle}
 :author: Matt Raible
 :email: matt@raibledesigns.com
-:revnumber: 3.0.0
+:revnumber: 3.0.1
 :revdate: {docdate}
 :revyear: 2023
 :subject: Angular

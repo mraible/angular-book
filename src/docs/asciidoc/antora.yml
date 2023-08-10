@@ -9,7 +9,7 @@ asciidoc:
     page-pagination: '@'
     book-title: The Angular Mini-Book
     author: Matt Raible
-    revnumber: 3.0.0
+    revnumber: 3.0.1
     revyear: 2023
     email: matt@raibledesigns.com
     subject: Angular
