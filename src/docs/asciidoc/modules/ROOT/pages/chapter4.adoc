@@ -84,7 +84,7 @@ image::angular-deployment/idea-edit-configuration.png[Edit DemoApplication Confi
 Next, click the paste icon. You'll need to delete `export` in the Name column. Now you can run your Spring Boot app with Auth0 from IDEA!
 
 .IntelliJ Environment Variables
-image::angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="60%", align=center]
+image::angular-deployment/idea-env-variables.png[IntelliJ Environment Variables, 600, scaledwidth="80%", align=center]
 ====
 
 Your Angular app should already be configured for OIDC authentication from the last chapter. However, if you registered a new SPA app on Auth0, you must modify `auth-routing.module.ts` to use the new client ID.
@@ -454,7 +454,7 @@ heroku addons:create heroku-postgresql
 ----
 
 [.text-left]
-Heroku will create a `DATABASE_URL` configuration variable as part of this process. It will also automatically detect Spring Boot and set variables for `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, AND `SPRING_DATASOURCE_PASSWORD`. These values will override what you have in `application-prod.properties`.
+Heroku will create a `DATABASE_URL` configuration variable as part of this process. It will also automatically detect Spring Boot and set variables for `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD`. These values will override what you have in `application-prod.properties`.
 
 By default, https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku[Heroku's Gradle support] runs `./gradlew build -x test`. Since you want it to run `./gradlew bootJar -Pprod`, you must override it by setting a `GRADLE_TASK` config var.
 

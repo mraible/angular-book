@@ -13,6 +13,10 @@ https://angular.io/[Angular] is an open source, popular web framework. It allows
 This document provides a high-level view of the changes introduced in the Angular Mini-Book by release.
 For a detailed view of what has changed, refer to the https://github.com/mraible/angular-book/commits/main[commit history] on GitHub.
 
+== 3.0.2 (2023-08-28) - @mraible
+
+* Adjusted content for print version again.
+
 == 3.0.1 (2023-08-10) - @mraible
 
 * Adjusted content for print version and updated ISBN.

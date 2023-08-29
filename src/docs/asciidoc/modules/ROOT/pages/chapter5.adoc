@@ -408,7 +408,7 @@ export class AppComponent implements OnInit {
 
 Remove `AuthModule` and its related code from `app.component.spec.ts` and `home.component.spec.ts`. You must also add `HttpClientTestingModule` to their `TestBed` imports.
 
-Change the buttons and link in `app.component.html` to reference the `isAuthenticated` property instead of `oktaAuth`.
+Change the buttons and link in `app.component.html` to reference the `isAuthenticated` property instead of `auth.isAuthenticated$`.
 
 [source,html]
 .notes/src/app/app.component.html
