@@ -1324,12 +1324,12 @@ You can see the test coverage of your project by running `ng test --no-watch --c
 You'll see a printout of code coverage in your terminal window.
 
 ----
-=============================== Coverage summary ============================ifeval::["{media}" != "prepress"]===endif::[]
+============================ Coverage summary ============================
 Statements   : 79.41% ( 54/68 )
 Branches     : 76.31% ( 29/38 )
 Functions    : 83.33% ( 25/30 )
 Lines        : 78.46% ( 51/65 )
-=============================================================================ifeval::["{media}" != "prepress"]===endif::[]
+==========================================================================
 ----
 
 You can also open `coverage/ng-demo/index.html` in your browser. You might notice that the `EditComponent` could use some additional coverage.
@@ -1449,7 +1449,7 @@ node {
 
 == Deployment to Heroku
 
-This section shows how to deploy an Angular app to https://heroku.com[Heroku].
+This section shows how to deploy an Angular app to Heroku.
 
 https://signup.heroku.com/[Create a Heroku account], https://devcenter.heroku.com/articles/heroku-cli[install the heroku CLI], and run `heroku login`.
 
@@ -1935,7 +1935,8 @@ it('should render title', () => {
   const fixture = TestBed.createComponent(AppComponent);
   fixture.detectChanges();
   const compiled = fixture.nativeElement as HTMLElement;
-  expect(compiled.querySelector('h1')?.textContent).toContain('Welcome to ng-demo!');
+  expect(compiled.querySelector('h1')?.textContent)
+    .toContain('Welcome to ng-demo!');
 });
 ----
 
