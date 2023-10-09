@@ -36,6 +36,8 @@ jobs:
             echo "Upgrading $dir"
             cd $dir && npm ci
             ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --force
+            git add package.json package-lock.json
+            git commit -m "Upgraded to Angular $ANGULAR_VERSION" package.json package-lock.json
             cd $origin
           done
 
