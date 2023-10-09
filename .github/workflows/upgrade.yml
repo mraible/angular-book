@@ -51,8 +51,8 @@ jobs:
           for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
             origin=$(pwd)
             echo "Upgrading $dir"
-            cd $dir && npm ci
-            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --next
+            cd $dir
+            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --next --force
             cd $origin
           done
 
