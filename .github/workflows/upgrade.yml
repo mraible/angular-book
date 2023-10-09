@@ -35,7 +35,7 @@ jobs:
             origin=$(pwd)
             echo "Upgrading $dir"
             cd $dir && npm ci
-            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --force
+            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --next
             cd $origin
           done
 
