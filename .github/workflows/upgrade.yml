@@ -26,6 +26,19 @@ jobs:
           java-version: 20
           cache: 'gradle'
 
+      - name: Upgrade to Angular 16
+        run: |
+          ANGULAR_VERSION="16"
+          echo "Upgrading to Angular $ANGULAR_VERSION"
+          npm i -g @angular/cli@$ANGULAR_VERSION
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            cd $dir && npm ci
+            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --force
+            cd $origin
+          done
+
       - name: Upgrade to Angular 17
         run: |
           ANGULAR_VERSION="17.0.0-next.7"
