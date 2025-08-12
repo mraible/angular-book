@@ -16,7 +16,7 @@ jobs:
       src: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Check if source changed
         uses: dorny/paths-filter@v3
         id: filter
@@ -42,7 +42,7 @@ jobs:
         java: ['17']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
