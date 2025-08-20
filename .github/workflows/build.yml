@@ -7,6 +7,7 @@ on:
   pull_request: # build all PRs
 
 jobs:
+  if: !contains('upgrade', github.ref)
   changes:
     name: Check for changes
     runs-on: ubuntu-latest
