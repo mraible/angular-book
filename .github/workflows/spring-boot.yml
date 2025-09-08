@@ -37,7 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Configure Node 18
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 18
       - name: Configure Java 17
