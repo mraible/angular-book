@@ -10,7 +10,7 @@ jobs:
       app: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Configure demos to test
         uses: dorny/paths-filter@v3
         id: filter
@@ -35,7 +35,7 @@ jobs:
         working-directory: ./src/code/${{ matrix.app }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Configure Node 18
         uses: actions/setup-node@v6
         with:
