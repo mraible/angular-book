@@ -1,0 +1,94 @@
+name: Upgrade to Angular 17 and Spring Boot 3.2
+
+on:
+  push:
+    branches:
+      - 'upgrade**'
+
+jobs:
+  upgrade:
+    name: Upgrade and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Java 20
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 20
+          cache: 'gradle'
+
+      - name: Upgrade to Angular 16
+        run: |
+          ANGULAR_VERSION="16"
+          echo "Upgrading to Angular $ANGULAR_VERSION"
+          npm i -g @angular/cli@$ANGULAR_VERSION
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            cd $dir && npm ci
+            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --force
+            git config --global user.email "matt@raibledesigns.com"
+            git config --global user.name "Matt Raible"
+            git add package.json package-lock.json
+            git commit -m "Upgraded to Angular $ANGULAR_VERSION" package.json package-lock.json
+            cd $origin
+          done
+
+      - name: Upgrade to Angular 17
+        run: |
+          ANGULAR_VERSION="17.0.0-next.7"
+          echo "Upgrading to Angular $ANGULAR_VERSION"
+          npm i -g @angular/cli@$ANGULAR_VERSION
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            cd $dir
+            sed -i "s/\"@ng-bootstrap\/ng-bootstrap\": \"\^14\.1\.0\"/\"@ng-bootstrap\/ng-bootstrap\": \"\^15\.1\.1\"/g" package.json
+            npm i
+            git add package.json package-lock.json
+            git commit -m "Upgrade to ng-bootstrap 15.1" package.json package-lock.json
+            ng update @angular/core@$ANGULAR_VERSION @angular/cli@$ANGULAR_VERSION --next --force
+            cd $origin
+          done
+
+      - name: Upgrade to Spring Boot 3.2
+        run: |
+          SPRING_BOOT_VERSION="3.2.0-M3"
+          echo "Upgrading to Spring Boot $SPRING_BOOT_VERSION"
+          for dir in $(find src/code -name 'build.gradle.kts' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Upgrading $dir"
+            sed -i "s/^.*id(\"org.springframework.boot\") version .*\$/id(\"org.springframework.boot\") version \"$SPRING_BOOT_VERSION\"/" $dir/build.gradle.kts
+            if ! grep -q 'https://repo.spring.io/milestone' $dir/build.gradle.kts; then
+              sed -i "s|^.*mavenCentral().*\$|    mavenCentral(); maven { url = uri(\"https://repo.spring.io/milestone\") }|" $dir/build.gradle.kts
+            fi
+            if ! grep -q 'https://repo.spring.io/milestone' $dir/settings.gradle.kts; then
+              echo 'pluginManagement { repositories { maven { url = uri("https://repo.spring.io/milestone") }; gradlePluginPortal() }}' >> $dir/settings.gradle.kts
+            fi
+            cd $origin
+          done
+
+      - name: Run Angular tests
+        run: |
+          for dir in $(find src/code -name 'package.json' -not -path '*/node_modules/*' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Running tests in $dir"
+            cd $dir && xvfb-run ng test --watch=false && cd $origin
+          done
+
+      - name: Run Spring Boot tests
+        run: |
+          for dir in $(find src/code -name 'build.gradle.kts' -exec dirname {} \;); do
+            origin=$(pwd)
+            echo "Running tests in $dir"
+            cd $dir && ./gradlew test && cd $origin
+          done
