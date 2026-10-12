@@ -1,3 +1,6 @@
 [build]
   publish = "public"
   command = "npm run build:site -- --url=https://angular-book.org"
+
+[build.environment]
+  NODE_VERSION = "24"
