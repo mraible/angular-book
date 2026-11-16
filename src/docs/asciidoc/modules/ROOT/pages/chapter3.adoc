@@ -199,7 +199,7 @@ And change `styles.scss` to import Bootstrap's Sass.
 
 To demonstrate how to override Bootstrap's variables, create a `src/_variables.scss` and override the colors. You can see the https://github.com/twbs/bootstrap/blob/v5.2.3/scss/_variables.scss[default variables in Bootstrap's GitHub repo].
 
-[source,sass]
+[source,scss]
 ----
 $primary: orange;
 $secondary: blue;
@@ -209,7 +209,7 @@ $dark: darken($secondary, 10%);
 
 Then import this file at the top of `src/styles.scss`:
 
-[source,sass]
+[source,scss]
 ----
 @import 'variables', 'bootstrap/scss/bootstrap.scss';
 ----
